@@ -220,6 +220,58 @@ if  __name__ =='__main__':
     main()
 ```
 
+## class static member
+
+Both ways aren't correct or incorrect, they are just two different kind of class elements:
+
+
+Elements outside the __init__ method are static elements, it means, they belong to the class, and share by all instance, we can access it event use ClassName.
+Elements inside the __init__ method are elements of the object (self), but every object have their independable memory event they have same value, we must by object to access it.
+
+You'll see it more clearly with some code:
+
+```python
+    class MyClass:
+        static_elem = 123
+
+        def __init__(self):
+            self.object_elem = 456
+
+
+
+    def setup():
+        """
+        >>> print c1.static_elem, c1.object_elem
+        123 456
+        >>> print c2.static_elem, c2.object_elem
+        123 456
+
+        # Let's try changing the static element
+        MyClass.static_elem = 999
+        >>> print c1.static_elem, c1.object_elem
+        999 456
+        >>> print c2.static_elem, c2.object_elem
+        999 456
+
+        # Now, let's try changing the object element
+        >>> c1.object_elem = 888
+        >>> print c1.static_elem, c1.object_elem
+        999 888
+        >>> print c2.static_elem, c2.object_elem
+        999 456
+        # As you can see, when we changed the class element, it changed for both objects.
+        # But, when we changed the object element, the other object remained unchanged.
+        """
+
+        c1 = MyClass()
+        c2 = MyClass()
+
+    if  __name__ =='__main__':
+        main()
+
+    if __name__ == os.path.splitext(os.path.basename(__file__))[0]:
+        setup()
+```
 ## class static method
 
     class MyClass(object):
@@ -789,78 +841,22 @@ class Switcher(object):
 
 
 
-## class static member
-
-
-Both ways aren't correct or incorrect, they are just two different kind of class elements:
-
-
-Elements outside the __init__ method are static elements, it means, they belong to the class, and share by all instance, we can access it event use ClassName.
-Elements inside the __init__ method are elements of the object (self), but every object have their independable memory event they have same value, we must by object to access it.
-
-You'll see it more clearly with some code:
-
-```python
-    class MyClass:
-        static_elem = 123
-
-
-        def __init__(self):
-            self.object_elem = 456
-
-
-    c1 = MyClass()
-    c2 = MyClass()
-```
-
-# Initial values of both elements
->>> print c1.static_elem, c1.object_elem 
-123 456
->>> print c2.static_elem, c2.object_elem
-123 456
-
-
-# Nothing new so far ...
-
-
-# Let's try changing the static element
-MyClass.static_elem = 999
-
-
->>> print c1.static_elem, c1.object_elem
-999 456
->>> print c2.static_elem, c2.object_elem
-999 456
-
-
-# Now, let's try changing the object element
-c1.object_elem = 888
-
-
->>> print c1.static_elem, c1.object_elem
-999 888
->>> print c2.static_elem, c2.object_elem
-999 456
-As you can see, when we changed the class element, it changed for both objects. But, when we changed the object element, the other object remained unchanged.
-
 
 ## static method
+
 However, the 'pythonic' way of doing this is not to have a class full of static methods, but to just make them free functions in a module.
 
+```python
+    #fileutility.py:
+    def get_file_size(fullName):
+        fileSize = os.path.getsize(fullName)
+        return fileSize
 
-#fileutility.py:
+    def get_file_path(fullName):
+        filePath = os.path.abspath(fullName)
+        return filePath
+```
 
-
-def get_file_size(fullName):
-    fileSize = os.path.getsize(fullName)
-    return fileSize
-
-
-
-
-def get_file_path(fullName):
-    filePath = os.path.abspath(fullName)
-    return filePath
 Now, in your other python files (assuming fileutility.py is in the same directory or on the PYTHONPATH)
 
 
