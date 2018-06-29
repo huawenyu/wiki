@@ -842,93 +842,66 @@ class Switcher(object):
 
 
 
-## static method
 
-However, the 'pythonic' way of doing this is not to have a class full of static methods, but to just make them free functions in a module.
+## how to find module source-code’s path
 
-```python
-    #fileutility.py:
-    def get_file_size(fullName):
-        fileSize = os.path.getsize(fullName)
-        return fileSize
+### method 1: __file__
 
-    def get_file_path(fullName):
-        filePath = os.path.abspath(fullName)
-        return filePath
-```
-
-Now, in your other python files (assuming fileutility.py is in the same directory or on the PYTHONPATH)
-
-
-import fileutility
-
-
-fileutility.get_file_size("myfile.txt")
-fileutility.get_file_path("that.txt")
-It doesn't mention static methods specifically, but if you're coming from a different language, PEP 8, the python style guide is a good read and introduction to how python programmers think.
-
-
-how to find module source-code’s path
-
-
-method 1: __file__
 For modules coming from .py (or .pyc) files, you can use mymodule.__file__, e.g.
-
 
 > import random
 > random.__file__
 'C:\\Python25\\lib\\random.pyc'
 
 
-method 2: python -v
-
+### method 2: python -v
 
 Running python -v from the command line should tell you what is being imported and from where. This works for me on Windows and Mac OS X.
 
+```
+    C:\>python -v
+    # installing zipimport hook
+    import zipimport # builtin
+    # installed zipimport hook
+    # C:\Python24\lib\site.pyc has bad mtime
+    import site # from C:\Python24\lib\site.py
+    # wrote C:\Python24\lib\site.pyc
+```
 
-C:\>python -v
-# installing zipimport hook
-import zipimport # builtin
-# installed zipimport hook
-# C:\Python24\lib\site.pyc has bad mtime
-import site # from C:\Python24\lib\site.py
-# wrote C:\Python24\lib\site.pyc
-
-
-What's the python __all__ module level variable for?
-
+### What's the python __all__ module level variable for?
 
 It has two purposes:
-
-
-* Anybody who reads the source will know what the exposed public API is. It doesn't prevent them from poking around in private declarations, but does provide a good warning not to.
-* When using from mod import *, only names listed in __all__ will be imported. This is not as important, in my opinion, because importing everything is a really bad idea.
-
+  - Anybody who reads the source will know what the exposed public API is. It doesn't prevent them from poking around in private declarations, but does provide a good warning not to.
+  - When using from mod import *, only names listed in __all__ will be imported. This is not as important, in my opinion, because importing everything is a really bad idea.
 
 Linked to, but not explicitly mentioned here, is exactly when __all__ is used. It is a list of strings defining what symbols in a module will be exported when from <module> import * is used on the module.
 
 
 For example, the following code in a foo.py explicitly exports the symbols bar and baz:
 
-
-__all__ = ['bar', 'baz']
-
-
-waz = 5
-bar = 10
-def baz(): return 'baz'
-These symbols can then be imported like so:
+```python
+    __all__ = ['bar', 'baz']
 
 
-from foo import *
+    waz = 5
+    bar = 10
+    def baz(): return 'baz'
 
 
-print bar
-print baz
+    # These symbols can then be imported like so:
 
 
-# The following will trigger an exception, as "waz" is not exported by the module
-print waz
+    from foo import *
+
+
+    print bar
+    print baz
+    
+    
+    # The following will trigger an exception, as "waz" is not exported by the module
+    print waz
+```
+
 If the __all__ above is commented out, this code will then execute to completion, as the default behaviour of import * is to import all symbols that do not begin with an underscore, from the given namespace.
 
 It's important to note that __all__ only affects the behavior of from <module> import *. Members that are not mentioned in __all__ as still accessible from outside the module and can be imported with from <module> import <member>.
