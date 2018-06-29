@@ -139,6 +139,20 @@ If you want to remove duplicated spaces, use the str.split():
 ## I/O oper
 
 
+python open does not create file if it doesnt exist:
+
+```python
+    # Change "rw" to "w+", Or use 'a+' for appending (not erasing existing content)
+    file = open('myfile.dat', 'rw')
+
+    # create path
+    filename = "/foo/bar/baz.txt"
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
+    with open(filename, "w+") as f:
+        f.write("FOOBAR")
+```
+
 # enum
 
 ## python 3: already added
@@ -367,7 +381,7 @@ if  __name__ =='__main__':
     main()
 ```
 
-## class static member
+## class member & static member
 
 Both ways aren't correct or incorrect, they are just two different kind of class elements:
 
@@ -384,34 +398,32 @@ You'll see it more clearly with some code:
         def __init__(self):
             self.object_elem = 456
 
+        def setup():
+            """
+            >>> print c1.static_elem, c1.object_elem
+            123 456
+            >>> print c2.static_elem, c2.object_elem
+            123 456
 
+            # Let's try changing the static element
+            MyClass.static_elem = 999
+            >>> print c1.static_elem, c1.object_elem
+            999 456
+            >>> print c2.static_elem, c2.object_elem
+            999 456
 
-    def setup():
-        """
-        >>> print c1.static_elem, c1.object_elem
-        123 456
-        >>> print c2.static_elem, c2.object_elem
-        123 456
+            # Now, let's try changing the object element
+            >>> c1.object_elem = 888
+            >>> print c1.static_elem, c1.object_elem
+            999 888
+            >>> print c2.static_elem, c2.object_elem
+            999 456
+            # As you can see, when we changed the class element, it changed for both objects.
+            # But, when we changed the object element, the other object remained unchanged.
+            """
 
-        # Let's try changing the static element
-        MyClass.static_elem = 999
-        >>> print c1.static_elem, c1.object_elem
-        999 456
-        >>> print c2.static_elem, c2.object_elem
-        999 456
-
-        # Now, let's try changing the object element
-        >>> c1.object_elem = 888
-        >>> print c1.static_elem, c1.object_elem
-        999 888
-        >>> print c2.static_elem, c2.object_elem
-        999 456
-        # As you can see, when we changed the class element, it changed for both objects.
-        # But, when we changed the object element, the other object remained unchanged.
-        """
-
-        c1 = MyClass()
-        c2 = MyClass()
+            c1 = MyClass()
+            c2 = MyClass()
 
     if  __name__ =='__main__':
         main()
@@ -566,29 +578,6 @@ Doctest will parse the while script and then execute the doctest part, sample wi
         dog = Animal()
         dog.owner = 'Sue'
 ```
-
-
-# Mix
-
-
-ate:
-
-
-python open does not create file if it doesnt exist:
-
-
-file = open('myfile.dat', 'rw')                <<< Change "rw" to "w+", Or use 'a+' for appending (not erasing existing content)
-
-
-<OR>                <<< create path
-filename = "/foo/bar/baz.txt"
-if not os.path.exists(os.path.dirname(filename)):
-    os.makedirs(os.path.dirname(filename))
-with open(filename, "w+") as f:
-    f.write("FOOBAR")
-
-
-
 
 # Lambda
 
@@ -848,7 +837,9 @@ If the __all__ above is commented out, this code will then execute to completion
 
 It's important to note that __all__ only affects the behavior of from <module> import *. Members that are not mentioned in __all__ as still accessible from outside the module and can be imported with from <module> import <member>.
 
-# Python's state machine
+# Mix
+
+## Python's state machine
 
 http://www.ibm.com/developerworks/linux/library/l-python-state/index.html
 http://code.activestate.com/recipes/578344-simple-finite-state-machine-class-v2/
