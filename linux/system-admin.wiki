@@ -1,0 +1,14 @@
+---
+layout: post
+title:  "Linux commands"
+date:   2017-02-15 13:31:01 +0800
+categories: linux admin
+tags: admin command
+---
+
+* content
+{:toc}
+
+
+# chrome browser write disk and too slow
+
