@@ -652,6 +652,7 @@ batch rename all wad*.c files to extension *.cpp files
 ## curl
 
 [Doc](https://ec.haxx.se/http-cookies.html)
+@SeeAlso [[../tool/tools#curl]]
 
 ### Install new verion (ubuntu)
 
