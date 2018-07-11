@@ -580,7 +580,7 @@ Doctest will parse the while script and then execute the doctest part, sample wi
         dog.owner = 'Sue'
 ```
 
-## echo each line when run
+## trace: echo each line when run
 
     $ python -m trace --trace my_script.py | grep my_script.py
 
