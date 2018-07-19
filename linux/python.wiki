@@ -546,6 +546,143 @@ on the command line. After setting up the special variables, it will execute the
 
 One of the reasons for doing this is that sometimes you write a module (a .py file) where it can be executed directly. Alternatively, it can also be imported and used in another module. By doing the main check, you can have that code only execute when you want to run the module as a program and not have it execute when someone just wants to import your module and call your functions themselves.
 
+# parameters ** (double star/asterisk)
+
+[What does ** (double star/asterisk) and * (star/asterisk) do for parameters?](https://stackoverflow.com/questions/36901/what-does-double-star-asterisk-and-star-asterisk-do-for-parameters)
+
+The `*args` and `**kwargs` is a common idiom to allow arbitrary number of arguments to functions as described in the section [more on defining functions][1] in the Python documentation.
+
+The `*args` will give you all function parameters [as a tuple][2]:
+
+```python
+    In [1]: def foo(*args):
+       ...:     for a in args:
+       ...:         print a
+       ...:         
+       ...:         
+    
+    In [2]: foo(1)
+    1
+    
+    
+    In [4]: foo(1,2,3)
+    1
+    2
+    3
+```
+The `**kwargs` will give you all 
+**keyword arguments** except for those corresponding to a formal parameter as a dictionary.
+
+```python
+    In [5]: def bar(**kwargs):
+       ...:     for a in kwargs:
+       ...:         print a, kwargs[a]
+       ...:         
+       ...:         
+    
+    In [6]: bar(name='one', age=27)
+    age 27
+    name one
+```
+Both idioms can be mixed with normal arguments to allow a set of fixed and some variable arguments:
+
+    def foo(kind, *args, **kwargs):
+       pass
+
+Another usage of the `*l` idiom is to **unpack argument lists** when calling a function.
+
+```python
+    In [9]: def foo(bar, lee):
+       ...:     print bar, lee
+       ...:     
+       ...:     
+    
+    In [10]: l = [1,2]
+    
+    In [11]: foo(*l)
+    1 2
+```
+In Python 3 it is possible to use `*l` on the left side of an assignment ([Extended Iterable Unpacking][3]), though it gives a list instead of a tuple in this context:
+
+```python
+    first, *rest = [1,2,3,4]
+    first, *l, last = [1,2,3,4]
+```
+Also Python 3 adds new semantic (refer [PEP 3102](https://www.python.org/dev/peps/pep-3102/)):
+
+    def func(arg1, arg2, arg3, *, kwarg1, kwarg2):
+        pass
+
+Such function accepts only 3 positional arguments, and everything after `*` can only be passed as keyword arguments.
+
+## pass multiple argument
+
+It's also worth noting that you can use `*` and `**` when calling functions as well. This is a shortcut that allows you to pass multiple arguments to a function directly using either a list/tuple or a dictionary. For example, if you have the following function:
+
+```python
+    def foo(x,y,z):
+        print("x=" + str(x))
+        print("y=" + str(y))
+        print("z=" + str(z))
+```
+You can do things like:
+
+```python
+    >>> mylist = [1,2,3]
+    >>> foo(*mylist)
+    x=1
+    y=2
+    z=3
+
+    >>> mydict = {'x':1,'y':2,'z':3}
+    >>> foo(**mydict)
+    x=1
+    y=2
+    z=3
+
+    >>> mytuple = (1, 2, 3)
+    >>> foo(*mytuple)
+    x=1
+    y=2
+    z=3
+```
+Note: The keys in `mydict` have to be named exactly like the parameters of function `foo`. Otherwise it will throw a `TypeError`:
+
+```python
+    >>> mydict = {'x':1,'y':2,'z':3,'badnews':9}
+    >>> foo(**mydict)
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    TypeError: foo() got an unexpected keyword argument 'badnews'
+```
+
+# Design Pattern: Observer
+
+Well... actually, this looks like a good design to me if an asynchronous API is what you want. It usually is. Maybe all you need is to switch from stderr to Python's [`logging`][1] module, which has a sort of publish/subscribe model of its own, what with `Logger.addHandler()` and so on.
+
+If you do want to support observers, my advice is to keep it simple. You really only need a few lines of code.
+
+```python
+    class Event(object):
+        pass
+
+    class Observable(object):
+        def __init__(self):
+            self.callbacks = []
+        def subscribe(self, callback):
+            self.callbacks.append(callback)
+        def fire(self, **attrs):
+            e = Event()
+            e.source = self
+            for k, v in attrs.iteritems():
+                setattr(e, k, v)
+            for fn in self.callbacks:
+                fn(e)
+```
+
+Your Job class can subclass `Observable`. When something of interest happens, call `self.fire(type="progress", percent=50)` or the like.
+
+
 # TroubleShooting
 
 ## unittest: doctest
