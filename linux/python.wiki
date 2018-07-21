@@ -12,12 +12,78 @@ tags: cm
 
 # Quick Start
 
-## Books & Doc
-Better than <Dive into Python> [Thinking in Python][1]  
-[Pycopia][2] is a collection of useful modules for developing Python applications  
-[How to organize Python files][3,4]  
+## python3 for ubuntu
 
+### Suggest using the default python3 for ubuntu
 
+Even install python3.6, the library is also using python3.4 when install by pip3.
+
+### [Not suggest] Install Python 3.6 from J Fernyhough’s Personal Package Archive (PPA).
+
+[Install python3.6](https://www.rosehosting.com/blog/how-to-install-python-3-6-on-ubuntu-16-04/)
+
+```shell
+    # Install the following requirements
+    $ sudo apt-get install software-properties-common python-software-properties
+
+    # Run the following command to add the PPA
+    $ sudo add-apt-repository ppa:jonathonf/python-3.6
+    Press [ENTER] to continue or ctrl-c to cancel adding it
+
+    # update the repositories
+    $ sudo apt-get update
+    $ sudo apt-get install python3.6
+    $ sudo apt-get install python3.6-dev
+    $ sudo apt-get install python3.6-venv
+    $ wget https://bootstrap.pypa.io/get-pip.py
+    $ sudo python3.6 get-pip.py
+    $ sudo ln -s /usr/bin/python3.6 /usr/local/bin/python3
+    $ sudo ln -s /usr/local/bin/pip /usr/local/bin/pip3
+
+    # Do this only if you want python3 to be the default Python
+    # instead of python2 (may be dangerous, esp. before 2020):
+    # sudo ln -s /usr/bin/python3.6 /usr/local/bin/python
+    # Verify Python 3.6.3 installation on Ubuntu 16.04
+    $ python3.6 -V
+    Python 3.6.3
+```
+
+### Change system default to python3
+
+From the comment: 
+
+    sudo update-alternatives --config python
+Will show you an error:
+
+    update-alternatives: error: no alternatives for python3 
+
+You need to update your `update-alternatives` , then you will be able to set your default python version.
+
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.4 1
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2
+Then run :
+
+    sudo update-alternatives --config python
+Set python3.6 as default. 
+
+    $ python --version
+    Python 3.6.3
+
+### python3: modules rename
+    
+### module: ConfigParser
+    In Python 3, ConfigParser has been renamed to configparser
+    
+    What worked for me in Ubuntu was actually just:
+
+### module: tkinter
+    
+    For python 3.4:
+    sudo apt-get install python3-tk
+    
+    For python 3.6:
+    sudo apt-get install python3.6-tk
+    
 ## Python shell
 
     bpython
