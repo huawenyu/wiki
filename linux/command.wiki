@@ -267,6 +267,185 @@ You can take this a step further and create a `watch.sh` script that can accept 
     $ dd if=/dev/dvd of=myfile.iso bs=2048	# Ripping a CD or DVD for local storage
     $ dd if=/dev/sdc of=sdc.img bs=100M conv=sync,noerror	# Image a disk
 
+## netcat: a better `telnet`
+
+https://www.g-loaded.eu/2006/11/06/netcat-a-couple-of-useful-examples/
+
+How to telnet and execute a batch of commands like this:
+```sh
+    telnet 192.168.1.199 <<<"print_debug"
+```
+
+Out of sudden, netcat comes to my mind, and It works!
+
+```sh
+    nc 192.168.1.199 23 <<<"print_debug" 
+    nc 192.168.1.199 23 <<<"print_debug" > result.txt 
+```
+
+A more better solution:
+
+    1. First, Create a normal text file and list all the commands line by line. At the end of the line put ‘exit’, Assume my file is call commands.txt. Examples:
+
+```sh
+    print_debug
+    proplist
+    ...
+    exit
+```
+     
+    2. Secondly, I can reconstruct my netcat command line into this
+
+```sh
+    nc 192.168.1.199 23 < commands.txt >results.txt
+```
+
+## socat
+
+socat can setup a pipeline just like the UNIX command line pipe "|" except that with socat you setup a two way pipe.
+That is the beauty of socat.
+
+The official examples: https://github.com/craSH/socat/blob/master/EXAMPLES
+
+https://www.cybrary.it/0p3n/socat-polymorphic-networking-tool
+http://lukeluo.blogspot.com/2014/06/linux-virtual-console5-socat-bridging.html
+
+
+### Using Socat to Simulate Networking Traffic to Test and Debug
+
+https://www.vividcortex.com/blog/2013/04/15/using-socat-to-simulate-networking-traffic-to-test-and-debug/
+
+We need a way to test/debug that the interface we programmed to enable our system communicate with the other end, can satisfy all the use
+cases. For brevity’s sake, we will have only one such case, and invent a very simple protocol as a proof of concept.
+
+The Solution
+
+What we need is an ad-hoc pseudo-chat client that lets us send arbitrary payloads over a persistent tcp connection, while being as verbose
+as possible.
+
+Uhmmm… What?
+
+A simulator!
+
+We want a program that:
+
+  * Can connect to our system via tcp socket.
+  * Can persist that connection. (the protocol can have “handshaking” logic for each connection)
+  * Lets us send arbitrary payloads
+  * Accept arbitrary payloads and print them.
+  * Print those also in hexa in case the payload is not printable.
+
+Why?
+
+Well… if we have everything above done for us, human insteraction can do the rest!
+
+How?
+
+Wait for it… With socat of course! Here is an example:
+
+Let’s say our system is an ATM, and we are going to be able to send transactions to a new banking institution. For that, we have to
+implement their Bacon&Eggs protocol. They don’t provide a simulator for their end, but they at least give us some example payloads.
+
+Here is a bacon payload (request) with id 666:
+
+```sh
+__      _.._
+       .-'__`-._.'.--.'.__.,
+      /--'  '-._.'    '-._./    id=666
+     /__.--._.--._.'``-.__/
+     '._.-'-._.-._.-''-..'
+
+```
+
+And here is an eggs payload (response, referencing the request with id 666):
+
+```sh
+$ cat eggs.payload
+
+,-""""-.     ,'"`.
+   /        `.  /     \
+  |           );       :    responded=666
+   \        ,' :       ;
+    `-....-'    `.___,'
+
+```
+
+Ok, we upgrade our ATM software to support protocol Bacon&Eggs. How can we test and debug as we go?
+
+Setup
+
+ 1. Create a pipe to receive the payloads. mkfifo /tmp/receive
+ 2. Create a pipe to send the response payloads. mkfifo /tmp/send
+ 3. Create a file to stream the responses to the sending pipe (more on this later). touch /tmp/stream
+ 4. Set a console to read (and keep reading) from /tmp/receive. tail -f /tmp/receive
+ 5. Set a console to write (and keep writing) to /tmp/send. tail -f /tmp/stream >> /tmp/send
+ 6. Set socat to listen and accept connections on some port and:
+ 7. whatever it receives from the socket, it forwards it to the receiving pipe.
+ 8. whatever it receives from the sending pipe, it forwards it to the socket.
+ 9. print the payload in text and in hexa
+
+Like this:
+```sh
+    $ socat -x -v -d -d tcp4-listen:8032,fork,reuseaddr pipe:/tmp/send\!\!/tmp/receive
+    # -x HEX print
+    # -d dump data
+    # pipe:/tmp/send!!/tmp/receive
+    #   /tmp/send as the PIPE's input
+    #   /tmp/receive as the PIPE's output
+
+
+```
+Now we can make our ATM connect to port 8032 at localhost as if it were a true Bacon&Eggs system. Now, whenever our ATM software sends a
+bacon request with id=667, we just open our egg payload response example in a text or hex editor, replace 666 with 667 to make it a correct
+response and send it back.
+
+```sh
+cat eggs.payload >> /tmp/stream
+```
+
+Our ATM software receives a correct egg response for its bacon request and thus the transaction is approved. The connection is still open,
+so we can keep sending requests and responses and try different scenarios and use cases.
+
+It’s like chatting with your software over a socket. Here is a screenshot of my human operated Bacon&Eggs protocol server processing a
+transaction.
+
+
+### simple telnet server by using socat
+
+On server side:
+
+```sh
+    $ ./socat exec:'bash -li',pty,stderr,setsid  tcp-listen:8999,reuseaddr
+```
+
+On client side:
+
+```sh
+    $ ./socat tcp-connect:127.0.0.1:8999 file:`tty`,raw,echo=0
+```
+
+### A UDP example: name server lookup
+
+Just to give you an example that is not also based on TCP, let's look at name server lookups. They are (usually) based on UDP. As we will see, this is a binary protocol. This time we have to use socat to set up a UDP relay:
+
+```sh
+    socat -x udp-listen:1234,reuseaddr udp:000.000.000.000:53
+```
+Note the -x option to output a hex dump. Replace 000.000.000.000 by the numerical IP address of your name server from /etc/resolv.conf. In order to perform the lookup, one can use the dig program. (The host program does not allow to specify a port to contact.) The following command line makes it connect to the relay we have set up:
+
+```sh
+    dig @127.0.0.1 -p 1234 volkerschatz.com
+```
+
+The IP after the @ is the name server to contact, and the number after -p is the port; in this case they refer to the local port of the socat relay. The hex dump of the communication is:
+
+> 2013/03/17 20:23:19.001936  length=45 from=0 to=44
+ 49 66 01 20 00 01 00 00 00 00 00 01 0c 76 6f 6c 6b 65 72 73 63 68 61 74 7a 03 63 6f 6d 00 00 01 00 01 00 00 29 10 00 00 00 00 00 00 00
+< 2013/03/17 20:23:19.046846  length=61 from=0 to=60
+ 49 66 81 80 00 01 00 01 00 00 00 01 0c 76 6f 6c 6b 65 72 73 63 68 61 74 7a 03 63 6f 6d 00 00 01 00 01 c0 0c 00 01 00 01 00 00 1c 10 00 04 51 a9 91 46 00 00 29 0f a0 00 00 00 00 00 00
+Pretty much the only obvious thing one can discern is the host name volkerschatz.com starting with 76 6f 6c 6b ... (use man ascii to display the ASCII code manual page). Interestingly, the com top-level domain is separated by a byte with value 03, not a dot.
+
+
 ## ls
 
     $ ls -d forti*
