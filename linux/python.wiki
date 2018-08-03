@@ -12,6 +12,37 @@ tags: cm
 
 # Quick Start
 
+## pip
+```sh
+    sudo python -m pip uninstall pip && sudo apt install python-pip --reinstall
+```
+### ImportError: cannot import name main
+
+在Ubuntu中，升级了pip,再次使用pip 安装相关的python包的时候就出现以下错误
+
+ImportError: cannot import name main
+
+解决：pip文件在usr/bin目录下，cd进去，进行以下修改
+
+把下面的三行
+
+```python
+from pip import main
+if __name__ == '__main__':
+    sys.exit(main())
+```
+
+换成下面的三行
+
+```python
+from pip import __main__
+if __name__ == '__main__':
+    sys.exit(__main__._main())
+```
+
+然后问题就解决了。
+
+
 ## python3 for ubuntu
 
 ### Suggest using the default python3 for ubuntu
@@ -84,6 +115,39 @@ Set python3.6 as default.
     For python 3.6:
     sudo apt-get install python3.6-tk
     
+## virtualenv
+
+A Virtual Environment, put simply, is an isolated working copy of Python which
+allows you to work on a specific project without worry of affecting other projects
+
+```sh
+    $ sudo pip install virtualenv
+    $ mkdir ~/virtualenv
+    $ virtualenv [--no-site-packages] ./virtualenv/my-proj1
+    $ cd ~/virtualenv/my_proj1/bin
+    $ source activate
+
+    $ ... in your new env ...
+    $ pip install <your-packages>
+
+    $ deactivate
+```
+
+### Use different Python version with virtualenv
+
+    For python 2:
+
+    $ virtualenv --python=/usr/bin/python2.6 <path/to/new/virtualenv/>
+
+    For Python3.6 or newer:
+
+    $ python3 -m venv <myenvname>
+
+    For python3 (3.3+), use either the above method or the script pyvenv command.
+
+    $ pyvenv /path/to/new/virtual/environment
+
+
 ## Python shell
 
     bpython
@@ -111,6 +175,47 @@ Set python3.6 as default.
 
     >>> import construct
     >>> print contruct.__version__
+
+
+# python CLI modules
+    
+Which require from myself dut_control.py and create a interactive prompt interface for our dut's troubleshooing.
+
+## Using basic lib `cmd`
+
+```python
+from cmd import Cmd
+
+class MyPrompt(Cmd):
+
+    def do_hello(self, args):
+        """Says hello. If you provide a name, it will greet you with it."""
+        if len(args) == 0:
+            name = 'stranger'
+        else:
+            name = args
+        print "Hello, %s" % name
+
+    def do_quit(self, args):
+        """Quits the program."""
+        print "Quitting."
+        raise SystemExit
+
+
+if __name__ == '__main__':
+    prompt = MyPrompt()
+    prompt.prompt = '> '
+    prompt.cmdloop('Starting prompt...')
+```
+
+## Using prompt_toolkit
+
+- HTTPie + prompt_toolkit = an interactive command-line HTTP client featuring autocomplete and syntax highlighting
+https://github.com/eliangcs/http-prompt/tree/master/http_prompt
+
+- 4 Python libraries for building great command-line user interfaces
+[Sample code](https://opensource.com/article/17/5/4-practical-python-libraries)
+[Project implement to mysql](https://github.com/dbcli/mycli)
 
 
 # Snippets
