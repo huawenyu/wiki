@@ -1,16 +1,4 @@
-﻿---
-layout: post
-title:  "git svn"
-date:   2013-02-15 13:31:01 +0800
-categories: linux
-tags: cm
----
-
-* content
-{:toc}
-
-
-# Quick Start
+﻿# Quick Start
 
 ## pip
 ```sh
@@ -53,7 +41,7 @@ Even install python3.6, the library is also using python3.4 when install by pip3
 
 [Install python3.6](https://www.rosehosting.com/blog/how-to-install-python-3-6-on-ubuntu-16-04/)
 
-```shell
+```sh
     # Install the following requirements
     $ sudo apt-get install software-properties-common python-software-properties
 
