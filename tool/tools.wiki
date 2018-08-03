@@ -69,6 +69,10 @@ tags: admin
 
 ## tmux
 
+### copy history
+
+    prefix + alt + shift + p
+
 ### rename-window <name>
 
     For example, if the top-line show like this:

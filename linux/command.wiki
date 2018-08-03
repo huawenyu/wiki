@@ -218,6 +218,171 @@ The print.sh file now contains:
 
     $ trans zh: 手紙
 
+## sudo: Switch-User do
+
+`sudo` lets you run commands in your own user account with root privileges. su lets you switch user so that you're actually logged in as root.
+
+`sudo -s` runs a shell with root privileges. `sudo -i` also acquires the root user's environment.
+
+The major difference between sudo -i and sudo -s is:
+    - sudo -i gives you the root environment, i.e. your ~/.bashrc is ignored.
+    - sudo -s gives you the user's environment, so your ~/.bashrc is respected.
+
+### sudo with vim
+
+:w !sudo tee %
+
+In above command:
+
+  * Colon (:) indicates we are in Vim’s ex mode
+  * w write current file's all lines to the command follow
+  * Exclamation (!) mark indicates that we are running shell command
+  * sudo and tee are the shell commands, `tee [option] [FILE]`: Copy standard input to each FILE, and also to standard output.
+  * Percentage (%) sign indicates current filename
+
+### revoke sudo as soon
+    
+Q1: Long story short, how does one run one command in a script with sudo, while then removing the elevated privileges for the rest of the script
+
+You can 'revoke' the sudo permission (actually: close the sudo time window early) by doing:
+
+    sudo -k
+
+Also, you can configure sudo to only allow elevated permissions on certain commands, or even to impersonate non-root for specific commands. See `man sudoers`. The **examples section** makes it exceedingly clear that there is virtually no limit to the configurability of sudo (roles, hosts, commands, allow escaping, allow sudo target users, exceptions to allowed things, password less authorization etc etc).
+
+Hopefully an interesting example in your context:
+
+> The user fred can run commands as any user in the DB Runas_Alias (oracle or sybase) without giving a password.
+>
+>        fred           ALL = (DB) NOPASSWD: ALL
+
+---- 
+
+If you can't / don't really want to meddle with /etc/sudoers (visudo!) then I suggest using something like
+
+
+    {
+         trap "sudo -k" EXIT INT QUIT TERM
+         sudo ls # whatever
+    }
+
+### sudo-command-tips
+
+Overview
+
+sudo stands for superuser do. It allows authorized users to execute command as an another user. Another user can be regular user or superuser. However, most of the time we use it to
+execute command with elevated privileges.
+
+sudo command works in conjunction with security policies, default security policy is sudoers and it is configurable via /etc/sudoers file. Its security policies are highly extendable.
+One can develop and distribute their own policies as plugins.
+
+#### How it’s different than su
+
+In GNU/Linux there are two ways to run command with elevated privileges:
+
+  * Using su command
+  * Using sudo command
+
+su stands for switch user. Using su, we can switch to root user and execute command. But there are few drawbacks with this approach.
+
+  * We need to share root password with another user.
+  * We cannot give controlled access as root user is superuser
+  * We cannot audit what user is doing.
+
+sudo addresses these problems in unique way.
+
+ 1. First of all, we don’t need to compromise root user password. Regular user uses its own password to execute command with elevated privileges.
+ 2. We can control access of sudo user meaning we can restrict user to execute only certain commands.
+ 3. In addition to this all activities of sudo user are logged hence we can always audit what actions were done. On Debian based GNU/Linux all activities are logged in /var/log/auth.log
+    file.
+
+Later sections of this tutorial sheds light on these points.
+
+#### Hands on with sudo
+
+##### Allow sudo access
+
+Let us add regular user as a sudo user. In my case user’s name is linuxtechi
+
+    1) Edit /etc/sudoers file as follows:
+
+        $ sudo visudo
+
+    2) Add below line to allow sudo access to user linuxtechi:
+
+        linuxtechi ALL=(ALL) ALL
+
+        In above command:
+
+          * linuxtechi indicates user name
+          * First ALL instructs to permit sudo access from any terminal/machine
+          * Second (ALL) instructs sudo command to be allowed to execute as any user
+          * Third ALL indicates all command can be executed as root
+
+
+    $ sudo cat /etc/passwd
+
+    When you execute this command, it will ask linuxtechi’s password and not root user password.
+
+##### Execute command as an another user
+
+In addition to this we can use sudo to execute command as another user. For instance, in below command, user linuxtechi executes command as a devesh user:
+
+    $ sudo -u devesh whoami
+    [sudo] password for linuxtechi:
+    devesh
+
+    $ sudo bash
+
+    After executing this command – you will observe that prompt sign changes to pound (#) character.
+
+##### Execute multiple commands using sudo
+
+So far we have executed only single command with sudo but we can execute multiple commands with it. Just separate commands using semicolon (;) as follows:
+
+$ sudo -- bash -c 'pwd; hostname; whoami'
+
+In above command:
+
+  * Double hyphen (&#8211;) stops processing of command line switches
+  * bash indicates shell name to be used for execution
+  * Commands to be executed are followed by –c option
+
+##### Run sudo command without password
+
+When sudo command is executed first time then it will prompt for password and by default password will be cached for next 15 minutes. However, we can override this behavior and disable
+password authentication using NOPASSWD keyword as follows:
+
+    linuxtechi ALL=(ALL) NOPASSWD: ALL
+
+##### Restrict user to execute certain commands
+
+To provide controlled access we can restrict sudo user to execute only certain commands. For instance, below line allows execution of echo and ls commands only
+
+    linuxtechi ALL=(ALL) NOPASSWD: /bin/echo /bin/ls
+
+Insights about sudo
+
+Let us dig more about sudo command to get insights about it.
+
+$ ls -l /usr/bin/sudo
+-rwsr-xr-x 1 root root 145040 Jun 13  2017 /usr/bin/sudo
+
+If you observe file permissions carefully, setuid bit is enabled on sudo. When any user runs this binary it will run with the privileges of the user that owns the file. In this case it
+is root user.
+
+To demonstrate this, we can use id command with it as follows:
+
+$ id
+uid=1002(linuxtechi) gid=1002(linuxtechi) groups=1002(linuxtechi)
+
+When we execute id command without sudo then id of user linuxtechi will be displayed.
+
+$ sudo id
+uid=0(root) gid=0(root) groups=0(root)
+
+But if we execute id command with sudo then id of root user will be displayed.
+
 ## watch
 
 ### sample
