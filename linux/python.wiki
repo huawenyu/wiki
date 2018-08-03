@@ -31,9 +31,11 @@ if __name__ == '__main__':
 然后问题就解决了。
 
 
-## python3 for ubuntu
+## python3 for ubuntu [Not suggest, apt-get also prefer python 2.7]
 
-### Suggest using the default python3 for ubuntu
+If you really want using python3, please using `virtualenv`.
+
+### Not suggest using the default python3 for ubuntu
 
 Even install python3.6, the library is also using python3.4 when install by pip3.
 
@@ -67,7 +69,7 @@ Even install python3.6, the library is also using python3.4 when install by pip3
     Python 3.6.3
 ```
 
-### Change system default to python3
+### [Not suggest] Change system default to python3
 
 From the comment: 
 
