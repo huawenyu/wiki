@@ -1,5 +1,38 @@
 ﻿# Quick Start
 
+## virtualenv
+
+A Virtual Environment, put simply, is an isolated working copy of Python which
+allows you to work on a specific project without worry of affecting other projects
+
+```sh
+    $ sudo pip install virtualenv
+    $ mkdir ~/virtualenv
+    $ virtualenv [--no-site-packages] ./virtualenv/my-proj1
+    $ cd ~/virtualenv/my_proj1/bin
+    $ source activate
+
+    $ ... in your new env ...
+    $ pip install <your-packages>
+
+    $ deactivate
+```
+
+### Use different Python version with virtualenv
+
+    For python 2:
+
+    $ virtualenv --python=/usr/bin/python2.6 <path/to/new/virtualenv/>
+
+    For Python3.6 or newer:
+
+    $ python3 -m venv <myenvname>
+
+    For python3 (3.3+), use either the above method or the script pyvenv command.
+
+    $ pyvenv /path/to/new/virtual/environment
+
+
 ## pip
 ```sh
     sudo python -m pip uninstall pip && sudo apt install python-pip --reinstall
@@ -105,39 +138,6 @@ Set python3.6 as default.
     For python 3.6:
     sudo apt-get install python3.6-tk
     
-## virtualenv
-
-A Virtual Environment, put simply, is an isolated working copy of Python which
-allows you to work on a specific project without worry of affecting other projects
-
-```sh
-    $ sudo pip install virtualenv
-    $ mkdir ~/virtualenv
-    $ virtualenv [--no-site-packages] ./virtualenv/my-proj1
-    $ cd ~/virtualenv/my_proj1/bin
-    $ source activate
-
-    $ ... in your new env ...
-    $ pip install <your-packages>
-
-    $ deactivate
-```
-
-### Use different Python version with virtualenv
-
-    For python 2:
-
-    $ virtualenv --python=/usr/bin/python2.6 <path/to/new/virtualenv/>
-
-    For Python3.6 or newer:
-
-    $ python3 -m venv <myenvname>
-
-    For python3 (3.3+), use either the above method or the script pyvenv command.
-
-    $ pyvenv /path/to/new/virtual/environment
-
-
 ## Python shell
 
     bpython
