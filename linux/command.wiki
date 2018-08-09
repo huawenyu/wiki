@@ -981,7 +981,13 @@ batch rename all wad*.c files to extension *.cpp files
     But if you use a plus sign instead (find . -exec ls '{}' \+), all filenames will be passed as arguments to a single command:
     ls file1 file2 file3
 
+## wget
+
+    --no-check-certificate, skip certificate
+
 ## curl
+
+    -k, skip certificate
 
 [Doc](https://ec.haxx.se/http-cookies.html)
 @SeeAlso [[../tool/tools#curl]]
