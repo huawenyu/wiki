@@ -32,6 +32,8 @@ tags: admin
     ### Last long time to get a large file to /dev/null
     curl -o /dev/null -x 10.1.1.123:8080 -U guest:guest --limit-rate 8b http://172.18.2.169/upload/linoxu/debug_out
     curl -I https://www.wellsfargo.com          <<< only reponse the headers
+    curl --header "X-MyHeader: 123" www.google.com      <<< add header
+    curl http://example.com/first http://example.com/second     <<< pipeline
 
 ### statistics
 

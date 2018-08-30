@@ -1,15 +1,3 @@
----
-layout: post
-title:  "git svn"
-date:   2013-02-15 13:31:01 +0800
-categories: linux
-tags: cm
----
-
-* content
-{:toc}
-
-
 # QuickStart
 
 [Svn Doc][2]
@@ -458,7 +446,7 @@ migadmin/node_modules/grunt-jscs/*
     git svn clone -r HEAD http://.../trunk	# only checkout the last version
 
     git svn rebase				# like: svn update
-    git commit -am ‘more modify’
+    git commit -am "more modify"
 
 
     git rebase -i HEAD~10			# squash more commit into one or two
