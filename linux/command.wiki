@@ -658,10 +658,19 @@ Also, see the `D` globbing qualifier if you want to include <strong>D</strong>ot
 There have another tools like: lsdiff, filterdiff, diffstat, patch.
 
     $ diff -x '*.gz' -x '.git' -x '.svn' -w -u -r -N WorkingCopy1 WorkingCopy2
-      -w to ignore all Whitespace
-      -u to use the unified diff format (like subversion)
-      -r for recursive
-      -N to let new files appear in the patch
+        -w to ignore all Whitespace
+        -u to use the unified diff format (like subversion)
+        -r for recursive
+        -N to let new files appear in the patch
+
+    $ diff -bur folder1/ folder2/
+
+    This will output a recursive diff that ignore spaces, with a unified context:
+
+        -b flag means ignoring whitespace
+        -u flag means a unified context (3 lines before and after)
+        -r flag means recursive
+        -q quiet or brief, only list files name, not include patch content
 
 ## touch
 
