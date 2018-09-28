@@ -64,6 +64,34 @@ Clean logfile which come from `plink -telnet 127.0.0.1 | tee log.file`
     $ sudo apt-get install sshpass
     $ sshpass -p your_password ssh user@hostname
 
+## SSH Escape Character and Disconnect Sequence
+
+Short answer: Type `exit`
+
+If that doesn't work, however...
+
+Most SSH implementations implement an escape character for interactive sessions, similar to telnet's `Ctrl-]` combination. The default SSH escape character is `~`, entered at the beginning of a line.
+
+If you want to terminate an interactive OpenSSH session **which is stuck and cannot be exited by entering `exit`
+or <kbd>Ctrl</kbd><kbd>D</kbd> into a shell on the remote side**, 
+   you can enter `~` followed by a dot `.`. To be sure to enter the escape character at the beginning of an input line, 
+   you should press Enter first.
+So the following sequence will in most cases terminate an SSH session:
+
+    *Enter ~ .*
+
+Other Escape Sequences
+-----
+
+OpenSSH, for example, offers other escape sequences besides `~.`. Entering `~?` during a session should give you a list. Some examples:
+
+- `~` followed `Ctrl-Z` suspends the session, 
+- `~&` puts it directly into background,
+- `~#` gives a list of forwarded connections in this session. 
+- If you want to simply enter a tilde at the beginning of a line, you have to double it: `~~`.
+
+The escape character can be changed using the command line option `-e`. If you set the special value `-e none`, escaping is disabled and the session is fully transparent.
+
 # command line
 
 ## Command Line Shortkey
