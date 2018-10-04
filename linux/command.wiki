@@ -26,6 +26,16 @@ From `man sort`:
               compare according to string numerical value
 
 
+## hostname change
+
+    $ sudo hostname new-server-name-here
+    $ sudo vi /etc/hostname
+    $ sudo vi /etc/hosts
+        From:
+            127.0.1.1 old-host-name
+        To:
+            127.0.1.1 new-server-name-here
+
 ## current dir size
 
     du -shc .

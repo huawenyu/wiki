@@ -55,7 +55,7 @@ title:  "Linux iptables"
           +-------+-------+        | +-------+-------+ |
                   |                | |   conntrack   | |
                   |                | +-------+-------+ |
-                  |                | |    mangle     | | <- MARK WRITE  
+                  |                | |    mangle     | | <- MARK WRITE
                   |                | +-------+-------+ |
                   |                | |      IMQ      | |
                   |                | +-------+-------+ |
@@ -116,7 +116,7 @@ title:  "Linux iptables"
           |    IPCHAINS   |       |      IPTABLES     |
           |     OUTPUT    |       |    POSTROUTING    |
           +-------+-------        | +-------+-------+ |
-                  |               | |    mangle     | | <- MARK WRITE  
+                  |               | |    mangle     | | <- MARK WRITE
                   |               | +-------+-------+ |
                   |               | |      nat      | | <- SOURCE REWRITE
                   |               | +-------+-------+ |      SNAT or MASQUERADE
