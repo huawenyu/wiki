@@ -13,6 +13,8 @@ title:  "Linux iptables"
 # Doc
 
 [iptables-tutorial][6]
+[An In-Depth Guide to iptables, the Linux Firewall](https://www.booleanworld.com/depth-guide-iptables-linux-firewall/)
+[Connection tracking](https://www.rigacci.org/wiki/lib/exe/fetch.php/doc/appunti/linux/sa/iptables/conntrack.html)
 
 ## iptables: tables
 
@@ -222,6 +224,28 @@ In the vast majority of use cases you won't need to use the raw, mangle, or secu
 tables at all. Consequently, the following chart depicts a simplified network packet flow
 through iptables:
 
+## Simple Selection using iptables
+
+https://netfilter.org/documentation/HOWTO/NAT-HOWTO-5.html
+
+iptables takes a number of standard options as listed below.
+All the double-dash options can be abbreviated, as long as iptables can still tell them apart from the other possible options.
+If your kernel has iptables support as a module, you'll need to load the ip_tables.o module first: `insmod ip_tables'.
+
+The most important option here is the table selection option, `-t'.
+For all NAT operations, you will want to use `-t nat' for the NAT table.
+The second most important option to use is `-A' to append a new rule at the end of the chain (e.g. `-A POSTROUTING'),
+    or `-I' to insert one at the beginning (e.g. `-I PREROUTING').
+
+You can specify the source (`-s' or `--source') and destination (`-d' or `--destination') of the packets you want to NAT.
+These options can be followed by a single IP address (e.g. 192.168.1.1), a name (e.g. www.gnumonks.org), or a network address (e.g. 192.168.1.0/24 or 192.168.1.0/255.255.255.0).
+
+You can specify the incoming (`-i' or `--in-interface') or outgoing (`-o' or `--out-interface') interface to match,
+    but which you can specify depends on which chain you are putting the rule into: at PREROUTING you can only select incoming interface,
+    and at POSTROUTING you can only select outgoing interface.
+    If you use the wrong one, iptables will give an error.
+
+
 
 ```
                                    XXXXXXXXXXXXXXXXXX
@@ -337,6 +361,59 @@ packet will continue to traverse all other chains in other tables in the normal 
 
 There are many modules which can be used to extend iptables such as connlimit, conntrack,
 limit and recent. These modules add extra functionality to allow complex filtering rules.
+
+# NAT
+
+## Controlling What To NAT
+
+You need to create NAT rules which tell the kernel what connections to change, and how to change them. To do this, we use the very versatile iptables tool, and tell it to alter the NAT table by specifying the `-t nat' option.
+
+The table of NAT rules contains three lists called `chains': each rule is examined in order until one matches. The two chains are called PREROUTING (for Destination NAT, as packets first come in), and POSTROUTING (for Source NAT, as packets leave). The third (OUTPUT) will be ignored here.
+
+The following diagram would illustrate it quite well if I had any artistic talent:
+
+       _____                                     _____
+     /     \                                   /     \
+   PREROUTING -->[Routing ]----------------->POSTROUTING----->
+     \D-NAT/     [Decision]                    \S-NAT/
+                     |                            ^
+                     |                            |
+                     |                            |
+                     |                            |
+                     |                            |
+                     |                            |
+                     |                            |
+                     --------> Local Process ------
+
+At each of the points above, when a packet passes we look up what connection it is associated with. If it's a new connection, we look up the corresponding chain in the NAT table to see what to do with it. The answer it gives will apply to all future packets on that connection.
+
+## Why does SNAT happen in POSTROUTING chain and DNAT in PREROUTING chain?
+
+https://unix.stackexchange.com/questions/280114/why-does-snat-happen-in-postrouting-chain-and-dnat-in-prerouting-chain
+
+As the chain names suggest, PREROUTING is done at first when a packet is received and is thus routed based on where it is going (destination).
+After all other routing rules have been applied, the POSTROUTING chain will determine where it goes based on where it came from (source).
+
+For example, on my server, incoming ports that are to be forwarded (NATed) are all defined in the PREROUTING chain as DNAT,
+    and all packets that come from the NATed interfaces, go through the POSTROUTING chain as SNAT,
+    and consequently (in this case), go through the filter FORWARD chain.
+
+
+Usually the main criterion for SNAT is "traffic that's going out a given interface" (i.e. -o eth0).
+What interface a packet will go out is determined by routing, so to apply that criterion you need to run it in a POSTROUTING context.
+
+DNAT rewrites the destination address of a packet, meaning it can affect where a packet goes to — for example,
+     a packet that looks like it's destined for the gateway could end up being rewritten to go to a machine on the network instead.
+     Since you want the routing to be able to take that rewritten destination into account when it makes its decision,
+     so that the packet actually goes where it needs to, DNAT should run in a PREROUTING context.
+
+With packets whose source is the local machine never visit the PREROUTING table, so POSTROUTING is the only choice by SNAT.
+
+# Connection tracking
+
+https://www.rigacci.org/wiki/lib/exe/fetch.php/doc/appunti/linux/sa/iptables/conntrack.html
+
+
 
 # Configuration and usage
 
