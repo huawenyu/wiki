@@ -12,7 +12,7 @@ title:  "Linux iptables"
 
 # Doc
 
-[iptables-tutorial][6]
+[Iptables-tutorial 1.2.1](https://www.frozentux.net/iptables-tutorial/chunkyhtml/index.html)
 [An In-Depth Guide to iptables, the Linux Firewall](https://www.booleanworld.com/depth-guide-iptables-linux-firewall/)
 [Connection tracking](https://www.rigacci.org/wiki/lib/exe/fetch.php/doc/appunti/linux/sa/iptables/conntrack.html)
 
@@ -157,47 +157,23 @@ title:  "Linux iptables"
   - The forwarding process is called at input routing by functions from specific places in the code. It executes after input routing and does not perform nexthop/outdev selection. It's the process of receiving and sending the same packet, but in the context of all these hooks the code that sends ICMP redirects (demanded from input routing), decrements the IP TTL, performs dumb NAT and calls the filter chain. This code is used only for forwarded packets.
   - Sometimes the word "Forwarding" with "big F", is used for referencing both, the routing and forwarding process.
 
-
-# Preface
-
-iptables is a command line utility for configuring Linux kernel firewall implemented
-within the Netfilter project. The term iptables is also commonly used to refer to this
-kernel-level firewall. It can be configured directly with iptables, or by using one of the
-many frontends and GUIs. iptables is used for IPv4 and ip6tables is used for IPv6.
-
-nftables was released in release with Linux kernel 3.13, and will one day replace iptables
-as the main Linux firewall utility.
-
-## Contents
-
-  * 1 Installation
-  * 2 Basic concepts
-      + 2.1 Tables
-      + 2.2 Chains
-      + 2.3 Rules
-      + 2.4 Traversing Chains
-      + 2.5 Modules
-  * 3 Configuration and usage
-      + 3.1 From the command line
-          o 3.1.1 Showing the current rules
-          o 3.1.2 Resetting rules
-          o 3.1.3 Editing rules
-      + 3.2 Guides
-  * 4 Logging
-      + 4.1 Limiting log rate
-      + 4.2 Viewing logged packets
-      + 4.3 syslog-ng
-      + 4.4 ulogd
-  * 5 See also
-
-# Installation
-
-The stock Arch Linux kernel is compiled with iptables support. You will only need to 
-install the userland utilities, which are provided by the package iptables. (The iproute2
-package from the base group depends on iptables, so the iptables package should be
-installed on your system by default.)
-
 # Basic concepts
+
+## Clearing the Running Config
+
+If you want to clear the ipset and iptables config (sets, rules, entries)
+and reset to a fresh open firewall state (useful at the top of a firewall script),
+run the following commands:
+
+    iptables -P INPUT ACCEPT
+    iptables -P OUTPUT ACCEPT
+    iptables -P FORWARD ACCEPT
+    iptables -t filter -F
+    iptables -t raw -F
+    iptables -t nat -F
+    iptables -t mangle -F
+    ipset -F
+    ipset -X
 
 iptables is used to inspect, modify, forward, redirect, and/or drop IPv4 packets. The code
 for filtering IPv4 packets is already built into the kernel and is organized into a
@@ -339,6 +315,10 @@ be filtered against the remaining rules of the original chain. Target extensions
 either terminating (as built-in targets) or non-terminating (as user-defined chains), see
 man 8 iptables-extensions for details.
 
+    - ACCEPT: This causes iptables to accept the packet.
+    - DROP: iptables drops the packet. To anyone trying to connect to your system, it would appear like the system didn’t even exist.
+    - REJECT: iptables “rejects” the packet. It sends a “connection reset” packet in case of TCP, or a “destination host unreachable” packet in case of UDP or ICMP.
+
 ## Traversing Chains
 
 A network packet received on any interface traverses the traffic control chains of tables
@@ -409,11 +389,50 @@ DNAT rewrites the destination address of a packet, meaning it can affect where a
 
 With packets whose source is the local machine never visit the PREROUTING table, so POSTROUTING is the only choice by SNAT.
 
+## Difference between SNAT and Masquerade
+
+Basically `SNAT` and `MASQUERADE` do the same source NAT thing in the nat table within the POSTROUTING chain.
+
+Differences
+
+- `MASQUERADE` does not require `--to-source` as it was made to work with dynamically assigned IPs
+- `SNAT` works only with static IPs, that's why it has `--to-source`
+- `MASQUERADE` has extra overhead and is slower than `SNAT` because each time `MASQUERADE` target gets hit by a packet, it has to check for the IP address to use.
+
+**NOTE**: A typical use case for `MASQUERADE`:
+  - AWS EC2 instance in a VPC, it has a private IP within the VPC CIDR (e.g. 10.10.1.0/24) - 10.10.1.100 for example,
+    it also has a public IP so as to communicate with the Internet(assume it is in a public subnet) thru which the private IP 1:1 NAT.
+    The public IP may change after instance reboot (if it is NOT an EIP), `MASQUERADE` is a better option in this use case.
+
+Important: It is still possible to use `MASQUERADE` target with static IP, just be aware of the extra overhead.
+
+References
+
+- [iptables Tutorial](https://www.frozentux.net/iptables-tutorial/iptables-tutorial.html#MASQUERADETARGET)
+- [NAT Tutorial](http://www.karlrupp.net/en/computer/nat_tutorial)
+
 # Connection tracking
 
 https://www.rigacci.org/wiki/lib/exe/fetch.php/doc/appunti/linux/sa/iptables/conntrack.html
 
 
+# ipset
+
+https://wiki.archlinux.org/index.php/Ipset
+[Advanced Firewall Configurations with ipset](https://www.linuxjournal.com/content/advanced-firewall-configurations-ipset)
+
+## list
+
+    ipset -L -n
+    ipset -L -t
+
+# Transparent Proxy
+
+[Kernel Doc: Transparent proxy support](https://www.kernel.org/doc/Documentation/networking/tproxy.txt)
+
+# Troubleshooting
+
+https://backreference.org/2010/06/11/iptables-debugging/
 
 # Configuration and usage
 

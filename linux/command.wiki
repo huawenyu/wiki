@@ -36,6 +36,35 @@ From `man sort`:
         To:
             127.0.1.1 new-server-name-here
 
+## su & sudo
+
+  - sudo    runs a single command with root privileges.
+  - su      switches to the super user – or root user – when you execute it with no additional options.
+    + su -c 'command'   Run a single command as the root user
+    + `su - devusr`       Change to another user's environment to check the shell or env setup ok or not.
+
+  - `sudo -s`       runs a shell with root privileges, specially when we install and setup a new env.
+  - `sudo -i`       also acquires the root user's environment.
+  - `sudo -u devusr whoami`     execute command as another user.
+
+## Change Shell
+
+    [ejr@hobbes ejr]$ cat /etc/shells
+        /bin/bash
+        /bin/sh
+        /bin/tcsh
+        /bin/csh
+        /bin/zsh
+
+    [ejr@hobbes ejr]$ chsh
+        Changing shell for ejr.
+        Password:
+        New shell [/bin/bash]: /bin/zsh
+        Shell changed.
+
+    ejr@hobbes ~ $ su - ejr     <=== check the new shell
+        Password:
+
 ## current dir size
 
     du -shc .
