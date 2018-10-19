@@ -1,15 +1,3 @@
----
-layout: post
-date:   2014-02-17 13:31:01 +0800
-categories: network
-tags: develop, network
-title:  "Linux iptables实例分析"
----
-
-* content
-{:toc}
-
-
 # iptables管理命令
 
 ## 使用的语法
@@ -23,6 +11,11 @@ iptables [-t table] 操作 chain RULE
 
 ## 查看规则
 
+    -n 代表--numeric，意思是IP和端口都以数字形式打印出来。否则会将127.0.0.1:80输出成localhost:http。端口与服务的对应关系可以在/etc/services中查看。  
+    -L 代表--list，列出iptables规则，默认列出filter链中的规则，可以用-t来指定列出哪个表中的规则。  
+    -t 代表--tables，指定一个表。  
+    -S 代表--list-rules，以原命令格式列出规则。  
+
     iptables -nL
     iptables -n -L
     iptables --numeric --list
@@ -31,10 +24,6 @@ iptables [-t table] 操作 chain RULE
     iptables -t nat -nL
     iptables-save
 
--n代表--numeric，意思是IP和端口都以数字形式打印出来。否则会将127.0.0.1:80输出成localhost:http。端口与服务的对应关系可以在/etc/services中查看。  
--L代表--list，列出iptables规则，默认列出filter链中的规则，可以用-t来指定列出哪个表中的规则。  
--t代表--tables，指定一个表。  
--S代表--list-rules，以原命令格式列出规则。  
 iptables-save命令是以原命令格式列出所有规则，可以-t指定某个表。
 
 ## 清除规则
