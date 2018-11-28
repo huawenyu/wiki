@@ -691,6 +691,8 @@ Some examples of ip route command syntax are as follows.
     (shows the interface and gateway that would be used to reach a remote host. This command would be especially useful for troubleshooting routing issues on
     hosts with large routing tables and/or with multiple network interfaces).
     # ip route get [ip_address]
+    # ip route show cache
+    # ip route flush cache
 
 
 # Quick Start
@@ -1557,13 +1559,21 @@ T2:20.0.0.3		         eth1
 
 ## vlan
 
-    $ sudo ip link add link eth0 name vlan125 type vlan id 125
-    $ sudo ip addr add 192.168.17.122/24 dev vlan125
+    $ sudo ip link add link eth0 name eth0.5 type vlan id 5
+    $ sudo ip link
+    $ sudo ip -d link show eth0.5
+
+    $ sudo ip addr add 192.168.17.122/24 brd 192.168.17.255 dev eth0.5
+    $ sudo ip link set dev eth0.5 up
+
     $ sudo ip route change default via 192.168.17.125
     $ ip route list
     $ ping 192.168.17.125
     $ ping 8.8.8.8
 
+    $ sudo ip address flush dev eth0.5
+    $ sudo ip link set dev eth0.5 down
+    $ sudo ip link delete eth0.5
 
   [1]: http://www.cyberciti.biz/files/ss.html
   [2]: http://www.binarytides.com/linux-ss-command/

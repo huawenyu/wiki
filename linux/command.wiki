@@ -501,7 +501,11 @@ You can take this a step further and create a `watch.sh` script that can accept 
 
 https://www.g-loaded.eu/2006/11/06/netcat-a-couple-of-useful-examples/
 
-How to telnet and execute a batch of commands like this:
+    $ sudo apt-get install netcat pv
+
+
+### telnet with a batch of commands
+
 ```sh
     telnet 192.168.1.199 <<<"print_debug"
 ```
@@ -529,6 +533,12 @@ A more better solution:
 ```sh
     nc 192.168.1.199 23 < commands.txt >results.txt
 ```
+
+### transfer file between two PCs
+
+    pc-A: $ sudo tar -zcf - CentOS-7-x86_64-DVD-1503.iso | pv | nc -l -p 5555 -q 5
+
+    pc-B: $ sudo nc 192.168.1.4 5555 | pv | tar -zxf -
 
 ## socat
 

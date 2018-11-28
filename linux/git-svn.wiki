@@ -93,7 +93,9 @@ global-ignores = *.o *.lo *.la *.al .libs *.so *.so.[0-9]* *.a *.pyc *.pyo __pyc
 
 ### Conflict
 
-    svn st | grep -e ‘^.{0,6}C’
+    svn status | grep -E '^.{0,6}C'
+    <or>
+    svn status | egrep '^.{0,6}C'
 
 ### Check changed
 

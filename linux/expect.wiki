@@ -1,0 +1,6 @@
+# Doc
+
+[Using Expect Scripts to Automate Tasks](http://www.admin-magazine.com/Articles/Automating-with-Expect-Scripts)
+
+
+
