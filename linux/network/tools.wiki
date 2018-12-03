@@ -1,15 +1,3 @@
----
-layout: post
-title:  "network"
-date:   2014-02-16 13:31:01 +0800
-categories: linux
-tags: network
----
-
-* content
-{:toc}
-
-
 # config
 
 ## vlan
@@ -71,12 +59,64 @@ In tcpdump command, you can give “and”, “or” and “not” condition to 
     [host|dst|src]
 
     $ sudo tcpdump -w xpackets.pcap -i eth0 dst 10.181.140.216 and port 22
+    $ sudo tcpdump -i wlan0  \
+               src port 80 or dst port 80 \
+               -w port-80-recording.pcap
     $ sudo tcpdump -ni eth0 not arp and not rarp
     $ sudo tcpdump -i vlan125 -en
 
-## tshark
+    $ sudo tcpdump -i eth0 -nn -s0 -v port 80
+    -nn : A single (n) will not resolve hostnames. A double (nn) will not resolve hostnames or ports. This is handy for not only viewing the IP / port numbers but also when capturing a large amount of data, as the name resolution will slow down the capture.
+    -s0 : Snap length, is the size of the packet to capture. -s0 will set the size to unlimited
 
+    ### Display ASCII text: Another option that shows both hexadecimal output and ASCII is the -X option.
+    $ sudo tcpdump -A -s0 port 80
+
+    ### Capture on Protocol
+    $ sudo tcpdump -i eth0 udp
+    $ sudo tcpdump -i eth0 proto 17
+
+    ### Line Buffered Mode
+    Avoid not always get the expected response when piping the tcpdump output to another command such as grep
+    $ sudo tcpdump -i eth0 -s0 -l port 80 | grep 'Server:'
+    $ sudo tcpdump -nn -A -s1500 -l | egrep -i 'User-Agent:|Host:'
+
+    $ tcpdump -vvAls0 | grep 'User-Agent:'
+    $ tcpdump -vvAls0 | grep 'Set-Cookie|Host:|Cookie:'
+
+    ### find dns traffic
+    $ tcpdump -vvAs0 port 53
+    ### find ftp traffic
+    tcpdump -vvAs0 port ftp or ftp-data
+
+    ### Using single quotes
+    $ tcpdump 'src 10.0.2.4 and (dst port 3389 or 22)'
+    $ tcpdump 'tcp[tcpflags] == tcp-syn'
+    $ tcpdump 'tcp[tcpflags] == tcp-fin'
+
+### packets dropped by kernel
+
+In the situation when I'm losing packets and turning off tcpdump I get this output from tcpdump:
+
+    126639 packets captured
+    1544770 packets received by filter
+    1416694 packets dropped by kernel
+
+The kernel puts captured packets in a fixed-size capture buffer.
+If tcpdump doesn't empty that buffer quickly enough, the kernel will begin overwriting old packets in the buffer and correspondingly incrementing the dropped counter.
+The value of that counter is what you see as "dropped by kernel".
+
+The capture buffer can be re sized by giving tcpdump the -B option to specify new buffer size in KiB
+
+[##](##) tshark
+
+even more awesomeness: tshark can look inside your packets
 Using the -T we specify that we want to extract fields and with the -e options we identify which fields we want to extract.
+
+    $ sudo tshark -i any \
+            -Y 'http.request.method == "GET"' \
+            -T fields \
+            -e http.request.method -e http.request.uri -e ip.dst
 
 ### dns
 

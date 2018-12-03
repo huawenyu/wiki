@@ -1,18 +1,10 @@
----
-layout: post
-title:  "gdb"
-date:   2017-02-16 13:31:01 +0800
-categories: linux
-tags: gdb
----
-
-* content
-{:toc}
-
-
 # Quick Start:
-
-  - [Gdbserver][1],
+  - https://en.wikipedia.org/wiki/Call_stack
+  - Disassemble the `static int a = 0;`
+    + https://www.recurse.com/blog/7-understanding-c-by-learning-assembly
+  -
+  - Gdbserver
+    + https://sourceware.org/gdb/onlinedocs/gdb/gdbserver-man.html
     + $ sudo apt-get install gdbserver
   - GUI front-end: [neovim][5], eclipse, others(insight, nemiver)
 
@@ -33,50 +25,14 @@ tags: gdb
 
 [command doc][2][3]
 
-## gdbserver
-
-gdbserver is a program that allows you to run GDB on a different machine than the one which is running the program being debugged.
+## Registers
 
 ```
-
-Table: gdbserver sample
-| =======================================           | =============================================== |
-| remote embedded env: gdbserver                    | local linux: gdb code                           |
-|                                                   |                                                 |
-| target> gdbserver comm program [args ...]         |                                                 |
-| =======================================           | =============================================== |
-|                                                   |                                                 |
-| [=single process mode=]                           |                                                 |
-| ---------------------------------------           | --------------------------------------------    |
-| $ gdbserver localhost:2000 my_prg                 | $ gdb my_prg                                    |
-| >  Process program created; pid = 2045            | (gdb) target remote 192.168.1.10:2000           |
-| >  Listening on port 2000                         | (gdb) b main                                    |
-|                                                   | (gdb) run                                       |
-|                                                   |                                                 |
-| $ gdbserver :2000 --attach pid                    | $ gdb my_prg                                    |
-| >  Process program created; pid = 2045            | (gdb) target remote 192.168.1.10:2000           |
-| >  Listening on port 2000                         | (gdb) b main                                    |
-|                                                   | (gdb) run                                       |
-|                                                   |                                                 |
-| $ gdbserver host:2345 /uploaded/to/my_prg my-arg1 | $ gdb my_prg                                    |
-| >  Process program created; pid = 2045            | (gdb) target remote 192.168.1.10:2000           |
-| >  Listening on port 2000                         | (gdb) b main                                    |
-|                                                   | (gdb) run                                       |
-|                                                   |                                                 |
-| [=Multi-process Mode=]                            |                                                 |
-| ---------------------------------------           | --------------------------------------------    |
-| $ gdbserver --multi localhost:2000                | $ gdb                                           |
-| > Listening on port 2000                          | (gdb) target extended-remote 192.168.1.10:2000  |
-|                                                   | (gdb) set remote exec-file /uploaded/to/my_prg  |
-|                                                   | (gdb) file ./sysinit/my_prg                     |
-|                                                   | (gdb) b main                                    |
-|                                                   | (gdb) run                                       |
-| ---------------------------------------           | --------------------------------------------    |
-| ***************************************           | ********************************************    |
-|                                                   |                                                 |
-| #######################################           | ############################################    |
-| =======================================           | =============================================== |
-
+|__64__|__56__|__48__|__40__|__32__|__24__|__16__|__8___|
+|__________________________RAX__________________________|
+|xxxxxxxxxxxxxxxxxxxxxxxxxxx|____________EAX____________|
+|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|_____AX______|
+|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|__AH__|__AL__|
 ```
 
 ## most useful
@@ -94,6 +50,8 @@ Table: gdbserver sample
     p/s str
     x/s str
     p *str@length
+
+    set disassemble-next-line on    # show asm of nexti
 
     finish			# show current function's return value
     type/whatis			# check value's type
@@ -175,6 +133,51 @@ If gdb debug sometimes cannot find source because the source path is different. 
 
 # howto
 
+## gdbserver
+
+gdbserver is a program that allows you to run GDB on a different machine than the one which is running the program being debugged.
+
+```
+
+Table: gdbserver sample
+| =======================================           | =============================================== |
+| remote embedded env: gdbserver                    | local linux: gdb code                           |
+|                                                   |                                                 |
+| target> gdbserver comm program [args ...]         |                                                 |
+| =======================================           | =============================================== |
+|                                                   |                                                 |
+| [=single process mode=]                           |                                                 |
+| ---------------------------------------           | --------------------------------------------    |
+| $ gdbserver localhost:2000 my_prg                 | $ gdb my_prg                                    |
+| >  Process program created; pid = 2045            | (gdb) target remote 192.168.1.10:2000           |
+| >  Listening on port 2000                         | (gdb) b main                                    |
+|                                                   | (gdb) run                                       |
+|                                                   |                                                 |
+| $ gdbserver :2000 --attach pid                    | $ gdb my_prg                                    |
+| >  Process program created; pid = 2045            | (gdb) target remote 192.168.1.10:2000           |
+| >  Listening on port 2000                         | (gdb) b main                                    |
+|                                                   | (gdb) run                                       |
+|                                                   |                                                 |
+| $ gdbserver host:2345 /uploaded/to/my_prg my-arg1 | $ gdb my_prg                                    |
+| >  Process program created; pid = 2045            | (gdb) target remote 192.168.1.10:2000           |
+| >  Listening on port 2000                         | (gdb) b main                                    |
+|                                                   | (gdb) run                                       |
+|                                                   |                                                 |
+| [=Multi-process Mode=]                            |                                                 |
+| ---------------------------------------           | --------------------------------------------    |
+| $ gdbserver --multi localhost:2000                | $ gdb                                           |
+| > Listening on port 2000                          | (gdb) target extended-remote 192.168.1.10:2000  |
+|                                                   | (gdb) set remote exec-file /uploaded/to/my_prg  |
+|                                                   | (gdb) file ./sysinit/my_prg                     |
+|                                                   | (gdb) b main                                    |
+|                                                   | (gdb) run                                       |
+| ---------------------------------------           | --------------------------------------------    |
+| ***************************************           | ********************************************    |
+|                                                   |                                                 |
+| #######################################           | ############################################    |
+| =======================================           | =============================================== |
+
+```
 ## ignore signal
 
 For the same SIGUSR1 example above, you can query the gdb handler rules like so:
@@ -239,7 +242,7 @@ when crash, we can address (such as 0x090b5c6b) and registers list, then:
     cond 1 strcmp($secret_code, c ) == 0	# set conditional to existed breakpoint
 ```
 
-## watchpoints
+## watchpoints: monitor the variable's value changed
 
 ```gdb
     info watchpoints [n...]
@@ -262,6 +265,14 @@ when crash, we can address (such as 0x090b5c6b) and registers list, then:
         - $sp stack pointer
         - $fp current stack frame
         - $ps processor status
+
+    print (‘x’, ‘d’, ‘u’, ‘o’, ‘t’, ‘a’, ‘c’, ‘f’, ‘s’)
+    x/nfu addr    n, f, and u are all optional parameters that specify how much memory to display and how to format it;
+                  u, the unit size:
+                    - b Bytes,
+                    - h Halfwords(two bytes),
+                    - w Words (four bytes). This is the initial default.
+                    - g Giant words (eight bytes).
 
     p /x $pc		# print the program counter in hex with
     x 3/i $pc		# print the instruction to be executed next 3 with
@@ -312,8 +323,7 @@ gdb executes file .gdbinit before running the program
     $ gdb --batch --command=test.gdb --args ./test.exe 5
 ```
 
-  [1]: https://sourceware.org/gdb/onlinedocs/gdb/gdbserver-man.html
-  [2]: https://sourceware.org/gdb/wiki/FAQ
+  [2]: https://sourceware.org/gwiki/FAQ
   [3]: https://blogs.oracle.com/ksplice/entry/8_gdb_tricks_you_should
   [4]: http://sourceware.org/gdb/onlinedocs/gdb/Continuing-and-Stepping.html
   [5]: https://github.com/huawenyu/neogdb.vim
