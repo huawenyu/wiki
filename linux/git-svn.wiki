@@ -307,7 +307,8 @@ migadmin/node_modules/grunt-jscs/*
     git branch -m <oldname> <newname>		# rename
 
     # branch from a spicific commit
-    git branch -your-study-branch-name- SHA^
+    git branch <branch-name> <sha1-of-commit>
+    git checkout -b <branchname> <sha1-of-commit or HEAD~3>
 
     # Easily track a remote branch
     git checkout -t origin/feature
