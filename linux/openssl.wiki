@@ -1,0 +1,8 @@
+# docs
+
+[openssl-cookbook](https://www.feistyduck.com/library/openssl-cookbook/online/ch-openssl.html)
+
+# curl
+
+    $ curl --cert certificate_file.pem:password https://www.example.com/some_protected_page
+

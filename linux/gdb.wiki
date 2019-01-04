@@ -116,6 +116,20 @@ If gdb debug sometimes cannot find source because the source path is different. 
     gdb> 
 ```
 
+# Front-end: insight
+
+https://stackoverflow.com/questions/26190094/setup-insight-on-ubuntu-14-04-or-linux-mint-17
+
+Well for the sake of jeff duntemann's book , I made a simple portable version of insight , All you have to do is to download a single binary ( AppImage ) and mark it executable , Then you are ready to rock. Remember this is only for 64 Bits for now. Also you have to use absolute paths for command line. This method does not require root and does not touch the host operating system.
+
+$ wget -O Insight-continuous-x86_64.AppImage https://git.io/vp4uE
+$ chmod +x ./Insight-continuous-x86_64.AppImage 
+$ ./Insight-continuous-x86_64.AppImage # Thats it.
+See the project at https://github.com/antony-jr/insight
+
+I repeat that this project was created by me , only the build scripts and not the source files.
+
+
 # TUI command/shortcut:
 
     wh			Enter TUI, but now cannot leave TUI mode use command
