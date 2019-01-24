@@ -48,14 +48,15 @@ Now no Gnome application (like nautilus) will open the help window ever again wh
 
 ## su & sudo
 
-  - sudo    runs a single command with root privileges.
-  - su      switches to the super user – or root user – when you execute it with no additional options.
-    + su -c 'command'   Run a single command as the root user
-    + `su - devusr`       Change to another user's environment to check the shell or env setup ok or not.
+  - sudo                    runs a single command with root privileges.
+  - sudo -s                 Runs a new shell with root privileges, and also with all current user's environment, specially useful when we install and setup a new env.
+  - sudo -u devusr whoami   execute command as another user.
 
-  - `sudo -s`       runs a shell with root privileges, specially when we install and setup a new env.
-  - `sudo -i`       also acquires the root user's environment.
-  - `sudo -u devusr whoami`     execute command as another user.
+  - su                      switches to the super user – or root user – when you execute it with no additional options.
+    + su -c 'command'       Run a single command as the root user
+    + su - devusr           Change to another user's environment to check the shell or env setup ok or not.
+
+  - sudo -i                 also acquires the root user's environment.
 
 ## Change Shell
 

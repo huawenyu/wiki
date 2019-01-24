@@ -1,8 +1,139 @@
 # docs
 
 [openssl-cookbook](https://www.feistyduck.com/library/openssl-cookbook/online/ch-openssl.html)
+    - https://www.feistyduck.com/library/openssl-cookbook/online/ch-openssl.html#
+    - https://www.feistyduck.com/library/openssl-cookbook/online/ch-testing-with-openssl.html#testing-heartbleed
 
-# curl
+https://home.mpcdf.mpg.de/~jkennedy/2017/09/01/tools-for-testing-https-connections.html
+
+# openssl tools
+
+## sample-1
+
+
+## commands
+
+### General OpenSSL Commands
+These commands allow you to generate CSRs, Certificates, Private Keys and do other miscellaneous tasks.
+
+    === Generate a new private key and Certificate Signing Request
+    $ openssl req -out CSR.csr -new -newkey rsa:2048 -nodes -keyout privateKey.key
+
+    === Generate a self-signed certificate (see How to Create and Install an Apache Self Signed Certificate for more info)
+    $ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
+
+    === Generate a certificate signing request (CSR) for an existing private key
+    $ openssl req -out CSR.csr -key privateKey.key -new
+
+    === Generate a certificate signing request based on an existing certificate
+    $ openssl x509 -x509toreq -in certificate.crt -out CSR.csr -signkey privateKey.key
+    === Remove a passphrase from a private key
+    $ openssl rsa -in privateKey.pem -out newPrivateKey.pem
+
+### Checking Using OpenSSL
+    If you need to check the information within a Certificate, CSR or Private Key, use these commands. You can also check CSRs and check certificates using our online tools.
+
+    === Check a Certificate Signing Request (CSR)
+    $ openssl req -text -noout -verify -in CSR.csr
+
+    === Check a private key
+    $ openssl rsa -in privateKey.key -check
+
+    === Check a certificate
+    $ openssl x509 -in certificate.crt -text -noout
+
+    === Check a PKCS#12 file (.pfx or .p12)
+    $ openssl pkcs12 -info -in keyStore.p12
+
+### Debugging Using OpenSSL
+    If you are receiving an error that the private doesn't match the certificate or that a certificate that you installed to a site is not trusted, try one of these commands. If you are trying to verify that an SSL certificate is installed correctly, be sure to check out the SSL Checker.
+
+    === Check an MD5 hash of the public key to ensure that it matches with what is in a CSR or private key
+    $ openssl x509 -noout -modulus -in certificate.crt | openssl md5
+    $ openssl rsa -noout -modulus -in privateKey.key | openssl md5
+    $ openssl req -noout -modulus -in CSR.csr | openssl md5
+
+    === Check an SSL connection. All the certificates (including Intermediates) should be displayed
+    $ openssl s_client -connect www.paypal.com:443
+
+### Converting Using OpenSSL
+    These commands allow you to convert certificates and keys to different formats to make them compatible with specific types of servers or software. For example, you can convert a normal PEM file that would work with Apache to a PFX (PKCS#12) file and use it with Tomcat or IIS. Use our SSL Converter to convert certificates without messing with OpenSSL.
+
+    === Convert a DER file (.crt .cer .der) to PEM
+    $ openssl x509 -inform der -in certificate.cer -out certificate.pem
+
+    === Convert a PEM file to DER
+    $ openssl x509 -outform der -in certificate.pem -out certificate.der
+
+    === Convert a PKCS#12 file (.pfx .p12) containing a private key and certificates to PEM
+    $ openssl pkcs12 -in keyStore.pfx -out keyStore.pem -nodes
+    You can add -nocerts to only output the private key or add -nokeys to only output the certificates.
+
+    === Convert a PEM certificate file and a private key to PKCS#12 (.pfx .p12)
+    $ openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt -certfile CACert.crt
+
+## curl
 
     $ curl --cert certificate_file.pem:password https://www.example.com/some_protected_page
+
+## s_client
+
+    $ openssl s_client -connect example.com:443 -servername example.com
+
+### Test different protocols
+
+    $ openssl s_client -connect server.yourwebhoster.eu:21 -starttls ftp      <<< Test FTP certificate
+    $ openssl s_client -connect server.yourwebhoster.eu:995                   <<< Test POP3 certificate
+    $ openssl s_client -connect server.yourwebhoster.eu:993                   <<< Test IMAP certificate
+    $ openssl s_client -connect server.yourwebhoster.eu:465                   <<< Test SMTP SSL certificate
+    $ openssl s_client -connect server.yourwebhoster.eu:587 -starttls smtp    <<< Test SMTP TLS certificate
+    $ openssl s_client -connect server.yourwebhoster.eu:443                   <<< Test HTTPS certificate
+    $ openssl s_client -connect server.yourwebhoster.eu:2222                  <<< Test DirectAdmin certificate
+
+### protocol: https
+    $ openssl s_client -quiet -connect example.com:443
+        < (...some certificate debugging will be displayed here...)
+        < (...after that, use the normal commands you would use in a telnet connection to port 80...)
+        user > GET / HTTP/1.1
+        user > Host: example.com
+
+### protocol: SSMTP / SMTPS
+    $ openssl s_client -quiet -connect mail.yourserver.tld:485
+        < (...some certificate debugging will be displayed here...)
+        < (...after that, use the normal commands you would use in a telnet connection to port 25...)
+        < 220 mail.yourserver.tld
+        user > HELO your-name
+
+        < 250 remote-server
+        user > MAIL FROM:<me@example.com>
+
+        < 250 2.1.0 Ok
+        user > RCPT TO:<tch@example.com>
+
+    Or, to test TLS on port 25:
+    $ openssl s_client -quiet -starttls smtp -connect mail.yourserver.tld:25
+
+### protocol: IMAP
+
+Note the "-starttls imap" added to the command line - this one shows an expired certificate:
+
+    $ openssl s_client -quiet -starttls imap -connect mail.yourserver.tld:143
+        depth=2 O = Digital Signature Trust Co., CN = DST Root CA X3
+        verify return:1
+        depth=1 C = US, O = Let's Encrypt, CN = Let's Encrypt Authority X3
+        verify return:1
+        depth=0 CN = mail.yourserver.tld
+        verify error:num=10:certificate has expired
+        notAfter=Sep 21 09:07:00 2016 GMT
+        verify return:1
+        depth=0 CN = mail.yourserver.tld
+        notAfter=Sep 21 09:07:00 2016 GMT
+        verify return:1
+        . OK Completed
+
+## x509: validate the certs
+
+    $ echo | openssl s_client -connect example.com:443 -servername example.com 2>/dev/null | openssl x509 -noout -dates
+        notBefore=Feb 14 00:00:00 2017 GMT
+        notAfter=Feb 14 23:59:59 2018 GMT
 

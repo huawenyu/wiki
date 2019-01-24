@@ -1,0 +1,76 @@
+# cmd: ldconfig
+
+    $ sudo ldconfig -v
+
+    ldconfig  -- creates the necessary links and cache to the most recent shared libraries found in the directories specified on the command line
+
+    By default, ldconfig looks in:
+      - `/lib`, `/usr/lib`,
+      - and directories listed in `/etc/ld.so.conf`
+      - and directories listed in `$LD_LIBRARY_PATH`.
+
+           $ LD_LIBRARY_PATH=/opt/intel/mkl/lib/ia32:$LD_LIBRARY_PATH  LD_PRELOAD=/opt/intel/mkl/lib/ia32/libmkl_core.so ./myexe
+
+        Add to `~/.bashrc` file so it will run every time you log in:
+
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/library
+
+      - $LD_PRELOAD -- override symbols in the stock libraries by creating a library with the same symbols
+            1. If you set LD_PRELOAD to the path of a shared object, that file will be loaded before any other library (including the C runtime, libc.so).
+                $ LD_PRELOAD=/path/to/my/malloc.so /bin/ls
+            2. One important thing to keep in mind: you usually want to specify an absolute path to LD_PRELOAD.
+                The reason is that it being an environment variable,
+                it's inherited by child processes - which may have a different working directory than the parent process.
+                So any relative path would fail to locate the library to preload.
+
+## a nonstandard directory
+
+    If your library is somewhere else, you can:
+      - either add the directory on its own line in `/etc/ld.so.conf`,
+      - or append the library's path to `$LD_LIBRARY_PATH`,
+      - or move the library into `/usr/lib`.
+          sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
+      - Then run `ldconfig` to reload into system cache.
+
+
+## fix load shared libraries error: cannot open shared object file
+
+    Which means the library is not in the standard path, so we should use LD_LIBRARY_PATH to told ldconfig where to find it.
+
+    ### Find where the library is placed if you don't know it.
+        $ locate that_library.so
+
+        $ cd /
+        $ sudo find ./ | grep that_library.so
+
+    ### Check for the existence of the dynamic library path environnement variable(LD_LIBRARY_PATH)
+
+        $ echo $LD_LIBRARY_PATH
+
+    ### if there is nothing to be display we need to add the default path value (or not as you wish)
+        $ export LD_LIBRARY_PATH=/usr/local/lib
+        <or> temperary change:
+        $ LD_LIBRARY_PATH=/usr/local/lib ./myexe
+
+    ### We add the desire path and export it and try the application
+
+        $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/my_library/path.so.something
+        $ ./my_app
+        <or> temperary change:
+        $ LD_LIBRARY_PATH=/opt/intel/mkl/lib/ia32:$LD_LIBRARY_PATH  LD_PRELOAD=/opt/intel/mkl/lib/ia32/libmkl_core.so ./myexe
+
+    ### work with sudo:
+
+        $ sudo LD_LIBRARY_PATH=/usr/local/lib ./myexe
+
+## Install Dev package or wrong version
+
+If that doesn't work, I would also check out [Paul's suggestion][2] and look for a "-dev" version of the library.
+Many libraries are split into dev and non-dev packages. You can use this command to look for it:
+
+    $ apt-cache search <libraryname>
+
+
+  [1]: http://linux.die.net/man/8/ldconfig
+  [2]: https://stackoverflow.com/a/480786/22781
+  [3]: http://www.gnu.org/software/gsl/manual/html_node/Shared-Libraries.html

@@ -1,59 +1,132 @@
 ﻿# Quick Start
 
-## virtualenv
+## env & version
 
-A Virtual Environment, put simply, is an isolated working copy of Python which
-allows you to work on a specific project without worry of affecting other projects
+https://amaral.northwestern.edu/resources/guides/pyenv-tutorial
 
+### pyenv Install
 ```sh
-    $ sudo pip install virtualenv
-    $ mkdir ~/virtualenv
-    $ virtualenv [--no-site-packages] ./virtualenv/my-proj1
-    $ cd ~/virtualenv/my_proj1/bin
-    $ source activate
+    git clone git://github.com/yyuu/pyenv.git .pyenv
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+    echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+    source ~/.bashrc
 
-    $ ... in your new env ...
-    $ pip install <your-packages>
+    <or> === oneline installer
 
-    $ deactivate
+    curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
 ```
 
-### Use different Python version with virtualenv
+### workflow: pyenv
 
-    For python 2:
+1. Switch global version:
 
-    $ virtualenv --python=/usr/bin/python2.6 <path/to/new/virtualenv/>
+```sh
+    $ pyenv global
+        system
 
-    For Python3.6 or newer:
+    $ pyenv versions
+        * system (set by /home/staff/jmoreira/.pyenv/version)
 
-    $ python3 -m venv <myenvname>
+    $ pyenv install 3.4.0
+    $ pyenv versions
+        * system (set by /home/staff/jmoreira/.pyenv/version)
+          3.4.0
 
-    For python3 (3.3+), use either the above method or the script pyvenv command.
+    $ pyenv global 3.4.0        <<< To use python 3.4 as the global one
+```
+2. Set local version:
 
-    $ pyvenv /path/to/new/virtual/environment
+You can also use pyenv to define a project-specific, or local, version of Python
 
+```sh
+    $ pyenv global system
+        Python 2.7.6
 
-## pip
+    $ mkdir cuting_edge
+    $ cd cuting_edge/
+    $ pyenv local 3.4.0
+    $ python -V
+        Python 3.4.0
+    $ cd ..
+    $ python -V
+        Python 2.7.6
+```
+
+### pyenv-virtualenv
+
+To other `virtualenv` users, the idea of a local Python might seem familiar.
+Indeed, a local Python created from pyenv is almost like a Python virtual environment.
+
+The main difference is that:
+  - pyenv actually copies an entire Python installation every time you create a new pyenv version.
+  - In contrast, virtualenv makes use of symbolic links to decrease the size of the virtualenv’s.
+
+If you can’t function without your virtual environments anymore then fear not, for there is a plugin for that: pyenv-virtualenv.
+
+### pyenv-virtualenv Install
+
+git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+source ~/.bashrc
+
+### workflow: pyenv-virtualenv
+
+```sh
+    $ mkdir virtual_env
+    $ cd virtual_env/
+    $ pyenv virtualenv 3.4.0 venv       <<< Install a new version 3.4.0 and named as 'venv'
+        Ignoring indexes: https://pypi.python.org/simple/
+        Requirement already satisfied (use --upgrade to upgrade): setuptools in /home/staff/jmoreira/.pyenv/versions/venv/lib/python3.4/site-packages
+        Requirement already satisfied (use --upgrade to upgrade): pip in /home/staff/jmoreira/.pyenv/versions/venv/lib/python3.4/site-packages
+        Cleaning up...
+
+    $ pyenv versions
+    * system (set by /home/staff/jmoreira/.pyenv/version)
+      3.4.0
+      lab_web
+      venv
+
+    $ pyenv activate venv
+    (venv) $ python -V
+            Python 3.4.0
+
+    (venv) $ pip list
+            pip (1.5.4)
+            setuptools (2.1)
+
+    (venv) $ pyenv deactivate
+            ~/virtual_env
+```
+
+Here I used Python 3.4 to create the virtualenv
+(Note that if you want to create a virtualenv from the system Python,
+ then virtualenv needs to be installed at the system level as well).
+
+This last command is the recommended way to deactivate the virtualenv. This ensures that pyenv remains working as normal after you leave the virtualenv.
+
+pyenv’s magic works because it actually redefines your Python command:
+
+```sh
+    ~$ which python
+    /home/staff/jmoreira/.pyenv/shims/python
+```
+When you try to run Python, it first looks for a .python-version in the current directory to decide which version of python to run. If it doesn’t find this file, then it looks for the user-level file ~/.pyenv/version.
+
+## pip install: ImportError: cannot import name main
+
+Try re-install fix it or not:
 ```sh
     sudo python -m pip uninstall pip && sudo apt install python-pip --reinstall
 ```
-### ImportError: cannot import name main
 
-在Ubuntu中，升级了pip,再次使用pip 安装相关的python包的时候就出现以下错误
-
-ImportError: cannot import name main
-
-解决：pip文件在usr/bin目录下，cd进去，进行以下修改
-
-把下面的三行
-
+Change /usr/bin/pip from
 ```python
 from pip import main
 if __name__ == '__main__':
     sys.exit(main())
 ```
 
-换成下面的三行
+To
 
 ```python
 from pip import __main__
@@ -61,83 +134,21 @@ if __name__ == '__main__':
     sys.exit(__main__._main())
 ```
 
-然后问题就解决了。
-
-
-## python3 for ubuntu [Not suggest, apt-get also prefer python 2.7]
-
-If you really want using python3, please using `virtualenv`.
-
-### Not suggest using the default python3 for ubuntu
-
-Even install python3.6, the library is also using python3.4 when install by pip3.
-
-### [Not suggest] Install Python 3.6 from J Fernyhough’s Personal Package Archive (PPA).
-
-[Install python3.6](https://www.rosehosting.com/blog/how-to-install-python-3-6-on-ubuntu-16-04/)
-
-```sh
-    # Install the following requirements
-    $ sudo apt-get install software-properties-common python-software-properties
-
-    # Run the following command to add the PPA
-    $ sudo add-apt-repository ppa:jonathonf/python-3.6
-    Press [ENTER] to continue or ctrl-c to cancel adding it
-
-    # update the repositories
-    $ sudo apt-get update
-    $ sudo apt-get install python3.6
-    $ sudo apt-get install python3.6-dev
-    $ sudo apt-get install python3.6-venv
-    $ wget https://bootstrap.pypa.io/get-pip.py
-    $ sudo python3.6 get-pip.py
-    $ sudo ln -s /usr/bin/python3.6 /usr/local/bin/python3
-    $ sudo ln -s /usr/local/bin/pip /usr/local/bin/pip3
-
-    # Do this only if you want python3 to be the default Python
-    # instead of python2 (may be dangerous, esp. before 2020):
-    # sudo ln -s /usr/bin/python3.6 /usr/local/bin/python
-    # Verify Python 3.6.3 installation on Ubuntu 16.04
-    $ python3.6 -V
-    Python 3.6.3
-```
-
-### [Not suggest] Change system default to python3
-
-From the comment: 
-
-    sudo update-alternatives --config python
-Will show you an error:
-
-    update-alternatives: error: no alternatives for python3 
-
-You need to update your `update-alternatives` , then you will be able to set your default python version.
-
-    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.4 1
-    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2
-Then run :
-
-    sudo update-alternatives --config python
-Set python3.6 as default. 
-
-    $ python --version
-    Python 3.6.3
-
 ### python3: modules rename
-    
+
 ### module: ConfigParser
     In Python 3, ConfigParser has been renamed to configparser
-    
+
     What worked for me in Ubuntu was actually just:
 
 ### module: tkinter
-    
+
     For python 3.4:
     sudo apt-get install python3-tk
-    
+
     For python 3.6:
     sudo apt-get install python3.6-tk
-    
+
 ## Python shell
 
     bpython
@@ -168,7 +179,7 @@ Set python3.6 as default.
 
 
 # python CLI modules
-    
+
 Which require from myself dut_control.py and create a interactive prompt interface for our dut's troubleshooing.
 
 ## Using basic lib `cmd`
@@ -494,7 +505,7 @@ By the way, the code you have written is not good Python. You should probably tr
 
 
   if  __name__ =='__main__':
-      dog = Animal()    
+      dog = Animal()
       dog.owner = 'Sue'
       print dog.owner
       dog.noise()
@@ -533,7 +544,7 @@ class Animal:
         print("hard to find")
 
 def main():        # should not be in the class. When you take it outside (no indent) it should work.
-    dog = Animal()    
+    dog = Animal()
     dog.set_owner('Sue')
     print dog.get_owner()
     dog.noise()
@@ -719,28 +730,28 @@ The `*args` will give you all function parameters [as a tuple][2]:
     In [1]: def foo(*args):
        ...:     for a in args:
        ...:         print a
-       ...:         
-       ...:         
-    
+       ...:
+       ...:
+
     In [2]: foo(1)
     1
-    
-    
+
+
     In [4]: foo(1,2,3)
     1
     2
     3
 ```
-The `**kwargs` will give you all 
+The `**kwargs` will give you all
 **keyword arguments** except for those corresponding to a formal parameter as a dictionary.
 
 ```python
     In [5]: def bar(**kwargs):
        ...:     for a in kwargs:
        ...:         print a, kwargs[a]
-       ...:         
-       ...:         
-    
+       ...:
+       ...:
+
     In [6]: bar(name='one', age=27)
     age 27
     name one
@@ -755,11 +766,11 @@ Another usage of the `*l` idiom is to **unpack argument lists** when calling a f
 ```python
     In [9]: def foo(bar, lee):
        ...:     print bar, lee
-       ...:     
-       ...:     
-    
+       ...:
+       ...:
+
     In [10]: l = [1,2]
-    
+
     In [11]: foo(*l)
     1 2
 ```
@@ -953,7 +964,7 @@ However, you can add to the Python path at runtime:
     # some_file.py
     import sys
     sys.path.insert(0, '/path/to/application/app/folder')
-    
+
     import file
 
 
@@ -1073,10 +1084,10 @@ import FooPackage.foo
 What you're doing is looking for foo in FooPackage/__init__.py. You could solve it by putting import FooPackage.foo as foo (or from . import foo) in FooPackage/__init__.py, then Python will be able to find foo there. But I recommend using my first suggestion.
 
 
-When you import FooPackage, Python searches the directories on PYTHONPATH until it 
-* finds a file called FooPackage.py 
+When you import FooPackage, Python searches the directories on PYTHONPATH until it
+* finds a file called FooPackage.py
 * or a directory called FooPackage containing a file called __init__.py
-However, having found the package directory, it does not then scan that directory and automatically import all .py files. There are two reasons for this behaviour. 
+However, having found the package directory, it does not then scan that directory and automatically import all .py files. There are two reasons for this behaviour.
 * The first is that importing a module executes Python code which may take time, memory, or have side effects. So you might want to import a.b.c.d without necessarily importing all of a huge package a. It's up to the package designer to decide whether a's __init__.py explicitly imports its modules and subpackages so that they are always available, or whether or leaves the client program the ability to pick and choose what is loaded.
 * The second is a bit more subtle, and also a showstopper. Without an explicit import statement (either in FooPackage/__init__.py or in the client program), Python doesn't necessarily know what name it should import foo.py as. On a case insensitive file system (such as used in Windows), this could represent a module named foo, Foo, FOO, fOo, foO, FoO, FOo, or fOO. All of these are valid, distinct Python identifiers, so Python just doesn't have enough information from the file alone to know what you mean. Therefore, in order to behave consistently on all systems, it requires an explicit import statement somewhere to clarify the name, even on file systems where full case information is available.
 
