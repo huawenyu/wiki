@@ -142,9 +142,31 @@ OpenSSH, for example, offers other escape sequences besides `~.`. Entering `~?` 
 
 The escape character can be changed using the command line option `-e`. If you set the special value `-e none`, escaping is disabled and the session is fully transparent.
 
-# command line
+# shell
 
-## Command Line Shortkey
+## '()' vs '{}'
+
+```sh
+	{ echo abc; cat 1.txt; } > 2.txt
+	<or>
+	echo abc | cat - 1.txt > 2.txt
+```
+
+(list)
+
+list is executed in a `subshell environment` (see COMMAND EXECUTION ENVIRONMENT below).
+Variable assignments and builtin commands that affect the shell's environment do not remain in effect after the command completes.
+The return status is the exit status of list.
+
+{ list; }
+
+list is simply executed in the `current shell environment`. 
+list must be terminated with a newline or semicolon.
+This is known as a group command. The return status is the exit status of list.
+Note that unlike the metacharacters ( and ),  { and } are reserved words and must occur where a reserved word is permitted to be recognized.  Since they do not cause a word break, they must be separated from list by whitespace or another shell metacharacter.
+The first option (subshell environment) has a bunch of side effects, most if not all of which are irrelevant to your scenario; however, if redirecting a bunch of commands' output is all you need, then Option #2 here (group command) is preferred.
+
+## Shortkey
 
 [Command Line Shortkey][6]
 
