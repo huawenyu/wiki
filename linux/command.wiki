@@ -179,7 +179,7 @@ The first option (subshell environment) has a bunch of side effects, most if not
 
     CTRL + _                <<< Undo the last change
 
-    Others
+    <Others>:
     CTRL + [left arrow]     <<< Move one word backward (on some systems this is ALT + B)
     CTRL + [right arrow]    <<< Move one word forward (on some systems this is ALT + F)
     ESC + [backspace]       <<< Delete the word in front of the cursor
