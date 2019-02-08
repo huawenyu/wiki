@@ -6,6 +6,57 @@
 
 https://home.mpcdf.mpg.de/~jkennedy/2017/09/01/tools-for-testing-https-connections.html
 
+# TSL protocol
+
+http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session
+  http://www.ntu.edu.sg/home/ehchua/programming/webprogramming/http_ssl.html
+  
+The higher layer is stacked on top of the SSL Record Protocol, and comprises four subprotocols.
+Each of these protocols has a very specific purpose, and are used at different stages of the communication:
+- Handshake Protocol: It allows the peers to authenticate each other and to negotiate a cipher suite and other parameters of the connection. The SSL handshake protocol involves four sets of messages (sometimes called flights) that are exchanged between the client and server. Each set is typically transmitted in a separate TCP segment. The following diagram shows a summary of the process, which has several steps and offers optional ones. Please note that ChangeCipherSpec messages don’t belong to this protocol, as they are a protocol by themselves, as seen below.
+```text
+               TLS Handshake
+
+               +-----+                              +-----+
+               |     |                              |     |
+               |     |        ClientHello           |     |
+               |     o----------------------------> |     |
+               |     |                              |     |
+       CLIENT  |     |        ServerHello           |     |  SERVER
+               |     |       [Certificate]          |     |
+               |     |    [ServerKeyExchange]       |     |
+               |     |    [CertificateRequest]      |     |
+               |     |      ServerHelloDone         |     |
+               |     | <----------------------------o     |
+               |     |                              |     |
+               |     |       [Certificate]          |     |
+               |     |     ClientKeyExchange        |     |
+               |     |    [CertificateVerify]       |     |
+               |     |   ** ChangeCipherSpec **     |     |
+               |     |         Finished             |     |
+               |     o----------------------------> |     |
+               |     |                              |     |
+               |     |   ** ChangeCipherSpec **     |     |
+               |     |         Finished             |     |
+               |     | <----------------------------o     |
+               |     |                              |     |
+               +-----+                              +-----+
+
+
+
+     Optional messages
+     -----------------
+      - Certificate (server)     needed with all key exchange algorithms, except for anonymous ones.
+      - ServerKeyExchange        needed in some cases, like Diffie-Hellman key exchange algorithm.
+      - CertificateRequest       needed if Client authentication is required.
+      - Certificate (client)     needed in response to CertificateRequest by the server.
+      - CertificateVerify        needed if client Certificate message was sent.
+```
+
+- ChangeCipherSpec Protocol: It makes the previously negotiated parameters effective, so communication becomes encrypted.
+- Alert Protocol: Used for communicating exceptions and indicate potential problems that may compromise security.
+- Application Data Protocol: It takes arbitrary data (application-layer data generally), and feeds it through the secure channel.
+
 # openssl tools
 
 ## sample-1
