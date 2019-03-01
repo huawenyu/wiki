@@ -2,6 +2,7 @@
 
 [Install mongodb Server](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 [MongoDB Shell Enhancements](https://github.com/TylerBrock/mongo-hacker)
+  Also inprove mongo-shell's color, so if cooperate with vim, maybe it's better not install the hacker.
 [A dedicated repository that collects collections to practice/use](https://github.com/ozlerhakan/mongodb-json-files)
 
 
