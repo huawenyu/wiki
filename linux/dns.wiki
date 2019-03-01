@@ -1,21 +1,73 @@
----
-layout: post
-title:  "dns"
-date:   2017-02-16 13:31:01 +0800
-categories: linux
-tags: network
----
-
-* content
-{:toc}
-
-
 # Quick Start:
 
 [Howto Setup DNS-server on Ubuntu][1]
 
+# Enforce Safe-Search
+
+https://support.opendns.com/hc/en-us/articles/227986807-How-to-Enforcing-Google-SafeSearch-YouTube-and-Bing<Paste>
+
+# DNS cache
+
+https://www.keycdn.com/support/dns-cache
+
+DNS cache is a very efficient way to avoid having to complete an entire DNS lookup each time you visit a site.
+Instead, this process will only need to occur the first time you visit the site and upon subsequent requests,
+    your machine will use the OS's and browser's cached DNS information until it expires or is flushed.
+
+## OS-level
+
+- Linux have no OS-level DNS caching
+- Windows have OS-level DSN cache: ipconfig /displaydns
+- Mac have cache
+
+## Browser level
+
+- Chrome:
+    Input "chrome://net-internals/#dns" into your address bar,
+    The browser will list current list of cached DNS records.
+
+
+## check TTL of host
+```sh
+    $ dig a www.youtube.com
+
+        ;; ->>HEADER<<- opcode: QUERY; status: NOERROR; id: 17463
+        ;; Flags: qr rd ra; QUERY: 1; ANSWER: 6; AUTHORITY: 4; ADDITIONAL: 8
+
+        ;; QUESTION SECTION:
+        ;; www.youtube.com.     0       IN      A
+
+        ;; ANSWER SECTION:
+        www.youtube.com.        19202   IN      CNAME   youtube-ui.l.google.com.    <=== Time To Live (TTL)
+        youtube-ui.l.google.com.        25      IN      A       172.217.14.206
+        youtube-ui.l.google.com.        25      IN      A       172.217.14.238
+
+
+
+    $ host -a www.youtube.com
+
+        Trying "www.youtube.com"
+        ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 46392
+        ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 4, ADDITIONAL: 8
+
+        ;; QUESTION SECTION:
+        ;www.youtube.com.               IN      ANY
+
+        ;; ANSWER SECTION:
+        www.youtube.com.        18560   IN      CNAME   youtube-ui.l.google.com.
+
+        ;; AUTHORITY SECTION:
+        youtube.com.            18516   IN      NS      ns2.google.com.
+        youtube.com.            18516   IN      NS      ns4.google.com.
+```
+## Flush
+
+https://documentation.cpanel.net/display/CKB/How+To+Clear+Your+DNS+Cache
+
+- Windows - command: ipconfig /flushdns
+- Mac - sudo killall -HUP mDNSResponder
+- clear the DNS cache in Chrome browsers, input "chrome://net-internals/#dns" and click the 'Clear Host Cache' button.
 
 # Useful command:
-
 
   [1]: http://mixeduperic.com/ubuntu/seven-easy-steps-to-setting-up-an-interal-dns-server-on-ubuntu.html

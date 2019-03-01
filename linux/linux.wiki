@@ -1,14 +1,54 @@
----
-layout: post
-title:  "Linux commands"
-date:   2017-02-15 13:31:01 +0800
-categories: linux admin
-tags: admin command
----
+# LinuxMint-XFCE
 
-* content
-{:toc}
+## Mail-client: evolution
 
+### Setting: open link in firefox/chrome
+
+```sh
+    # Check the config, sure it's not xfce's config, because evolution not know the xfce at all.
+    $ gvfs-mime --query x-scheme-handler/http
+    $ gvfs-mime --query x-scheme-handler/https
+
+        Default application for 'x-scheme-handler/http': firefox.desktop
+        Registered applications:
+                firefox.desktop
+                google-chrome.desktop
+                opera.desktop
+        Recommended applications:
+                firefox.desktop
+                google-chrome.desktop
+                opera.desktop
+
+    # Set it to chrome
+    $ gvfs-mime --set x-scheme-handler/http google-chrome.desktop
+    $ gvfs-mime --set x-scheme-handler/https google-chrome.desktop
+```
+
+### Viewing Unread messages from task-bar windows title
+
+1. Right Click on "Search Folders", and create a new folder, for example named as 'vfolder':
+ - in vfolder properties
+ - in "rules", make a rule that says "Status" "is not" "read"
+ - in "search folder sources" choose specific folders, or the all folders option.
+   You can also choose "all related" threads to get replies and parents to an unread message in the same vfolder.
+
+Now view this folder instead of your inbox, and you will only see unread messages!
+
+2. Compare with another method: You can also choose View -> Hide Read Messages to accomplish this > task.
+
+The 'vfolder' isn't as simple as just showing unread messages.  I actually have the following in my vfolder rules:
+
+ - "Date sent" "is after" "2 days ago" or 
+ - "Status" "is not" "Read" or 
+ - "Label" "is" "Important" 
+
+This shortens my inbox with ~800 messages down to less than 20!
+I also have "Include threads - all related", so that I get replies and 
+originals that fall outside of the above criteria. 
+
+It's great!  Evolution is the only mail reader I know that lets you do 
+so much with vfolders.  Even thunderbird's search folders can't do as 
+well as this! 
 
 # chrome browser write disk and too slow
 

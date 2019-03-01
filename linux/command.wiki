@@ -76,9 +76,48 @@ Now no Gnome application (like nautilus) will open the help window ever again wh
     ejr@hobbes ~ $ su - ejr     <=== check the new shell
         Password:
 
-## current dir size
+## file & dir's space & size
 
-    du -shc .
+### free disk space
+
+1. check core dump
+
+    $ find / -xdev -name core -ls -o  -path "/lib*" -prune
+
+2. find which file|dir take the space
+
+    $ sudo du -hsx /home/* | sort -rh | head -n 10
+    $ sudo du -hsx --max-depth=1 /home/* | sort -rh | head -n 10
+
+### current dir size
+    du -hsc .
+
+## User management
+
+```sh
+    # create a user
+    USERNAME=foo
+    $ useradd $USERNAME
+
+    # reset password
+    USERNAME=foo
+    $ passwd $USERNAME
+
+    # add an existing user to a group
+    USERNAME=foo
+    GROUP=www
+    $ usermod -a -G $GROUP $USERNAME
+    $ cat /user/group
+
+    # remove user
+    USERNAME=foo
+    $ userdel $USERNAME
+
+    # add a user to a group
+    USERNAME=foo
+    GROUP=www-data
+    $ usermod -a -G $GROUP $USERNAME
+```
 
 ## clean logfile
 
@@ -123,8 +162,8 @@ If that doesn't work, however...
 Most SSH implementations implement an escape character for interactive sessions, similar to telnet's `Ctrl-]` combination. The default SSH escape character is `~`, entered at the beginning of a line.
 
 If you want to terminate an interactive OpenSSH session **which is stuck and cannot be exited by entering `exit`
-or <kbd>Ctrl</kbd><kbd>D</kbd> into a shell on the remote side**, 
-   you can enter `~` followed by a dot `.`. To be sure to enter the escape character at the beginning of an input line, 
+or <kbd>Ctrl</kbd><kbd>D</kbd> into a shell on the remote side**,
+   you can enter `~` followed by a dot `.`. To be sure to enter the escape character at the beginning of an input line,
    you should press Enter first.
 So the following sequence will in most cases terminate an SSH session:
 
@@ -135,9 +174,9 @@ Other Escape Sequences
 
 OpenSSH, for example, offers other escape sequences besides `~.`. Entering `~?` during a session should give you a list. Some examples:
 
-- `~` followed `Ctrl-Z` suspends the session, 
+- `~` followed `Ctrl-Z` suspends the session,
 - `~&` puts it directly into background,
-- `~#` gives a list of forwarded connections in this session. 
+- `~#` gives a list of forwarded connections in this session.
 - If you want to simply enter a tilde at the beginning of a line, you have to double it: `~~`.
 
 The escape character can be changed using the command line option `-e`. If you set the special value `-e none`, escaping is disabled and the session is fully transparent.
@@ -160,7 +199,7 @@ The return status is the exit status of list.
 
 { list; }
 
-list is simply executed in the `current shell environment`. 
+list is simply executed in the `current shell environment`.
 list must be terminated with a newline or semicolon.
 This is known as a group command. The return status is the exit status of list.
 Note that unlike the metacharacters ( and ),  { and } are reserved words and must occur where a reserved word is permitted to be recognized.  Since they do not cause a word break, they must be separated from list by whitespace or another shell metacharacter.
@@ -199,7 +238,7 @@ The first option (subshell environment) has a bunch of side effects, most if not
 [Command History][7]
 
 ```
-    history n               <<< This will only list the last n commands. 
+    history n               <<< This will only list the last n commands.
 
     CTRL + R                <<< Search history, hit ctrl-r again to scroll backward through the matched history
     CTRL + S                <<< scroll forward through the matched history
@@ -329,7 +368,7 @@ In above command:
   * Percentage (%) sign indicates current filename
 
 ### revoke sudo as soon
-    
+
 Q1: Long story short, how does one run one command in a script with sudo, while then removing the elevated privileges for the rest of the script
 
 You can 'revoke' the sudo permission (actually: close the sudo time window early) by doing:
@@ -344,7 +383,7 @@ Hopefully an interesting example in your context:
 >
 >        fred           ALL = (DB) NOPASSWD: ALL
 
----- 
+----
 
 If you can't / don't really want to meddle with /etc/sudoers (visudo!) then I suggest using something like
 
@@ -536,8 +575,8 @@ https://www.g-loaded.eu/2006/11/06/netcat-a-couple-of-useful-examples/
 Out of sudden, netcat comes to my mind, and It works!
 
 ```sh
-    nc 192.168.1.199 23 <<<"print_debug" 
-    nc 192.168.1.199 23 <<<"print_debug" > result.txt 
+    nc 192.168.1.199 23 <<<"print_debug"
+    nc 192.168.1.199 23 <<<"print_debug" > result.txt
 ```
 
 A more better solution:
@@ -550,7 +589,7 @@ A more better solution:
     ...
     exit
 ```
-     
+
     2. Secondly, I can reconstruct my netcat command line into this
 
 ```sh
@@ -861,7 +900,7 @@ There have another tools like: lsdiff, filterdiff, diffstat, patch.
     awk 'NR < 11'				 Print first 10 lines of file (emulates behavior of "head")
 
     awk '!a[$0]++'				 Remove duplicate, consecutive lines (emulates "uniq")
-    awk 'a !~ $0; {a=$0}'			 
+    awk 'a !~ $0; {a=$0}'
 
     awk -F ":" '{ print $1 | "sort" }' /etc/passwd		 Print and sort the login names of all users
     awk '{gsub(/scarlet|ruby|puce/, "red"); print}'		 Change "scarlet" or "ruby" or "puce" to "red"
@@ -922,7 +961,7 @@ like excel’s vlookup
     echo will remove newline, default have -n option which donnot show the newline.
     Also we can use paste -s to remove a file’s newline
     paste -sd+ - | bc
-    http://www.theunixschool.com/2012/07/10-examples-of-paste-command-usage-in.html 
+    http://www.theunixschool.com/2012/07/10-examples-of-paste-command-usage-in.html
 ```
 
 ## paste
@@ -1188,7 +1227,7 @@ $ sudo apt-get install curl
     $ ssh-keygen -R servername      # Remove the host key for ‘servername’ from your known_hosts file
     $ ssh-copy-id ‘user@remotehost’    # Automatically installs your public key to the remote host (this actually is included in the openssh package)
 
-    $ xargs -n1 -0 < /proc/$(pidof firefox| cut -d’ ‘ -f1)/environ       # Print the environment of a running process (ie. firefox) 
+    $ xargs -n1 -0 < /proc/$(pidof firefox| cut -d’ ‘ -f1)/environ       # Print the environment of a running process (ie. firefox)
     $ last |awk ‘BEGIN {f=0;u=”YOURUSER”;} {if ($1==u && f==0){f=1; print $0;}else if(f==1 && $1!=u) {print $0;exit;}}’       # Display prev. user b4 u
     $ find . -type f | egrep -o “[^\.]+$” | tr A-Z a-z | sort | uniq -c  # Show a count of all the file extensions in use below current directory.
     $ awk ‘{a[$1] += $10} END {for (h in a) print h ” ” a[h]}’ access_log | sort -k 2 -nr | head -10          # Display top bandwidth hogs on website.
