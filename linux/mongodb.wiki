@@ -1,0 +1,7 @@
+# Install
+
+[Install mongodb Server](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
+[MongoDB Shell Enhancements](https://github.com/TylerBrock/mongo-hacker)
+[A dedicated repository that collects collections to practice/use](https://github.com/ozlerhakan/mongodb-json-files)
+
+
