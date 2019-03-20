@@ -141,7 +141,8 @@ Short answer: Type `exit`
 
 If that doesn't work, however...
 
-Most SSH implementations implement an escape character for interactive sessions, similar to telnet's `Ctrl-]` combination. The default SSH escape character is `~`, entered at the beginning of a line.
+Most SSH implementations implement an escape character for interactive sessions, similar to telnet's `Ctrl-]` combination.
+The default SSH escape character is `~.`, entered at the beginning of a line.
 
 If you want to terminate an interactive OpenSSH session **which is stuck and cannot be exited by entering `exit`
 or <kbd>Ctrl</kbd><kbd>D</kbd> into a shell on the remote side**,

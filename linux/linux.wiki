@@ -50,5 +50,25 @@ It's great!  Evolution is the only mail reader I know that lets you do
 so much with vfolders.  Even thunderbird's search folders can't do as 
 well as this! 
 
+# To reset your lost or fogotten password:
+
+1. Reboot your computer / Turn your computer on.
+2. Hold down the Shift key at the start of the boot process to enable the GNU GRUB2 boot menu (if it does not show)
+3. Select the entry for your Linux installation, Press e to edit.
+4. Use the Arrow keys to navigate to a line that looks similar to this:
+
+    linux /boot/vmlinuz-[kernel version]-generic root=UUID=[letters and numbers]\[letters and numbers] ro quiet splash vt.handoff=7
+ 
+Change ro quiet splash vt.handoff=7 to rw init=/bin/bash so it now reads:
+
+    linux /boot/vmlinuz-[kernel version]-generic root=UUID=[letters and numbers]\[letters and numbers] rw init=/bin/bash
+ 
+5. Press F10 to boot your system.
+   Your system will boot up to a passwordless root shell.
+6. Type in `passwd <yourusername>`
+    (if you have also forgotten your username, type cat /etc/passwd first to get a list of all users, yours should be at the end)
+    Set your new password.
+7. Restart your system.
+
 # chrome browser write disk and too slow
 

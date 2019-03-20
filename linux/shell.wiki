@@ -104,7 +104,7 @@ The print.sh file now contains:
 
 # Shell Script
 
-## '()' vs '{}': {cmd1;}
+## '()' vs '{}': prefer {cmd1;}
 
 ```sh
 	{ echo abc; cat 1.txt; } > 2.txt
