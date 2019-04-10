@@ -258,8 +258,8 @@ migadmin/node_modules/grunt-jscs/*
 
 
     ==push,pull==
-    On the client machine you can push your repo to the server. 
-    $ git remote add origin ssh://user@server:/GitRepos/myproject.git 
+    On the client machine you can push your repo to the server.
+    $ git remote add origin ssh://user@server:/GitRepos/myproject.git
     $ git push origin master
 ```
 
@@ -286,7 +286,7 @@ migadmin/node_modules/grunt-jscs/*
     git apply --check fix_feature1.patch	# check the patch is OK or not
     git am --signoff file.patch			# commit the patch with original author information
     <OR>
-    git apply fix_feature1.patch		# apply the changes, not commit them. 
+    git apply fix_feature1.patch		# apply the changes, not commit them.
 
     ==troubleshoot==
     git rebase -i HEAD~5			# will open an editor: select or delete commits that you want
@@ -461,7 +461,7 @@ migadmin/node_modules/grunt-jscs/*
 ### Clone remote repository
 
     # get the last serveral revisions
-    git svn clone -r65000:HEAD <URL> my-dev 
+    git svn clone -r65000:HEAD <URL> my-dev
 
     <OR>
     # -s svn repos have normal layout, such as trunk, branches, tags
@@ -638,7 +638,7 @@ $ cat .gitignore
     $ git pull --all
 
 
-    fetch remote server’s git branch: 
+    fetch remote server’s git branch:
     git branch -l -r    #list remote branch, choose what you want
     git branch test origin/test
     git checkout test
@@ -898,7 +898,8 @@ then you can use `git reset` to rewrite the history so that it looks as though y
 ## Log & diff
 
     git format-patch -1 <sha>
-    git diff bbc2845 -- . > patch.diff          # Difference between a git commit and the working directory
+    git diff bbc2845 -- > patch.diff          # Difference between a git commit <SHA1> and the unstaged working directory
+
     git diff 66f93d7..f1ba363
     git diff --name-only SHA1 SHA2
     git diff --name-only HEAD~10 HEAD~5
@@ -926,7 +927,7 @@ then you can use `git reset` to rewrite the history so that it looks as though y
 
 
     $ diff -u -I 'revision' 5tr_40c/patch.diff 5tr/patch.diff | vim -		# compare two diff-files
-      -u unified context, 
+      -u unified context,
       -I RE, ignore changes whose lines all match RE
       -p show which c function each change is in
       -w ignore all white space, -B ignore changes whose lines are all blank
@@ -1014,7 +1015,7 @@ then you can use `git reset` to rewrite the history so that it looks as though y
     $ svn blame <file>[@XXX] | vim -        <<< find that modify lines, and the first field is the revision XXXX
 
 
-    $ svn log -rXXXX                        <<< r101766 | hyu | 2013-08-29 12:12:24 -0700 (Thu, 29 Aug 2013) | 9 lines, 
+    $ svn log -rXXXX                        <<< r101766 | hyu | 2013-08-29 12:12:24 -0700 (Thu, 29 Aug 2013) | 9 lines,
     hyu-5436-fix Explicit Proxy add/remove HTTP headers <<< the 5436 is eco-number
 
 
@@ -1029,7 +1030,7 @@ then you can use `git reset` to rewrite the history so that it looks as though y
     $ git log -G<string> -- file         <<< same thing with regular expressions!
     $ git blame --reverse -- file        <<< Walk history forward instead of backward.
     $ git blame -L10,+1 fe25b6d^ -- src/options.cpp        <<< blame according line, and also start from a revision (instead of the default of HEAD); fe25b6d^is the parent of fe25b6d.
-    todo list: 
+    todo list:
     two kind-of dir:  summit-dir, working-dir, please keep them update-sync as svn-update==git.master.HEAD
     working on your working-dir, add @todo @fixme @note @code, @test up to you, for example, you can add your code comment like this:
     //@note wad_vd: vdom config data
@@ -1044,7 +1045,7 @@ then you can use `git reset` to rewrite the history so that it looks as though y
 ## apply patch failed
 
 
-    $ git apply -v --check fix_empty_poster.patch 
+    $ git apply -v --check fix_empty_poster.patch
             error: patch failed: mm/vmalloc.c:469
             error: mm/vmalloc.c: patch does not apply
             Patch failed at file.patch.
@@ -1182,7 +1183,7 @@ It is the mutt to your Outlook, the Vim to your Emacs, the w3m to your Firefox.
 
     $ svn info       <<< show configuration-url and current version
     $ svn up[date]        <<< Updates working copy from repository.
-    $ svn st[atus] | grep  -v ‘^?’ 
+    $ svn st[atus] | grep  -v ‘^?’
     $ svn add [path]     <<< Adds new files/directories to SVN.
     $ svn revert [file or path]
     $ svn resolve --accept working <FILENAME>
@@ -1195,9 +1196,9 @@ It is the mutt to your Outlook, the Vim to your Emacs, the w3m to your Firefox.
     $ svn log -r {2011-02-02}:{2011-02-03}
     $ svn log -v --l 4
       r58687 | mr_x | 2012-04-02 15:31:31 +0200 (Mon, 02 Apr 2012) | 1 line Changed
-      paths: 
-      A /trunk/java/App/src/database/support    
-      A /trunk/java/App/src/database/support/MIGRATE    
+      paths:
+      A /trunk/java/App/src/database/support
+      A /trunk/java/App/src/database/support/MIGRATE
       A /trunk/java/App/src/database/support/MIGRATE/remove_device.sql
 
 
