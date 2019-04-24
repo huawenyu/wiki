@@ -21,7 +21,7 @@ title:  "Linux iptables"
 If you load the ipchains module, you can't use iptables anymore.
 You can even load the ipfwadm module if you want ipfwadm support.
 So it's `iptables`, or `ipchains`, or `ipfwadm`, but no combination is possible.
-     
+
 
 ```
                      +-----------------------------------------------+
@@ -50,6 +50,7 @@ So it's `iptables`, or `ipchains`, or `ipfwadm`, but no combination is possible.
 
 ## Kernel Packet Traveling Diagram
 
+https://unix.stackexchange.com/questions/104609/no-internet-even-with-iptables-accept-all
 
 ```
                                 Network
@@ -76,12 +77,12 @@ So it's `iptables`, or `ipchains`, or `ipfwadm`, but no combination is possible.
                            |    INGRESS    |
                            +-------+-------+
                                    |
-             packet is for +-------+-------+ packet is for
-              this machine |     INPUT     | another address
+             packet is for   +-----+-----+   packet is for
+              this machine  /    INPUT    \  another address
             +--------------+    ROUTING    +--------------+
-            |              |    + PDBB     |              |
-            |              +---------------+              |
-    +-------+-------+                                     |
+            |               \   + PDBB    /               |
+            |                +-----------+                |
+    +-------+-------+        Route base-on dst-addr       |
     |   IPTABLES    |                                     |
     |     INPUT     |                                     |
     | +-----+-----+ |                                     |
@@ -96,10 +97,10 @@ So it's `iptables`, or `ipchains`, or `ipfwadm`, but no combination is possible.
     |    Process    |               |    IPCHAINS   |           |    IPTABLES   |
     +-------+-------+               |    FORWARD    |           |    FORWARD    |
             |                       +-------+-------+           | +-----+-----+ |
-    +-------+-------+                       |                   | |  mangle   | | <- MARK WRITE
-    |    OUTPUT     |                       |                   | +-----+-----+ |
-    |    ROUTING    |                       |                   | |  filter   | |
-    +-------+-------+                       |                   | +-----+-----+ |
+      +-----+-----+                         |                   | |  mangle   | | <- MARK WRITE
+     /   OUTPUT    \                        |                   | +-----+-----+ |
+     \   ROUTING   /                        |                   | |  filter   | |
+      +-----+-----+                         |                   | +-----+-----+ |
             |                               |                   +-------+-------+
     +-------+-------+                       |                           |
     |    IPTABLES   |                       +---------------------------+
@@ -286,7 +287,7 @@ iptables contains five tables:
     firewall take place.
  3. `nat` is used for network address translation (e.g. port forwarding).
  4. `mangle` is used for specialized packet alterations.
- 5. `security` is used for Mandatory Access Control networking rules (e.g. SELinux -- see 
+ 5. `security` is used for Mandatory Access Control networking rules (e.g. SELinux -- see
     this article for more details).
 
 In most common use cases you will only use two of these: filter and nat. The other tables
@@ -458,7 +459,7 @@ https://backreference.org/2010/06/11/iptables-debugging/
 # Configuration and usage
 
 iptables is a systemd service and is started accordingly. However, the service won't start
-unless it finds an /etc/iptables/iptables.rules file, which is not provided by the Arch 
+unless it finds an /etc/iptables/iptables.rules file, which is not provided by the Arch
 iptables package. So to start the service for the first time:
 
     # touch /etc/iptables/iptables.rules
@@ -720,6 +721,128 @@ simply change the file value of destination d_iptables here (still in syslog-ng.
 
 ulogd is a specialized userspace packet logging daemon for netfilter that can replace the
 default LOG target. The package ulogd is available in the [community] repository.
+
+# Read iptable rules
+
+## Skipping rules in iptables
+
+### Using `RETURN`
+
+A custom chain can be used to organize things more easily.
+There's a an other "terminal" target more useful once in a custom chain:
+  - `RETURN` to immediately come back and execute the rule after the calling rule.
+  - `RETURN` in the base chain just applies the default policy, so is not so much used.
+
+The asked example becomes:
+
+```iptable
+    iptables -N whitelist-check
+    iptables -A whitelist-check -m set --match-set whitelist src -j RETURN
+    iptables -A whitelist-check -p tcp --dport 22 -j DROP
+    iptables -A INPUT -j whitelist-check
+    iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+```
+
+### Using `inverting logic`
+
+Sometimes inverting logic and grouping can work too. For this simple case an equivalent method would have simply been:
+
+    iptables -A INPUT -p tcp -m set ! --match-set whitelist src --dport 22 -j DROP
+    iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+
+**For the updated scenario**: drop everything which is not whitelisted nor from DE (nor ...). For additional exceptions, just add more rules ending with `-j RETURN` before the `-j DROP`
+
+**Update 2**: changed the logic with `DE` since OP changed it too... if, as per OP's change, traffic is dropped for Germany, here, traffic continues for non-Germany.
+
+```iptable
+    iptables -N filterchain
+    iptables -A filterchain -m set --match-set whitelist src -j RETURN
+    iptables -A filterchain -m geoip ! --src-cc DE -j RETURN
+    ...
+    iptables -A filterchain -j DROP
+
+    iptables -A INPUT -j filterchain
+    ... other rules ...
+```
+
+## A near perfect iptables firewall configuration
+
+https://www.lammertbies.nl/comm/info/iptables.html
+
+```
+    #
+    # Example fast and scalable firewall configuration with iptables
+    # Please only implement if you fully understand the functionality
+    # because is very easy to lockout yourself from your computer if
+    # the script isn't adapted to your specific situation.
+    #
+
+    *filter
+    :INPUT ACCEPT [0:0]     <=== set buildin chain 'INPUT' default jump target/verdict
+    :FORWARD ACCEPT [0:0]
+    :OUTPUT ACCEPT [0:0]
+    :Always - [0:0]         <=== create user chain 'Always'
+    :Allow - [0:0]
+    :Bogus - [0:0]
+    :Enemies - [0:0]
+    :Friends - [0:0]
+
+    ### We can take the chain as call function
+    # Like call function, enter chain 'Bogus'
+    -A INPUT -j Bogus       <=== Traffic criter in chain 'INPUT', jump to user-chain 'Bogus'
+    # Like call function, enter chain 'Always'
+    -A INPUT -j Always      <=== After traffic RETURN from chain 'Bogus', then enter user-chain 'Always'
+    -A INPUT -j Enemies
+    -A INPUT -j Allow
+
+    -A FORWARD -j Bogus
+    -A FORWARD -j Always
+    -A FORWARD -j Enemies
+    -A FORWARD -j Allow
+
+    # User define chain 'Bogus':
+        -A Bogus -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP      <=== The whole criter ended by 'DROP'
+        -A Bogus -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
+        -A Bogus -s 169.254.0.0/16 -j DROP
+        -A Bogus -s 172.16.0.0/12 -j DROP
+        -A Bogus -s 192.0.2.0/24 -j DROP
+        -A Bogus -s 192.168.0.0/16 -j DROP
+        -A Bogus -s 10.0.0.0/8 -j DROP
+        -A Bogus -s 127.0.0.0/8 -i ! lo -j DROP
+        ### traffic not 'DROP' return from user-chain 'Bogus', backto caller
+
+    # User define chain 'Always':
+        -A Always -p udp --dport 123 -j ACCEPT
+        -A Always -m state --state ESTABLISHED,RELATED -j ACCEPT        <=== The whole criter ended by 'ACCEPT'
+        -A Always -i lo -j ACCEPT
+
+    # User define chain 'Friends':
+        -A Friends -s 123.123.123.123 -j ACCEPT
+        -A Friends -s 111.111.111.0/24 -j ACCEPT
+        -A Friends -j DROP
+
+    # User define chain 'Enemies':
+        -A Enemies  -m recent --name psc --update --seconds 60 -j DROP
+        -A Enemies -i ! lo -m tcp -p tcp --dport 1433  -m recent --name psc --set -j DROP
+        -A Enemies -i ! lo -m tcp -p tcp --dport 3306  -m recent --name psc --set -j DROP
+        -A Enemies -i ! lo -m tcp -p tcp --dport 8086  -m recent --name psc --set -j DROP
+        -A Enemies -i ! lo -m tcp -p tcp --dport 10000 -m recent --name psc --set -j DROP
+        -A Enemies -s 99.99.99.99 -j DROP
+
+    # User define chain 'Allow':
+        -A Allow -p icmp --icmp-type echo-request -j Friends
+        -A Allow -p icmp --icmp-type any -m limit --limit 1/second -j ACCEPT
+        -A Allow -p icmp --icmp-type any -j DROP
+        -A Allow -p tcp -m state --state NEW -m tcp --dport 22 -j Friends
+        -A Allow -p tcp -m state --state NEW -m tcp --dport 25 -j ACCEPT
+        -A Allow -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+        -A Allow -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
+        -A Allow -j DROP
+
+    COMMIT
+```
+
 
   [1]: https://www.netfilter.org/documentation/HOWTO/netfilter-hacking-HOWTO.txt
   [2]: http://www.docum.org/docum.org/kptd/
