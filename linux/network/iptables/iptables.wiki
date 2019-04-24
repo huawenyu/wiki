@@ -18,6 +18,11 @@ title:  "Linux iptables"
 
 ## iptables: tables
 
+If you load the ipchains module, you can't use iptables anymore.
+You can even load the ipfwadm module if you want ipfwadm support.
+So it's `iptables`, or `ipchains`, or `ipfwadm`, but no combination is possible.
+     
+
 ```
                      +-----------------------------------------------+
                      |                 上层协议栈                    |
@@ -140,13 +145,17 @@ title:  "Linux iptables"
 
 ### My remarks on the diagram
 
-  - Output routing : the local process selects a source address and a route. This route is attached to the packet and used later.
+  - Output routing : the local process selects a source address and a route.
+     This route is attached to the packet and used later.
   - Postrouting : there is also rerouting possible if netfilter changes some parts of the packets like address, tos, ... .
-  - RPDB : routing policy database, controlled by ip. That's also the place where the kernel does source validation and nexthop decision.
-  - IMQ : Packets put in the imq device travel also thru the "EGRESS" part of the diagram so you can use htb/cbq to control the packets in the imq device.
-  - ipchains : Yes, there is some ipchains code in kernel 2.4. If you load the ipchains module, you can't use iptables anymore. You can even load the ipfwadm module if you want ipfwadm support. So it's iptables, or ipchains, or ipfwadm, but no combination is possible.
+  - RPDB : routing policy database, controlled by ip.
+     That's also the place where the kernel does source validation and nexthop decision.
+  - IMQ : Packets put in the imq device travel also thru the "EGRESS" part of the diagram
+     so you can use htb/cbq to control the packets in the imq device.
+  - ipchains : Yes, there is some ipchains code in kernel 2.4.
   - mangle : since kernel 2.4.18, you have a mangle table in all 5 netfilter hooks.
-  - IMQ in input comes before nat so IMQ does not know the real ip address. Ingress comes after nat, so ingress knows the real ip address.
+  - IMQ in input comes before nat so IMQ does not know the real ip address.
+     Ingress comes after nat, so ingress knows the real ip address.
 
 ### Leonardo old notes
 
@@ -154,12 +163,19 @@ title:  "Linux iptables"
   - ip rule (routing policy database RPDB) is input routing, more correctly, part of the input routing.
   - The output routing is performed from "higher layer".
   - nexthop and output device are determined both from the input and the output routing.
-  - The forwarding process is called at input routing by functions from specific places in the code. It executes after input routing and does not perform nexthop/outdev selection. It's the process of receiving and sending the same packet, but in the context of all these hooks the code that sends ICMP redirects (demanded from input routing), decrements the IP TTL, performs dumb NAT and calls the filter chain. This code is used only for forwarded packets.
+  - The forwarding process is called at input routing by functions from specific places in the code.
+      It executes after input routing and does not perform nexthop/outdev selection.
+      It's the process of receiving and sending the same packet,
+        but in the context of all these hooks the code that sends ICMP redirects (demanded from input routing),
+        decrements the IP TTL, performs dumb NAT and calls the filter chain.
+      This code is used only for forwarded packets.
   - Sometimes the word "Forwarding" with "big F", is used for referencing both, the routing and forwarding process.
 
 # Basic concepts
 
 ## Clearing the Running Config
+
+https://netfilter.org/documentation/HOWTO/NAT-HOWTO-5.html
 
 If you want to clear the ipset and iptables config (sets, rules, entries)
 and reset to a fresh open firewall state (useful at the top of a firewall script),
@@ -174,6 +190,29 @@ run the following commands:
     iptables -t mangle -F
     ipset -F
     ipset -X
+
+iptables takes a number of standard options as listed below.
+All the double-dash options can be abbreviated, as long as iptables can still tell them apart from the other possible options.
+If your kernel has iptables support as a module, you'll need to load the ip_tables.o module first: `insmod ip_tables'.
+
+The most important option here is the table selection option, `-t'.
+For all NAT operations, you will want to use `-t nat' for the NAT table.
+The second most important option to use is `-A' to append a new rule at the end of the chain (e.g. `-A POSTROUTING'),
+    or `-I' to insert one at the beginning (e.g. `-I PREROUTING').
+
+You can specify the source (`-s' or `--source') and destination (`-d' or `--destination') of the packets you want to NAT.
+These options can be followed by a single IP address (e.g. 192.168.1.1), a name (e.g. www.gnumonks.org), or a network address (e.g. 192.168.1.0/24 or 192.168.1.0/255.255.255.0).
+
+You can specify the incoming (`-i' or `--in-interface') or outgoing (`-o' or `--out-interface') interface to match,
+    but which you can specify depends on which chain you are putting the rule into: at PREROUTING you can only select incoming interface,
+    and at POSTROUTING you can only select outgoing interface.
+    If you use the wrong one, iptables will give an error.
+
+## Simple Selection using iptables
+
+- The iptables contains five tables: `raw`, `filter`, `nat`, `mangle`, and `security`;
+- And the tables may consist of some of chains: `INPUT`, `PREROUTING`, `FORWARD`, `POSTROUTING`, and `OUTPUT`;
+- And the chains contain any rules added by customer or us.
 
 iptables is used to inspect, modify, forward, redirect, and/or drop IPv4 packets. The code
 for filtering IPv4 packets is already built into the kernel and is organized into a
@@ -200,32 +239,11 @@ In the vast majority of use cases you won't need to use the raw, mangle, or secu
 tables at all. Consequently, the following chart depicts a simplified network packet flow
 through iptables:
 
-## Simple Selection using iptables
-
-https://netfilter.org/documentation/HOWTO/NAT-HOWTO-5.html
-
-iptables takes a number of standard options as listed below.
-All the double-dash options can be abbreviated, as long as iptables can still tell them apart from the other possible options.
-If your kernel has iptables support as a module, you'll need to load the ip_tables.o module first: `insmod ip_tables'.
-
-The most important option here is the table selection option, `-t'.
-For all NAT operations, you will want to use `-t nat' for the NAT table.
-The second most important option to use is `-A' to append a new rule at the end of the chain (e.g. `-A POSTROUTING'),
-    or `-I' to insert one at the beginning (e.g. `-I PREROUTING').
-
-You can specify the source (`-s' or `--source') and destination (`-d' or `--destination') of the packets you want to NAT.
-These options can be followed by a single IP address (e.g. 192.168.1.1), a name (e.g. www.gnumonks.org), or a network address (e.g. 192.168.1.0/24 or 192.168.1.0/255.255.255.0).
-
-You can specify the incoming (`-i' or `--in-interface') or outgoing (`-o' or `--out-interface') interface to match,
-    but which you can specify depends on which chain you are putting the rule into: at PREROUTING you can only select incoming interface,
-    and at POSTROUTING you can only select outgoing interface.
-    If you use the wrong one, iptables will give an error.
-
 
 
 ```
                                    XXXXXXXXXXXXXXXXXX
-                                 XXX     Network    XXX
+                                 <<X     Network    X>>
                                    XXXXXXXXXXXXXXXXXX
                                            +
                                            |
@@ -256,7 +274,7 @@ You can specify the incoming (`-i' or `--in-interface') or outgoing (`-o' or `--
     +--------------+                      |
                                           v
                                    XXXXXXXXXXXXXXXXXX
-                                 XXX    Network     XXX
+                                 <<X    Network     X>>
                                    XXXXXXXXXXXXXXXXXX
 ```
 
@@ -264,13 +282,13 @@ You can specify the incoming (`-i' or `--in-interface') or outgoing (`-o' or `--
 
 iptables contains five tables:
 
- 1. raw is used only for configuring packets so that they are exempt from connection
+ 1. `raw` is used only for configuring packets so that they are exempt from connection
     tracking.
- 2. filter is the default table, and is where all the actions typically associated with a
+ 2. `filter` is the default table, and is where all the actions typically associated with a
     firewall take place.
- 3. nat is used for network address translation (e.g. port forwarding).
- 4. mangle is used for specialized packet alterations.
- 5. security is used for Mandatory Access Control networking rules (e.g. SELinux -- see 
+ 3. `nat` is used for network address translation (e.g. port forwarding).
+ 4. `mangle` is used for specialized packet alterations.
+ 5. `security` is used for Mandatory Access Control networking rules (e.g. SELinux -- see 
     this article for more details).
 
 In most common use cases you will only use two of these: filter and nat. The other tables
@@ -279,10 +297,10 @@ are in any case beyond the scope of these introductory remarks.
 
 ## Chains
 
-Tables consist of chains, which are lists of rules which are followed in order. The
-default table, filter, contains three built-in chains: INPUT, OUTPUT and FORWARD which are
-activated at different points of the packet filtering process, as illustrated in the flow
-chart. The nat table includes PREROUTING, POSTROUTING, and OUTPUT chains.
+Tables consist of chains, which are lists of rules which are followed in order.
+ - The default table `filter` contains three built-in chains: INPUT, OUTPUT and FORWARD
+     which are activated at different points of the packet filtering process, as illustrated in the flow chart.
+ - The `nat` table includes chains: PREROUTING, POSTROUTING, and OUTPUT chains.
 
 See man 8 iptables for a description of built-in chains in other tables.
 
@@ -317,20 +335,23 @@ man 8 iptables-extensions for details.
 
     - ACCEPT: This causes iptables to accept the packet.
     - DROP: iptables drops the packet. To anyone trying to connect to your system, it would appear like the system didn’t even exist.
-    - REJECT: iptables “rejects” the packet. It sends a “connection reset” packet in case of TCP, or a “destination host unreachable” packet in case of UDP or ICMP.
+    - REJECT: iptables `rejects` the packet.
+       + It sends a `connection reset` packet in case of TCP,
+       + or a `destination host unreachable` packet in case of UDP or ICMP.
 
 ## Traversing Chains
 
 A network packet received on any interface traverses the traffic control chains of tables
-in the order shown in the flow chart. The first routing decision involves deciding if the
-final destination of the packet is the local machine (in which case the packet traverses
-through the INPUT chains) or elsewhere (in which case the packet traverses through the
-FORWARD chains). Subsequent routing decisions involve deciding what interface to assign to
-an outgoing packet. At each chain in the path, every rule in that chain is evaluated in
-order and whenever a rule matches, the corresponding target/jump action is executed. The 3
-most commonly used targets are ACCEPT, DROP, and jump to a user-defined chain. While
-built-in chains can have default policies, user-defined chains can not. If every rule in a
-chain that you jumped fails to provide a complete match, the packet is dropped back into
+in the order shown in the flow chart.
+ - The first routing decision involves deciding
+   + if the final destination of the packet is the local machine (in which case the packet traverses through the INPUT chains)
+   + or elsewhere (in which case the packet traverses through the FORWARD chains).
+ - Subsequent routing decisions involve deciding what interface to assign to an outgoing packet.
+ - At each chain in the path, every rule in that chain is evaluated in order and whenever a rule matches, the corresponding target/jump action is executed.
+
+The 3 most commonly used targets are ACCEPT, DROP, and jump to a user-defined chain.
+While built-in chains can have default policies, user-defined chains can not.
+If every rule in a chain that you jumped fails to provide a complete match, the packet is dropped back into
 the calling chain as illustrated here. If at any time a complete match is achieved for a
 rule with a DROP target, the packet is dropped and no further processing is done. If a
 packet is ACCEPTed within a chain, it will be ACCEPTed in all superset chains also and it
@@ -339,16 +360,20 @@ packet will continue to traverse all other chains in other tables in the normal 
 
 ## Modules
 
-There are many modules which can be used to extend iptables such as connlimit, conntrack,
-limit and recent. These modules add extra functionality to allow complex filtering rules.
+There are many modules which can be used to extend iptables such as `connlimit`, `conntrack`,
+`limit` and `recent`. These modules add extra functionality to allow complex filtering rules.
 
 # NAT
 
 ## Controlling What To NAT
 
-You need to create NAT rules which tell the kernel what connections to change, and how to change them. To do this, we use the very versatile iptables tool, and tell it to alter the NAT table by specifying the `-t nat' option.
-
-The table of NAT rules contains three lists called `chains': each rule is examined in order until one matches. The two chains are called PREROUTING (for Destination NAT, as packets first come in), and POSTROUTING (for Source NAT, as packets leave). The third (OUTPUT) will be ignored here.
+You need to create NAT rules which tell the kernel what connections to change, and how to change them.
+To do this, we use the very versatile iptables tool, and tell it to alter the NAT table by specifying the `-t nat` option.
+The table of `NAT` contains three `chains`:
+ - each rule is examined in order until one matches.
+ - The two chains are called PREROUTING (for Destination NAT, as packets first come in),
+     and POSTROUTING (for Source NAT, as packets leave).
+ - The third (OUTPUT) will be ignored here.
 
 The following diagram would illustrate it quite well if I had any artistic talent:
 
@@ -359,13 +384,11 @@ The following diagram would illustrate it quite well if I had any artistic talen
                      |                            ^
                      |                            |
                      |                            |
-                     |                            |
-                     |                            |
-                     |                            |
-                     |                            |
-                     --------> Local Process ------
+                     +-----> [Local Process] -----+
 
-At each of the points above, when a packet passes we look up what connection it is associated with. If it's a new connection, we look up the corresponding chain in the NAT table to see what to do with it. The answer it gives will apply to all future packets on that connection.
+At each of the points above, when a packet passes we look up what connection it is associated with.
+If it's a new connection, we look up the corresponding chain in the NAT table to see what to do with it.
+The answer it gives will apply to all future packets on that connection.
 
 ## Why does SNAT happen in POSTROUTING chain and DNAT in PREROUTING chain?
 
