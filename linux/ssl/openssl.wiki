@@ -57,10 +57,74 @@ Each of these protocols has a very specific purpose, and are used at different s
 - Alert Protocol: Used for communicating exceptions and indicate potential problems that may compromise security.
 - Application Data Protocol: It takes arbitrary data (application-layer data generally), and feeds it through the secure channel.
 
+# apache conf
+
+## ciphers suggests
+
+https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+
+The following configuration is (or used to be) the best configuration according to SSLLabs:
+
+```
+    SSLProtocol +TLSv1.2 +TLSv1.1 +TLSv1
+    SSLCompression off
+    SSLHonorCipherOrder on
+    SSLCipherSuite "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA"
+```
+
+Add above to the config file:
+
+`/etc/apache2/conf-available/default-ssl.conf`
+
 # openssl tools
 
-## sample-1
+http://www.taddong.com/en/lab.html#TLSSLED
 
+## list the SSL/TLS cipher suites of a website offers
+https://superuser.com/questions/109213/how-do-i-list-the-ssl-tls-cipher-suites-a-particular-website-offers
+
+### script/test_ciphers.sh
+
+### Nmap with ssl-enum-ciphers
+
+```
+    ### Using buildin feature
+    nmap --script ssl-cert,ssl-enum-ciphers -p 443 secure.m2osw.com
+
+
+    ### Usging script
+    $ cd wiki/linux/ssl
+
+    ### List ciphers supported by an HTTP server
+    $ nmap --script ssl-enum-ciphers -p 443 www.example.com
+
+    ### List ciphers supported by an IMAP server
+    $ nmap --script ssl-enum-ciphers -p 993 mail.example.com
+
+    Here is a snippet of output from a Dovecot IMAP server:
+
+    993/tcp open  imaps
+    | ssl-enum-ciphers:
+    |   SSLv3:
+    |     ciphers:
+    |       TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA - strong
+    |       TLS_DHE_RSA_WITH_AES_128_CBC_SHA - strong
+    |       TLS_DHE_RSA_WITH_AES_256_CBC_SHA - strong
+    |       TLS_RSA_WITH_IDEA_CBC_SHA - weak
+    ...
+    |   TLSv1.0:
+    |     ciphers:
+    |       TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA - strong
+    |       TLS_DHE_RSA_WITH_AES_128_CBC_SHA - strong
+    |       TLS_DHE_RSA_WITH_AES_256_CBC_SHA - strong
+    |       TLS_RSA_WITH_IDEA_CBC_SHA - weak
+    ...
+    |_  least strength: weak
+
+    Nmap done: 1 IP address (1 host up) scanned in 1.03 seconds
+```
+
+### sslscan www.google.com
 
 ## commands
 
@@ -129,7 +193,11 @@ These commands allow you to generate CSRs, Certificates, Private Keys and do oth
 
 ## s_client
 
-    $ openssl s_client -connect example.com:443 -servername example.com
+    $ openssl s_client -connect test.example.com:443 -servername example.com
+    $ openssl s_client -connect test.example.com:443 -ssl3
+    $ openssl s_client -connect test.example.com:443 -tls1
+    $ openssl s_client -connect test.example.com:443 -tls1_1
+    $ openssl s_client -connect test.example.com:443 -tls1_2
 
 ### Test different protocols
 

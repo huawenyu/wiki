@@ -413,6 +413,12 @@ With packets whose source is the local machine never visit the PREROUTING table,
 
 ## Difference between SNAT and Masquerade
 
+`MASQUERADE` is an iptables target that can be used instead of `SNAT` target (source NAT)
+    when external ip of the inet interface is not known at the moment of writing the rule (when server gets external ip dynamically).
+
+    # iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    # iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source xx.xx.xx.xx
+
 Basically `SNAT` and `MASQUERADE` do the same source NAT thing in the nat table within the POSTROUTING chain.
 
 Differences
@@ -420,6 +426,12 @@ Differences
 - `MASQUERADE` does not require `--to-source` as it was made to work with dynamically assigned IPs
 - `SNAT` works only with static IPs, that's why it has `--to-source`
 - `MASQUERADE` has extra overhead and is slower than `SNAT` because each time `MASQUERADE` target gets hit by a packet, it has to check for the IP address to use.
+
+The SNAT target requires you to give it an IP address to apply to all the outgoing packets.
+The MASQUERADE target lets you give it an interface,
+    and whatever address is on that interface is the address that is applied to all the outgoing packets.
+In addition, with SNAT, the kernel's connection tracking keeps track of all the connections when the interface is taken down and brought back up;
+the same is not true for the MASQUERADE target.
 
 **NOTE**: A typical use case for `MASQUERADE`:
   - AWS EC2 instance in a VPC, it has a private IP within the VPC CIDR (e.g. 10.10.1.0/24) - 10.10.1.100 for example,
@@ -722,7 +734,7 @@ simply change the file value of destination d_iptables here (still in syslog-ng.
 ulogd is a specialized userspace packet logging daemon for netfilter that can replace the
 default LOG target. The package ulogd is available in the [community] repository.
 
-# Read iptable rules
+# Howto write a iptable rules
 
 ## Skipping rules in iptables
 
