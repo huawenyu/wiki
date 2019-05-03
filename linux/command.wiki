@@ -199,6 +199,23 @@ The escape character can be changed using the command line option `-e`. If you s
     $ bash -xv filesize.sh   <<<< Execute Shell script with debug option
 ```
 
+# Command howto:
+
+## check git which dir commit most frequent
+
+    $ git log0 --name-only --oneline > log.list
+    $ cat log.list | grep '^*' -v | cut -d'/' -f1-2 | sort | uniq -c | sort -nr | head -10
+       7123 | tests/data
+       2443 | docs/libcurl
+       1903 | CHANGES
+       1659 | RELEASE-NOTES
+       1590 | tests/libtest
+       1208 | lib/url.c
+       1165 | docs/examples
+        864 | include/curl
+        725 | tests/server
+        692 | lib/ftp.c
+
 # Commands:
 
 ## tool: mutt - email client
@@ -707,16 +724,20 @@ There have another tools like: lsdiff, filterdiff, diffstat, patch.
 
 ## cut
 
-    cut -d: -f 1,3
-      -d, --delimiter
-      -f, --show-field
-      -c, --show-character
+mode:
+ - character-mode
+ - field-mode
+
+option: cut -d: -f 1,3
+  -d, --delimiter
+  -f, --show-field
+  -c, --show-character
 
 ```shell
     $ cut -d: -f 1 names.txt		 show 1st field with a colon delimited
     $ cut -d: -f 1,3 names.txt 		 show 1st and 3rd field from a colon delimited file
     $ cut -c 1-8 names.txt			 show 1~8 characters of every line in a file
-    $ cut -c 5-  log.txt			 remove first 5 characters, show the reserved
+    $ cut -c 5-  log.txt			 remove first 4 characters, show the reserved
     $ free | tr -s ' ' | sed '/^Mem/!d' | cut -d" " -f2    	 Displays the total memory available on the system.
 ```
 
@@ -796,6 +817,12 @@ There have another tools like: lsdiff, filterdiff, diffstat, patch.
 
 ## sort
 
+option:
+  -t    delimiter
+  -k    index key fields
+  -n    take key fields as number, default is string
+  -r    output descending order
+
 ```shell
     sort -t: -u -k 3n
 
@@ -805,21 +832,59 @@ There have another tools like: lsdiff, filterdiff, diffstat, patch.
     $ sort -t: -k 3n /etc/passwd | more	 Sort the passwd file by the 3rd field (numeric userid)
     $ sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n /etc/hosts		Sort /etc/hosts file by ip-address
 
-    ps –ef | sort				Sort the output of process list
+    ps -ef | sort				Sort the output of process list
     ls -al | sort +4n			List the files in the ascending order of the file-size. i.e sorted by 5th filed and displaying smallest files first.
     ls -al | sort +4nr			List the files in the descending order of the file-size. i.e sorted by 5th filed and displaying largest files first.
 ```
+## tr
+
+option
+  -s    squeeze repetition of characters: `tr -s [:space:] ' '`
+  -w    Delete specified characters: `tr -d 'x'`, `tr -d [:digit:]`
+  -c    Complement behavior, like `grep -v`: echo 'unix' | tr -c 'u' 'a'      output=uaaa
+
+Uppercase:
+    $ tr a-z A-Z
+    $ tr '[a-z]' '[A-Z]'
+    $ tr [:lower:] [:upper:]
+
+Tabs to white-space:
+    $ tr [:space:] '\t'
+
+Set replace one-by-one, using '*' to pad:
+    $ tr '{}' '()'
+    $ tr -c '[:alnum:]' '[\n*]'
+
+Remove all non-printable character:
+    $ tr -cd [:print:] < file.txt
+
+Join lines into a single line:
+    $ tr -s '\n' ' ' < file.txt
 
 ## uniq
 
-`uniq` does not detect repeated lines unless they are adjacent. You may want to sort the input first, or use 'sort -u' without 'uniq'.
+`uniq` does not detect repeated lines unless they are adjacent.
+You may want to sort the input first, or use 'sort -u' without 'uniq'.
+
+The weird is have no option to assign delimiter, the field split by space.
+so maybe we can use `tr` to convert the delimiter.
+
+  -c    show repeated count
+  -f    number-of-fields-to-skip, delimiter is ' ',
+  -s    number-of-char-to-skip,
+  -w    number-of-char-to-compare,
+  -i    case-insensitive,
+  -z    force ouput NUL-terminated, like find's -print0
 
 ```shell
+    uniq <file>         Delete repeated lines
+    uniq -c <file>      Display number of repeated for each line
+    uniq -D <file>      Display only duplicated lines
+    uniq -u <file>      Display only non-duplicated lines
     uniq -uf 1
-    uniq -f 1		skip the first column
+    uniq -f 1		skip the first field
     uniq -s 8		skip the first 8 char
     uniq -uf 1
-    uniq -c
 
     # statitics app crash times
     ag --nogroup " application " Mar_16.txt.txt | awk '{print $6}' | sort | uniq -c
