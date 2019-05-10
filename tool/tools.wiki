@@ -41,8 +41,8 @@ tags: admin
 
     $ curl -kv -o ~/tmp/log.1 --limit-rate 8b www.tired.com
     100   184  100   184    0     0      8      0  0:00:23  0:00:22  0:00:01     7
-    
-    
+
+
     ### headers: total,download,upload,speed,time
     % Total    % Received % Xferd  Average Speed          Time             Curr.
                                    Dload  Upload Total    Current  Left    Speed
@@ -95,6 +95,44 @@ tags: admin
 
     2. sudo also using current shell's env: sudo -E
       $ sudo -E minicom -b 115200 | tee ~/tmp/log.minicom
+
+# thunderbird
+
+## Export message filter
+
+    The msgFilterrules.dat is just plain text file. Edit it as you needed—usually just the directory paths for duplicating an account's filter to another account.
+    Remember to close Thunderbird before manually change these msgfilterRules.dat files. Otherwise, Thunderbird will overwrite your changes.
+    To quickly find all your filter setting files on Linux, run
+
+    $ find ~/.thunderbird/ -name msgFilterRules.dat | xargs ls -l {} \+
+
+## Addons FireTray: System Tray with unread message notify
+
+    ### For TB 60.
+    git clone https://github.com/firetray-updates/FireTray
+    cd FireTray/src
+    make build
+    ls ../build-*/*.xpi # <-- your xpi, ready to be installed
+
+    I don't use git, so just visited the page https://github.com/firetray-updates/FireTray
+    Downloaded the zip file, right-click extracted it
+    Used the Terminal command: cd ExtractedDirectory/FireTray/src
+    followed by command: make build
+    then navigate UP one directory to find "build-" directory which contains the file firetray-0.6.1.xpi
+    click and drag it to Addons page in Thunderbird, click ok and restart
+
+## Addons ThreadVis: Visualize the group threaded mail
+
+    But conflict with addons, so please disable them before use: Thunderbird-conversation, Compact-header
+
+## Addons:
+
+- Edit email Subject
+- Lightning
+- NestedQuote Remover
+- XNote++
+- Cardbook
+- AutoResize image
 
 # nomachine
 
