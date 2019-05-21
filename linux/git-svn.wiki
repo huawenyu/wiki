@@ -393,6 +393,55 @@ migadmin/node_modules/grunt-jscs/*
 
     git blame <SHA> -- <file>    <<< use --follow to make blame follow renames
 
+#### Vim Plugin - Fugitive: Gblame reblame options
+
+https://stackoverflow.com/questions/25286726/vim-fugitive-gblame-reblame-options
+
+    ref~ is shorthand for ref~1 and means the commit's first parent.
+    ref~2 means the commit's first parent's first parent.
+    ref~3 means the commit's first parent's first parent's first parent. And so on.
+
+    ref^ is shorthand for ref^1 and means the commit's first parent.
+    But where the two differ is that ref^2 means the commit's second parent (remember, commits can have two parents when they are a merge).
+
+Think of reblame as navigating to a commit and then running blame on your file or `git blame <commit> -- <file>`
+
+* `-` the simplest case. Use the commit in question under your cursor and reblame the file.
+* `~` Is equivalent to running  `git blame <rev>~[count] -- <file>`
+* `P` Is equivalent to running  `git blame <rev>^[count] -- <file>`
+
+For the common case, i.e. no `[count]`, `~` and `P` are the equivalent. (Note that `[count]` defaults to 1)
+
+Quick revision tutorial taken from `git help gitrevisions`:
+
+    Here is an illustration, by Jon Loeliger.
+    Both commit nodes B and C are parents of commit node A (usually as `HEAD`).
+    Parent commits are ordered left-to-right.
+
+    G   H   I   J
+     \ /     \ /
+      D   E   F      <=== `B^3`: F is B's third-parent
+       \  |  / \
+        \ | /   |
+         \|/    |
+          B     C    <=== `A^2`: C is A's second-parent
+           \   /
+            \ /
+             A (`HEAD`)
+
+    A =      = A^0
+    B = A^   = A^1     = A~1
+    C = A^2  = A^2
+    D = A^^  = A^1^1   = A~2
+    E = B^2  = A^^2
+    F = B^3  = A^^3
+    G = A^^^ = A^1^1^1 = A~3
+    H = D^2  = B^^2    = A^^^2  = A~2^2
+    I = F^   = B^3^    = A^^3^
+    J = F^2  = B^3^2   = A^^3^2
+
+
+
 ### Revert & Discard changes
 
     git checkout HEAD [filenames or directories]
