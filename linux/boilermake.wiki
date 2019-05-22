@@ -1,15 +1,3 @@
----
-layout: post
-title:  "gdb"
-date:   2017-02-16 13:31:01 +0800
-categories: linux
-tags: gdb
----
-
-* content
-{:toc}
-
-
 # Quick Start:
 
 https://github.com/dmoulding/boilermake.git
