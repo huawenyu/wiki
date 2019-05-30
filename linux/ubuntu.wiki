@@ -1,4 +1,18 @@
-**Step 1 - Find the version you want**
+# Howto
+
+## Fix install fail or update fail
+
+    $ sudo -i
+    # apt-get clean
+    # cd /var/lib/apt
+    # mv lists lists.old
+    # mkdir -p lists/partial
+    # apt-get clean
+    # apt-get update
+
+This will rename your "list" folder to "list.old" for backup purposes and then rebuild.
+
+## Step 1 - Find the version you want**
 
 **`apt policy` or `apt-cache policy`**  (or `apt-cache madison`)
 
@@ -22,7 +36,7 @@ So now we know (at this time) we have two versions:
 
 The three stars `***` indicates that this is the version *currently installed* as per the "Installed:" line.
 
-**Step 2 - Install another version**
+## Step 2 - Install another version**
 
 This is easy, just use the syntax **[packagename]=[version]** with `apt install`.
 
@@ -43,7 +57,7 @@ e.g.
 
 Note the **warning** that the package will be **DOWNGRADED**
 
-**Bonus step - lock in that version**  (a.k.a. **apt-mark hold**)
+## Bonus step - lock in that version**  (a.k.a. **apt-mark hold**)
 
 If you want to stop `apt upgrade` from upgrading the package again, then you can tell apt to **hold** a package.
 
