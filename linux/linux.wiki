@@ -1,5 +1,13 @@
 # LinuxMint-XFCE
 
+## Mint 19 Xfce typing delay
+
+When I start "Xfce Terminal" there is a few seconds delay after typing a character from appearing.
+Seems like anything related with typing has this delay (eg: Firefox, text editor, etc) but "Xfce Terminal" is the worst.
+
+[Solved]:
+  Start>>"Windows Manager Tweeks">>Tab-Comositor>>unchecked the "Enable display compositing", WORKED! =)
+
 ## Mail-client: evolution
 
 ### Setting: open link in firefox/chrome
