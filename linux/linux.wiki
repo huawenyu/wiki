@@ -131,3 +131,11 @@ The hard limit is the maximum server limit that can be set without tuning the ke
 
 6. Restart your system.
 
+# Install&Port Thunderbird
+
+## copy message filter
+
+Find file `msgFilterRules.dat` and copy to replace the new dat.
+
+## copy addons
+
