@@ -1,0 +1,89 @@
+# Intro
+
+Linuxbrew Homepage: http://linuxbrew.sh/.
+It's feature set includes:
+
+- Allowing installation of packages to a home directory without root access.
+- Supports installing of third-party software (not packaged on the native distributions).
+- Supports installing of up-to-date versions of packages when the one provided in the distro repositories is old.
+- In addition, brew allows you to manage packages on both your Mac and Linux machines.
+
+# Install Linuxbrew in Linux
+
+To install Linuxbrew on your Linux distribution, fist you need to install following dependencies as shown.
+
+    ###--------- On Debian/Ubuntu ---------
+    $ sudo apt-get install build-essential curl file git
+
+    ###--------- On Fedora 22+ ---------
+    $ sudo dnf groupinstall 'Development Tools' && sudo dnf install curl file git
+
+    ###--------- On CentOS/RHEL ---------
+    $ sudo yum groupinstall 'Development Tools' && sudo yum install curl file git
+
+Once the dependencies installed, you can use the following script to install Linuxbrew package
+in /home/linuxbrew/.linuxbrew (or in your home directory at ~/.linuxbrew) as shown.
+
+$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+
+Next, you need to add the directories to your PATH
+
+- /home/linuxbrew/.linuxbrew/bin - (or ~/.linuxbrew/bin)
+- /home/linuxbrew/.linuxbrew/sbin (or ~/.linuxbrew/sbin)
+
+And to your bash shell initialization script ~/.bashrc as shown:
+
+    $ echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/:$PATH"' >>~/.bashrc
+    $ echo 'export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"' >>~/.bashrc
+    $ echo 'export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"' >>~/.bashrc
+
+Then source the ~/.bashrc file for the recent changes to take effect.
+
+    $ source  ~/.bashrc
+
+## How to Uninstall Linuxbrew in Linux
+
+    $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/uninstall)"
+
+# Using Linuxbrew
+
+For example you can install the gcc package (or formula) with the following command.
+Take note of some of the messages in the output, there are some useful environmental variables that you need to set for some formulae to work correctly.
+
+    $ brew help
+    $ brew update         === download the newest version of homebrew from GitHub
+    $ brew cleanup        === clean already install used downloaded
+
+    $ brew install gcc
+
+    ### To list all installed formulae, run.
+    $ brew list
+
+    ### You can uninstall a formula using following command.
+    $ brew uninstall gcc
+
+    ### You can search for packages using the following syntax.
+    $ brew search    				#show all formulae
+    OR
+    $ brew search --desc <keyword>		#show a particular formulae
+
+# troubleshoot
+
+## fix compile error: install curl with TLS1.3 supported
+
+When we want to install curl with TLS1.3,
+
+    $ brew install DomT4/crypto/curl-max
+Found there have compile error for nhttp2 lib
+
+    ### disable nghttp
+    $ brew edit DomT4/crypto/curl-max
+
+Found there have compile error for libldap
+    ### add --disable-ldap to curl's config
+    $ brew edit DomT4/crypto/curl-max
+
+    $ brew link --overwrite --dry-run curl-max
+
+Check by:
+      curl -kvvv https://www.tired.com --tlsv1.3
