@@ -6,6 +6,46 @@
 
 https://home.mpcdf.mpg.de/~jkennedy/2017/09/01/tools-for-testing-https-connections.html
 
+# Install openssl 1.1.1a
+
+According to the [OpenSSL website](https://www.openssl.org/source/):
+
+> The latest stable version is the 1.1.1 series. This is also our Long Term Support (LTS) version, supported until 11th September 2023.
+
+Since this is not in the current Ubuntu repositories, you will need to download, compile, and install the latest OpenSSL version manually.
+
+Below are the instructions to follow:
+
+1. Open a terminal (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>t</kbd>).
+2. Fetch the tarball: `wget https://www.openssl.org/source/openssl-1.1.1a.tar.gz`
+3. Unpack the tarball with `tar -zxf openssl-1.1.1a.tar.gz && cd openssl-1.1.1a`
+4. Issue the command `./config`.
+5. `sudo apt install build-essential && make`
+6. Run `make test` to check for possible errors.
+7. Backup current openssl binary: `sudo mv /usr/bin/openssl ~/tmp`
+8. Issue the command `sudo make install`.
+9. Create symbolic link from newly install binary to the default location: 
+    ```
+    sudo ln -s /usr/local/bin/openssl /usr/bin/openssl
+    ```
+10. Run the command `sudo ldconfig` to update symlinks and rebuild the library cache.
+11. Check version:
+    $ openssl version
+    OpenSSL 1.1.1a  20 Nov 2018
+
+# curl with TLSv1.3
+
+    $ brew install openssl@1.1
+    ### and also openssl 1.0.2l with
+    $ brew install openssl
+
+    ### after install of curl with brew install curl it uses openssl 1.0.2l
+    $ brew install curl
+
+    ### How can one install curl with openssl@1.1 ?
+    ###   Until we decide to use openssl@1.1 for curl, you can:
+    $ brew install DomT4/crypto/curl-max
+
 # TSL protocol
 
 http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session
