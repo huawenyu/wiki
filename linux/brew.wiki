@@ -67,9 +67,24 @@ Take note of some of the messages in the output, there are some useful environme
     OR
     $ brew search --desc <keyword>		#show a particular formulae
 
-## brew tap: add more repositories
+## Interesting Taps & Forks
 
-brew tap adds more repositories to the list of formulae that brew tracks, updates, and installs from. By default, tap assumes that the repositories come from GitHub, but the command isn’t limited to any one location.
+We can find tag reps from here:
+https://github.com/topics/homebrew
+
+Or you can [create your own taps](https://robdalton.me/create-your-own-brew-package/).
+
+For examples, like:
+- goreleaser/goreleaser (4.2k) Deliver Go binaries as fast and easily as possible
+
+A tap is Homebrew-speak for a Git repository containing extra formulae.
+Homebrew has the capability to add (and remove) multiple taps to your local installation
+with the `brew tap` and `brew untap` commands.
+Type `man brew` in your terminal.
+The main repository at <https://github.com/Homebrew/homebrew-core>, often called `homebrew/core`, is always built-in.
+
+brew tap adds more repositories to the list of formulae that brew tracks, updates, and installs from.
+By default, tap assumes that the repositories come from GitHub, but the command isn’t limited to any one location.
 
     $ brew tap
     domt4/crypto
@@ -77,15 +92,83 @@ brew tap adds more repositories to the list of formulae that brew tracks, update
 
     $ brew untap domt4/crypto
 
-### Interesting Taps & Forks
+## How do I install these formulae?
 
-A [tap](Taps.md) is Homebrew-speak for a Git repository containing extra formulae.
-Homebrew has the capability to add (and remove) multiple taps to your local installation with the `brew tap` and `brew untap` commands. Type `man brew` in your terminal. The main repository at <https://github.com/Homebrew/homebrew-core>, often called `homebrew/core`, is always built-in.
+    $ brew tap domt4/crypto
+    $ brew install <formula>
+
+    ### You can also install via URL:
+    $ brew install https://raw.githubusercontent.com/DomT4/homebrew-crypto/master/Formula/<formula>.rb
+
+## Troubleshooting:
+
+1. First, please run `brew update` and `brew doctor`.
+
+2. If you encounter any errors, feel free to file an issue.
+A `brew gist-logs <formula>` is often handy. Thanks!
+
+3. patch yourself
+
+For example, when we install curl +TLS1.3, and found nghttp2 compile error,
+    also there have a patch to fix that error, we can change the formulae like this:
+
+```diff
+    $ brew edit DomT4/crypto/curl-max
+
+    diff --git a/Formula/curl-max.rb b/Formula/curl-max.rb
+    index 1eed9eb..110ad14 100644
+    --- a/Formula/curl-max.rb
+    +++ b/Formula/curl-max.rb
+    @@ -34,6 +34,14 @@ class CurlMax < Formula
+       resource "nghttp2" do
+         url "https://github.com/nghttp2/nghttp2/releases/download/v1.38.0/nghttp2-1.38.0.tar.xz"
+         sha256 "ef75c761858241c6b4372fa6397aa0481a984b84b7b07c4ec7dc2d7b9eee87f8"
+    +
+    +    unless OS.mac?
+    +      patch do
+    +        # Fix: shrpx_api_downstream_connection.cc:57:3: error: array must be initialized with a brace-enclosed initializer
+    +        url "https://gist.githubusercontent.com/iMichka/5dda45fbad3e70f52a6b4e7dfd382969/raw/19797e17926922bdd1ef21a47e162d8be8e2ca65/nghttp2?full_index=1"
+    +        sha256 "0759d448d4b419911c12fa7d5cbf1df2d6d41835c9077bf3accf9eac58f24f12"
+    +      end
+    +    end
+       end
+
+       resource "libssh2" do
+```
+
+## example
 
 Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
+```sh
+    $ brew tap "Homebrew/brew"
+        Same as:
+        $ git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-brew --depth=1
+            Cloning into '/home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-brew'...
+            remote: Enumerating objects: 1877, done.
+            remote: Counting objects: 100% (1877/1877), done.
+            remote: Compressing objects: 100% (1704/1704), done.
+            remote: Total 1877 (delta 188), reused 781 (delta 96), pack-reused 0
+            Receiving objects: 100% (1877/1877), 1.98 MiB | 6.05 MiB/s, done.
+            Resolving deltas: 100% (188/188), done.
+    $ brew tap
+        domt4/crypto     <=== Used to install curl +TLS1.3 by 'brew install DomT4/crypto/curl-max',
+                              and the really url is https://github.com/DomT4/homebrew-crypto, so "homebrew-" is default prefix.
+                              If you found there have some error, you just edit the formulae by `brew edit DomT4/crypto/curl-max`
+        homebrew/brew
+        homebrew/cask
+        homebrew/core
+    $ brew install vim                     # installs from your custom repository
+    $ brew install homebrew/core/vim       # installs from homebrew/core
+```
+
+## What Packages Are Available?
+
+- Type `brew search` for a list all formulae.
+- Or visit [formulae.brew.sh](https://formulae.brew.sh/formula/) to browse packages online.
+- Or use brew search --desc <keyword> to browse packages from the command line.
 
 ### Unsupported interesting taps
-*   [varenc/ffmpeg](https://github.com/varenc/homebrew-ffmpeg): A tap for FFmpeg with additional options, including nonfree additions. 
+*   [varenc/ffmpeg](https://github.com/varenc/homebrew-ffmpeg): A tap for FFmpeg with additional options, including nonfree additions.
 
 *   [denji/nginx](https://github.com/denji/homebrew-nginx): A tap for NGINX modules, intended for its `nginx-full` formula which includes more module options.
 
