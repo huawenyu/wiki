@@ -67,6 +67,17 @@ The major difference between sudo -i and sudo -s is:
     + su - Bob              Start a new shell, and change to another user's environment to check the shell or env setup ok or not.
     + su Bob                You'll be prompted to enter Bob's password and the reuse current shell and also switch to Bob's user account with old env.
 
+### sudo change timeout
+
+    $ sudo visudo
+
+        Defaults env_reset
+
+    ### Change it like this, here as 10 minutes:
+        Defaults env_reset, timestamp_timeout=10
+
+    ### After that, press Ctrl+X and followed by Y to save the changes
+
 ### sudo with vim
 
 :w !sudo tee %
