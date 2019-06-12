@@ -2,6 +2,39 @@
 
 [Howto Setup DNS-server on Ubuntu][1]
 
+# Ubuntu DNS server
+
+## nameserver: 127.0.0.53
+
+Check /etc/resolv.conf reset to be nameserver: 127.0.0.53
+
+If I change that to 8.8.8.8 or 208.67.222.222 then everything works. Until I reboot.
+
+Upon reboot or resume, the nameserver is reset to 127.0.0.53.
+```sh
+    $ cat /etc/resolv.conf
+    $ nslookup www.google.com
+        Server:     10.0.0.1     <--This is the DNS server address.
+        Address:    10.0.0.1#53
+
+        Non-authoritative answer:
+        Name:   www.google.com
+        Address: 216.58.217.36
+
+    $ dig @172.16.100.100  voip.fortinet.com        <-- force using inner nameserver
+```
+
+## set nameserver ourself
+
+    $ sudo apt install resolvconf
+
+Then you can then create or modify files:
+
+    `/etc/resolvconf/resolv.conf.d/head`
+    `/etc/resolvconf/resolv.conf.d/tail`
+
+    $ sudo reboot
+
 # Enforce Safe-Search
 
 https://support.opendns.com/hc/en-us/articles/227986807-How-to-Enforcing-Google-SafeSearch-YouTube-and-Bing<Paste>
