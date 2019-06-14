@@ -453,7 +453,34 @@ You can take this a step further and create a `watch.sh` script that can accept 
       -h, --human-readable
       -c, --total
 
-    df .                    # find out what partition the current directory is on
+    $ df .                    # find out what partition the current directory is on
+
+    $ du -sch --exclude=.git
+        544M    .
+        544M    total
+
+    ### the cumulative disk usage of all non-hidden directories, files etc
+    $ du -sch -- * | tail
+        4.0K    sit
+        1.9M    snmp
+        1.9M    tests
+        544M    total
+
+    ### Only list the dirs
+    $ du -h --max-depth=1 | sort -hr
+        13G     ./.git
+        13G     .
+        20M     ./router
+        19M     ./dev-dir
+
+    ### Or using `./*`
+    $ du -sch ./* | sort -h
+        148K    ./mk
+        352K    ./include
+        1.9M    ./tests
+        13M     ./tools
+        544M    total
+
 
 ## dd
 
