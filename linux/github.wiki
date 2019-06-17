@@ -1,0 +1,37 @@
+# Multiple public keys for one user
+
+You can have as many keys as you desire.  It's good practice to use separate private/public key sets for different realms anyway, like one set for your personal use, one for your work, etc.
+
+First, generate two separate keypairs, one for home and one for work:
+
+    ssh-keygen -t rsa -f ~/.ssh/id_rsa.home
+    ssh-keygen -t rsa -f ~/.ssh/id_rsa.work
+
+Next, add an entry to your `~/.ssh/config` file to pick the key to use based on the server you connect to:
+
+    Host home
+    Hostname home.example.com
+    IdentityFile ~/.ssh/id_rsa.home
+    User <your-home-acct>
+
+    Host work
+    Hostname work.example.com
+    IdentityFile ~/.ssh/id_rsa.work
+    User <your-work-acct>
+
+Next, append the contents of your `id_rsa.work.pub` into `~/.ssh/authorized_keys` on the work machine, and do the same for the home key on your home machine.
+
+Then when you connect to the home server you use one of the keys, and the work server you use another.
+
+Note you probably want to add both keys to your `ssh-agent` so you don't have to type your passphrase all the time.
+
+## github
+
+https://gist.github.com/jexchan/2351996
+
+$ git config user.name "jexchan"
+$ git config user.email "jexchan@gmail.com"
+
+$ git config user.name "activehacker"
+$ git config user.email "jexlab@gmail.com"
+
