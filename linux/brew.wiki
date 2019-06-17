@@ -45,6 +45,15 @@ Then source the ~/.bashrc file for the recent changes to take effect.
 
     $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/uninstall)"
 
+# Formula Cookbook
+
+https://docs.brew.sh/Formula-Cookbook.html
+
+## How to build a new formula
+
+    $ brew create https://example.com/foo-0.1.tar.gz
+
+
 # Using Linuxbrew
 
 For example you can install the gcc package (or formula) with the following command.

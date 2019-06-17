@@ -1,0 +1,66 @@
+# Doc
+
+[Using Expect Scripts to Automate Tasks](http://www.admin-magazine.com/Articles/Automating-with-Expect-Scripts)
+[Expect Command And How To Automate Shell Scripts Like Magic](https://likegeeks.com/expect-command/)
+[Introduction to the Oracle VM Command Line Interface](https://docs.oracle.com/cd/E35328_01/E35336/html/vmcli-script.html)
+
+
+# Build our own `Formula`
+
+We can build from an existed tap.
+For example, we can build our own Formula of nginx debug version.
+
+1. build our own tap
+    - Git clone https://github.com/denji/homebrew-nginx our own tap.
+    - Install the tap into local brew.
+        $ brew tap huawenyu/nginx
+        Usually it path: /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/huawenyu/homebrew-nginx
+
+2. Clone a basic nginx build from homebrew-core into our own tap
+    - brew edit nginx       <--- homebrew-core's nginx
+      Found it's path: /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/nginx.rb
+
+    - brew edit huawenyu/nginx/nginx-full  <--- our own nginx version, but it's too full, we need basic version here.
+      Found it's path: /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/huawenyu/homebrew-nginx/Formula/nginx-full.rb
+
+    - copy to our own dir and push back to github:
+      $ cp /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/{homebrew/homebrew-core,huawenyu/homebrew-nginx}/Formula/nginx.rb
+      $ cd /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/huawenyu/homebrew-nginx
+      $ git add Formula/nginx.rb
+
+3. Check & Verify:
+    $ brew search nginx
+        huawenyu/nginx/nginx    <-- new added formula
+    $ brew install huawenyu/nginx/nginx
+        Docroot is: `/home/linuxbrew/.linuxbrew/var/www`
+
+        The default port has been set in `/home/linuxbrew/.linuxbrew/etc/nginx/nginx.conf to 8080` so that
+        nginx can run without sudo.
+
+        nginx will load all files in `/home/linuxbrew/.linuxbrew/etc/nginx/servers/`.
+
+        Warning: nginx provides a launchd plist which can only be used on macOS!
+        You can manually execute the service instead with:
+          nginx
+
+    $ which nginx
+        /home/linuxbrew/.linuxbrew/bin/nginx
+    $ nginx     <-- run nginx
+    $ ps -ef|grep nginx
+        hyu      29431     1  0 10:12 ?        00:00:00 nginx: master process nginx
+        hyu      29432 29431  0 10:12 ?        00:00:00 nginx: worker process
+
+    $ curl http://localhost:8080/   <-- try to access it
+
+        <p><em>Thank you for using nginx.</em></p>
+
+## How to submit a new formula
+* Fork this repository on GitHub.
+* Clone to your Mac.
+* Read and look at the other formule here.
+* In your locally cloned `homebrew-nginx` repo, create a new branch: `git checkout --branch my_new_formula`
+* Write/edit your formula (ruby file). Check [Homebrew's documentation](https://github.com/Homebrew/brew/blob/master/docs/README.md) for details.
+* Test it locally! `brew install ./my-new-formula.rb`. Does it install? Note, `./<formula>.rb` will target the local file.
+* `git push --set-upstream origin my-new-formula` to get it into your GitHub fork as a new branch.
+* If you have to change something, add a commit and `git push`.
+* On GitHub, select your new branch and then click the "Pull Request" button.
