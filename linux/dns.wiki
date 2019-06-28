@@ -40,7 +40,7 @@ Then you can then create or modify files:
     nameserver 172.16.100.80
     nameserver 127.0.0.53
 
-    $ sudo reboot
+    $ sudo resolvconf -u        <=== update immediately
 
 # Enforce Safe-Search
 
