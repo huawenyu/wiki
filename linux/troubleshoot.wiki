@@ -1,3 +1,51 @@
+# Limit memory to simulate segment-crash
+
+- `ulimit -m` strictly limits resident memory, and not the amount of memory for a process
+- `ulimit -v` will limit the amount of virtual memory for a process
+
+for example...
+```c
+    #include <stdio.h>
+    #include <stdlib.h>
+
+
+    int main(int argc, char* argv[]) {
+
+        int size = 1 << 20;
+        void* memory = NULL;
+        memory = malloc(size);
+        printf("allocated %i bytes...\n", size);
+        return 0;
+    }
+
+
+    $ ulimit -m 512
+        ./memory
+        allocated 1048576 bytes...
+
+    $ ulimit -v 512
+        ./memory
+        Segmentation fault
+```
+
+If you execute `ulimit -a` it should provide a summary of all the current limits for child processes.
+
+**Warning!**
+You can also set hard limits via the `ulimit -H` [command](http://ss64.com/osx/ulimit.html), which cannot be modified by sub-processes.  However, those limits also cannot be raised again once lowered, without elevated permissions (root).
+
+If your process doesn't spawn more children that consume the most memory:
+```sh
+    $ ulimit -Sv 500000     # Set ~500 mb limit
+    $ <your-process>
+```
+This will only limit "virtual" memory of your process, taking into account—and limiting—the memory the process being invoked shares with other processes,
+     and the memory mapped but not reserved (for instance, Java's large heap).
+     Still, virtual memory is the closest approximation for processes that grow really large, making the said errors insignificant.
+
+If your program spawns children, and it's them which allocate memory, it becomes more complex, and you should write auxiliary scripts to run processes under [your control](http://coldattic.info/page/resourcelimit/).
+
+
+
 # Slow Server
 
 ## [doc][4]

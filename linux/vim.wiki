@@ -75,16 +75,20 @@ If the directive `%compile_commands.json` appears in .ccls then after compile_co
 
     ### convince Clang to use the GCC header files
     $ ccls --index=. --init='{"clang":{"extraArgs": ["--gcc-toolchain=/usr"]}}'
+    $ ccls --index=. --init='{"clang":{"extraArgs": ["-fms-extensions", "--gcc-toolchain=/usr"]}}'
 
     ### compiled with MSVC, you may set the compiler driver in .ccls to clang-cl
-    $ ccls --index=. --init='{"clang":{"extraArgs": ["-fms-extensions -fms-compatibility -fdelayed-template-parsing"]}}'
+    $ ccls --index=. --init='{"clang":{"extraArgs": ["-fms-extensions", "-fms-compatibility", "-fdelayed-template-parsing"]}}'
 
     ### build linux kernel
-    $ ccls -index ~/Dev/Linux -init='{"clang":{"excludeArgs":[
-"-falign-jumps=1","-falign-loops=1","-fconserve-stack","-fmerge-constants","-fno-code-hoisting","-fno-schedule-insns","-fno-sched-pressure","-fno-var-tracking-assignments","-fsched-pressure",
-"-mhard-float","-mindirect-branch-register","-mindirect-branch=thunk-inline","-mpreferred-stack-boundary=2","-mpreferred-stack-boundary=3","-mpreferred-stack-boundary=4","-mrecord-mcount","-mindirect-branch=thunk-extern","-mno-fp-ret-in-387","-mskip-rax-setup",
-"--param=allow-store-data-races=0","-Wa,arch/x86/kernel/macros.s","-Wa,-"
-], "extraArgs":["--gcc-toolchain=/usr"]}}'
+    $ ccls -index ~/Dev/Linux -init='{"clang":
+        {"excludeArgs":["-falign-jumps=1","-falign-loops=1","-fconserve-stack","-fmerge-constants",
+            "-fno-code-hoisting","-fno-schedule-insns","-fno-sched-pressure","-fno-var-tracking-assignments",
+            "-fsched-pressure", "-mhard-float","-mindirect-branch-register","-mindirect-branch=thunk-inline",
+            "-mpreferred-stack-boundary=2","-mpreferred-stack-boundary=3","-mpreferred-stack-boundary=4",
+            "-mrecord-mcount","-mindirect-branch=thunk-extern","-mno-fp-ret-in-387","-mskip-rax-setup",
+            "--param=allow-store-data-races=0","-Wa,arch/x86/kernel/macros.s","-Wa,-"],
+        "extraArgs":["--gcc-toolchain=/usr"]}}'
 
     $ cat ~/.vim/coc-settings.json
 ```
