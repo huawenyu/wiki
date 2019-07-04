@@ -1,3 +1,7 @@
+# sample
+
+http://www.yolinux.com/TUTORIALS/LibraryArchives-StaticAndDynamic.html
+
 # cmd: ldconfig
 
     $ sudo ldconfig -v
@@ -25,13 +29,18 @@
 
 ## a nonstandard directory
 
-    If your library is somewhere else, you can:
-      - either add the directory on its own line in `/etc/ld.so.conf`,
-      - or append the library's path to `$LD_LIBRARY_PATH`,
-      - or move the library into `/usr/lib`.
-          sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
-      - Then run `ldconfig` to reload into system cache.
+For example, if the libraries have been installed in: `/usr/local/lib`
+If your library is somewhere else, you can do at least one of the following:
+- either sudo add the directory on its own line to `/etc/ld.so.conf`,
+- or append the library's path to `$LD_LIBRARY_PATH` environment variable during execution,
+- or LIBDIR to the `LD_RUN_PATH' environment variable during linking
+- or the `-Wl,--rpath -Wl,LIBDIR' linker flag
+- or move the library into `/usr/lib`.
+    $ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
+- Then run `ldconfig` to reload into system cache.
 
+    $ sudo ldconfig -n /usr/local/lib
+    $ sudo ldconfig
 
 ## fix load shared libraries error: cannot open shared object file
 
