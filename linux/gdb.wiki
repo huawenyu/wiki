@@ -321,7 +321,7 @@ gdb executes file .gdbinit before running the program
 
 ### hit breakpoint automatic execute batch commands
 
-```shell
+```sh
     $ cat test.gdb
     set width 0
     set height 0
