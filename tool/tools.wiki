@@ -1,15 +1,3 @@
----
-layout: post
-title:  "Linux Tools"
-date:   2017-02-15 13:31:01 +0800
-categories: linux
-tags: admin
----
-
-* content
-{:toc}
-
-
 # terminal application
 
 ## [great-terminal-replacements-for-gui-applications][1]
@@ -86,6 +74,39 @@ tags: admin
 ### swap-pane -s(src) 4 -t(dst) 2
 
     Prefix+q: show pane number
+
+## todo.txt-cli
+
+### install
+    $ git clone https://github.com/huawenyu/todo.txt-cli-ex
+    Create softlink existed 'todo' into this dir.
+
+    ### append the follow lines into .zshrc:
+
+        # todo.txt-cli
+        export TODOTXT_DEFAULT_ACTION=ls
+        #alias t='$HOME/tools/todo.txt-cli-ex/todo.sh -d $HOME/tools/todo.txt-cli-ex/todo.cfg'
+        alias t='$HOME/tools/todo.txt-cli-ex/todo.sh'
+
+### usage
+
+```sh
+    $ t -h
+    $ t add "setup new linode server"
+    $ t add "discuss fosswork.com site with Ravi"
+    $ t
+    $ t pri 1 A
+    $ t append 2 "ready at 3PM"
+    $ t do 1
+    $ t del 1
+    $ t listall
+
+    ### create another task file
+    $ t move 10 maybelater.txt
+    $ t listfile maybelater.txt
+    $ t addto ideas.txt "My bright idea"
+    $ t lf ideas.txt apple
+```
 
 # minicom
 
