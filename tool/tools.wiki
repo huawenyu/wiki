@@ -1,4 +1,4 @@
-# terminal application
+[#](#) terminal application
 
 ## [great-terminal-replacements-for-gui-applications][1]
 
@@ -75,11 +75,23 @@
 
     Prefix+q: show pane number
 
-## todo.txt-cli
+## todo.txt-cli: but taskwarrior is better
 
 ### install
     $ git clone https://github.com/huawenyu/todo.txt-cli-ex
     Create softlink existed 'todo' into this dir.
+
+    # todo.txt-cli
+    mkdir -p ~/tools
+    cd ~/tools
+    git clone https://github.com/todotxt/todo.txt-cli.git
+    git clone https://github.com/huawenyu/todo.txt-cli-ex.git
+
+    # should link the existed dir "todo" into the dir 'todo.txt-cli-ex':
+    cd todo.txt-cli-ex
+    # copy sh from 'todo.txt-cli' into our dir 'todo.txt-cli-ex':
+    make -B
+
 
     ### append the follow lines into .zshrc:
 
