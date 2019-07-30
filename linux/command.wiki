@@ -414,13 +414,19 @@ The escape character can be changed using the command line option `-e`. If you s
 
 ## watch
 
+-t   silent the header
+-c   support color
+-n   secdons
+
 ### sample
 
 ```sh
+    $ watch -c du -sch ./*
+
     # every 5-seconds execute the command
-    watch    -n 5 free -m
-    watch -t -n 5 free -m               <=== -t silent the header
-    watch -d=cumulative 'ls -l | fgrep janis'
+    $ watch    -n 5 free -m
+    $ watch -t -n 5 free -m               <=== -t silent the header
+    $ watch -d=cumulative 'ls -l | fgrep janis'
 ```
 
 ### shell-script likes
@@ -481,6 +487,7 @@ You can take this a step further and create a `watch.sh` script that can accept 
         13M     ./tools
         544M    total
 
+    $ watch du -sch ./*
 
 ## dd
 
@@ -676,6 +683,31 @@ The IP after the @ is the name server to contact, and the number after -p is the
  49 66 81 80 00 01 00 01 00 00 00 01 0c 76 6f 6c 6b 65 72 73 63 68 61 74 7a 03 63 6f 6d 00 00 01 00 01 c0 0c 00 01 00 01 00 00 1c 10 00 04 51 a9 91 46 00 00 29 0f a0 00 00 00 00 00 00
 Pretty much the only obvious thing one can discern is the host name volkerschatz.com starting with 76 6f 6c 6b ... (use man ascii to display the ASCII code manual page). Interestingly, the com top-level domain is separated by a byte with value 03, not a dot.
 
+
+## ln
+
+Check the original file of a softlink.
+Or find the original file have some softlink already point-to itself.
+
+```sh
+    $ ln -s $(pwd)/orig.file $(pwd)/dirA/
+    $ ln -s $(pwd)/orig.file $(pwd)/dirB/lorig.file
+```
+
+At this point, I can use readlink to see what is the 'original' (well, I guess the usual term here is either 'target' or 'source', but those in my mind can be opposite concepts as well, so I'll just call it 'original') file of the symlinks, i.e.
+
+```sh
+    $ readlink -f dirA/orig.file 
+    /tmp/orig.file
+    $ readlink -f dirB/lorig.file 
+    /tmp/orig.file
+```
+
+... However, what I'd like to know is - is there a command I could run on the 'original' file, and find all the symlinks that point to it? In other words, something like (pseudo):
+
+```sh
+    $ find -L /dir/to/start -samefile /tmp/orig.file
+```
 
 ## ls
 
