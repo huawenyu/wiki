@@ -307,6 +307,20 @@ when crash, we can address (such as 0x090b5c6b) and registers list, then:
     x/s 0xffffffff81946000
 ```
 
+### Gdb trick: array
+
+```sh
+(gdb) p *a@3
+
+(gdb) set $pos=0
+(gdb) print array[$pos++]
+  content of array[0]
+(gdb)
+  content of array[1]
+(gdb)
+  content of array[2]
+```
+
 ## Automatic batch commands
 
 ### batch from terminal

@@ -705,7 +705,7 @@ output:
     clark.x_ray()
 ```
 
-### What does `if __name__ == “__main__”:` do?
+### What does `if __name__ == "__main__":` do?
 
 
 When the Python interpreter reads a source file, it executes all of the code found in it. Before executing the code, it will define a few special variables. For example, if the python interpreter is running that module (the source file) as the main program, it sets the special __name__ variable to have a value "__main__". If this file is being imported from another module, __name__ will be set to the module's name.
@@ -718,7 +718,51 @@ on the command line. After setting up the special variables, it will execute the
 
 One of the reasons for doing this is that sometimes you write a module (a .py file) where it can be executed directly. Alternatively, it can also be imported and used in another module. By doing the main check, you can have that code only execute when you want to run the module as a program and not have it execute when someone just wants to import your module and call your functions themselves.
 
-# parameters ** (double star/asterisk)
+# Use of *args and **kwargs
+
+[The syntax is the `*` and `**`][1].  The names `*args` and `**kwargs` are only by convention but there's no hard requirement to use them.
+
+You would use `*args` when you're not sure how many arguments might be passed to your function, i.e. it allows you pass an arbitrary number of arguments to your function.  For example:
+
+    >>> def print_everything(*args):
+            for count, thing in enumerate(args):
+    ...         print( '{0}. {1}'.format(count, thing))
+    ...
+    >>> print_everything('apple', 'banana', 'cabbage')
+    0. apple
+    1. banana
+    2. cabbage
+
+Similarly, `**kwargs` allows you to handle named arguments that you have not defined in advance:
+
+    >>> def table_things(**kwargs):
+    ...     for name, value in kwargs.items():
+    ...         print( '{0} = {1}'.format(name, value))
+    ...
+    >>> table_things(apple = 'fruit', cabbage = 'vegetable')
+    cabbage = vegetable
+    apple = fruit
+
+You can use these along with named arguments too.  The explicit arguments get values first and then everything else is passed to `*args` and `**kwargs`.  The named arguments come first in the list.  For example:
+
+    def table_things(titlestring, **kwargs)
+
+You can also use both in the same function definition but `*args` must occur before `**kwargs`.
+
+You can also use the `*` and `**` syntax when calling a function.  For example:
+
+    >>> def print_three_things(a, b, c):
+    ...     print( 'a = {0}, b = {1}, c = {2}'.format(a,b,c))
+    ...
+    >>> mylist = ['aardvark', 'baboon', 'cat']
+    >>> print_three_things(*mylist)
+    a = aardvark, b = baboon, c = cat
+
+As you can see in this case it takes the list (or tuple) of items and unpacks it. By this it matches them to the arguments in the function.  Of course, you could have a `*` both in the function definition and in the function call.
+
+  [1]: http://docs.python.org/tutorial/controlflow.html#arbitrary-argument-lists
+
+## parameters ** (double star/asterisk)
 
 [What does ** (double star/asterisk) and * (star/asterisk) do for parameters?](https://stackoverflow.com/questions/36901/what-does-double-star-asterisk-and-star-asterisk-do-for-parameters)
 
@@ -895,7 +939,12 @@ Doctest will parse the while script and then execute the doctest part, sample wi
 
 # Lambda
 
-Are you talking about lambda functions? Like `f = lambda x: x**2 + 2*x - 5`  Those things are actually quite useful.
+Like `f = lambda x: x**2 + 2*x - 5`:
+            |   |  ---------------
+        function|            |
+            the 1st param    |
+                         the function implement
+
 
 Python supports a style of programming called functional programming where you can pass functions to other functions to do stuff. Example:
 
@@ -933,6 +982,32 @@ Define a function that takes a mark and returns a human readable representation,
     99 - A++
     45 - None
     23 - Fail
+```
+
+## unnamed var
+
+The `_` is variable name. Try it. (This variable name is usually a name for an ignored variable. A placeholder so to speak.)
+
+`l = lambda _: True`:
+      |    |  ---------------
+  function |           |
+      the 1st param    |  -> but we don't use this parameter, so just like placeholder.
+                   the function implement, always return true
+
+
+```python
+>>> l = lambda _: True
+>>> l()
+  <lambda>() missing 1 required positional argument: '_'
+
+  >>> l("foo")
+  True
+
+# So this lambda does require one argument. If you want a lambda with no argument that always returns True, do this:
+>>> m = lambda: True
+>>> m()
+  True
+
 ```
 
 # Import package and module
