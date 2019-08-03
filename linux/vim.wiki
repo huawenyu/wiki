@@ -201,6 +201,28 @@ The active configuration is the merged result of the 'default', 'user' and 'work
 
 # vimscript
 
+## variables
+  
+Vimscript Variable Scoping:
+
+g:varname	The variable is global
+s:varname	The variable is local to the current script file
+w:varname	The variable is local to the current editor window
+t:varname	The variable is local to the current editor tab
+b:varname	The variable is local to the current editor buffer
+l:varname	The variable is local to the current function
+a:varname	The variable is a parameter of the current function
+v:varname	The variable is one that Vim predefines
+A similar table that I want to keep with it:
+
+Vimscript Pseudovariables:
+
+&varname	A Vim option (local option if defined, otherwise global)
+&l:varname	A local Vim option
+&g:varname	A global Vim option
+@varname	A Vim register
+$varname	An environment variable<Paste> 
+
 Please install plugin [vim-eval](https://github.com/amiorin/vim-eval) which can be used to execute current snippets code.
 
 ## OOP
