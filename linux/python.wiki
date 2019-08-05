@@ -177,6 +177,185 @@ if __name__ == '__main__':
     >>> import construct
     >>> print contruct.__version__
 
+# Modules_and_Packages
+
+  https://www.learnpython.org/en/Modules_and_Packages
+
+# Decorator
+
+  https://python-3-patterns-idioms-test.readthedocs.io/en/latest/PythonDecorators.html
+
+  https://www.artima.com/weblogs/viewpost.jsp?thread=240808
+  [Decorator with args/class](https://dev.to/apcelent/python-decorator-tutorial-with-example-529f)
+  https://www.geeksforgeeks.org/class-as-decorator-in-python/
+
+```python
+    # Python program to execute
+    # time of a program
+
+    # importing time module
+    from time import time
+    class Timer:
+
+        def __init__(self, func):
+            self.function = func
+
+        def __call__(self, *args, **kwargs):
+            start_time = time()
+            result = self.function(*args, **kwargs)
+            end_time = time()
+            print("Execution took {} seconds".format(end_time-start_time))
+            return result
+
+
+    # adding a decorator to the class
+    @Timer
+    def some_function(delay):
+        from time import sleep
+
+        # Introducing some time delay to
+        # simulate a time taking function.
+        sleep(delay)
+
+    some_function(3)
+```
+
+# yield/generators/iterables
+
+  https://stackoverflow.com/questions/231767/what-does-the-yield-keyword-do
+
+The `yield` is a keyword that is used like return, except the function will return a `generator`.
+The `yield` statement suspends function's execution and sends a value back to caller,
+    but retains enough state to enable function to resume where it is left off.
+    When resumed, the function continues execution immediately after the last `yield` run.
+This allows its code to produce a series of values over time, rather them computing them at once and sending them back like a list.
+
+Let's see with an example:
+```python
+    # A Simple Python program to demonstrate working
+    # of yield
+
+    # A generator function that yields 1 for first time,
+    # 2 second time and 3 third time
+    def simpleGeneratorFun():
+        yield 1
+        yield 2
+        yield 3
+
+    # Driver code to check above generator function
+    for value in simpleGeneratorFun():
+        print(value)
+
+    """
+    Output:
+    ================================
+    1
+    2
+    3
+    """
+```
+
+
+Return sends a specified value back to its caller whereas Yield can produce a sequence of values. We should use yield when we want to iterate over a sequence, but don’t want to store the entire sequence in memory.
+
+Yield are used in Python generators. A generator function is defined like a normal function, but whenever it needs to generate a value, it does so with the yield keyword rather than return. If the body of a def contains yield, the function automatically becomes a generator function.
+
+```python
+    # A Python program to generate squares from 1
+    # to 100 using yield and therefore generator
+
+    # An infinite generator function that prints
+    # next square number. It starts with 1
+    def nextSquare():
+        i = 1;
+
+        # An Infinite loop to generate squares
+        while True:
+            yield i*i
+            i += 1  # Next execution resumes
+                    # from this point
+
+    # Driver code to test above generator
+    # function
+    for num in nextSquare():
+        if num > 100:
+             break
+        print(num)
+
+    """
+    Output:
+    =================
+    1
+    4
+    9
+    16
+    25
+    36
+    49
+    64
+    81
+    100
+    """
+```
+
+## Shortcut to understanding `yield` ##
+
+When you see a function with `yield` statements, apply this easy trick to understand what will happen:
+
+ 1. Insert a line `result = []` at the start of the function.
+ 2. Replace each `yield expr` with `result.append(expr)`.
+ 3. Insert a line `return result` at the bottom of the function.
+ 4. Yay - no more `yield` statements! Read and figure out code.
+ 5. Compare function to original definition.
+
+This trick may give you an idea of the logic behind the function, but what actually happens with `yield` is significantly different that what happens in the list based approach. In many cases the yield approach will be a lot more memory efficient and faster too. In other cases this trick will get you stuck in an infinite loop, even though the original function works just fine. Read on to learn more...
+
+## Don't confuse your Iterables, Iterators and Generators
+
+First, the **iterator protocol** - when you write
+
+    for x in mylist:
+        ...loop body...
+
+Python performs the following two steps:
+
+1. Gets an iterator for `mylist`:
+
+   Call `iter(mylist)` -> this returns an object with a `next()` method (or `__next__()` in Python 3).
+
+   [This is the step most people forget to tell you about]
+
+2. Uses the iterator to loop over items:
+
+   Keep calling the `next()` method on the iterator returned from step 1. The return value from `next()` is assigned to `x` and the loop body is executed. If an exception `StopIteration` is raised from within `next()`, it means there are no more values in the iterator and the loop is exited.
+
+The truth is Python performs the above two steps anytime it wants to *loop over* the contents of an object - so it could be a for loop, but it could also be code like `otherlist.extend(mylist)` (where `otherlist` is a Python list).
+
+Here `mylist` is an *iterable* because it implements the iterator protocol. In a user defined class, you can implement the `__iter__()` method to make instances of your class iterable. This method should return an *iterator*. An iterator is an object with a `next()` method. It is possible to implement both `__iter__()` and `next()` on the same class, and have `__iter__()` return `self`. This will work for simple cases, but not when you want two iterators looping over the same object at the same time.
+
+So that's the iterator protocol, many objects implement this protocol:
+
+ 1. Built-in lists, dictionaries, tuples, sets, files.
+ 2. User defined classes that implement `__iter__()`.
+ 3. Generators.
+
+Note that a `for` loop doesn't know what kind of object it's dealing with - it just follows the iterator protocol, and is happy to get item after item as it calls `next()`. Built-in lists return their items one by one, dictionaries return the *keys* one by one, files return the *lines* one by one, etc. And generators return... well that's where `yield` comes in:
+
+    def f123():
+        yield 1
+        yield 2
+        yield 3
+
+    for item in f123():
+        print item
+
+Instead of `yield` statements, if you had three `return` statements in `f123()` only the first would get executed, and the function would exit. But `f123()` is no ordinary function. When `f123()` is called, it *does not* return any of the values in the yield statements! It returns a generator object. Also, the function does not really exit - it goes into a suspended state. When the `for` loop tries to loop over the generator object, the function resumes from its suspended state at the very next line after the `yield` it previously returned from, executes the next line of code, in this case a `yield` statement, and returns that as the next item. This happens until the function exits, at which point the generator raises `StopIteration`, and the loop exits.
+
+So the generator object is sort of like an adapter - at one end it exhibits the iterator protocol, by exposing `__iter__()` and `next()` methods to keep the `for` loop happy. At the other end however, it runs the function just enough to get the next value out of it, and puts it back in suspended mode.
+
+## Why Use Generators?
+
+Usually you can write code that doesn't use generators but implements the same logic. One option is to use the temporary list 'trick' I mentioned before. That will not work in all cases, for e.g. if you have infinite loops, or it may make inefficient use of memory when you have a really long list. The other approach is to implement a new iterable class `SomethingIter` that keeps state in instance members and performs the next logical step in it's `next()` (or `__next__()` in Python 3) method. Depending on the logic, the code inside the `next()` method may end up looking very complex and be prone to bugs. Here generators provide a clean and easy solution.
 
 # python CLI modules
 
