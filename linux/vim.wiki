@@ -225,6 +225,153 @@ $varname	An environment variable<Paste>
 
 Please install plugin [vim-eval](https://github.com/amiorin/vim-eval) which can be used to execute current snippets code.
 
+## funcion ref
+
+  https://vim-jp.org/vimdoc-en/eval.html
+
+1.2 Function references
+                                        Funcref E695 E718
+A Funcref variable is obtained with the function() function, the funcref()
+function or created with the lambda expression expr-lambda.  It can be used
+in an expression in the place of a function name, before the parenthesis
+around the arguments, to invoke the function it refers to.  Example:
+
+```vim
+        :let Fn = function("MyFunc")
+        :echo Fn()
+```
+                                                        E704 E705 E707
+A Funcref variable must start with a capital, "s:", "w:", "t:" or "b:".  You
+can use "g:" but the following name must still start with a capital.  You
+cannot have both a Funcref variable and a function with the same name.
+
+A special case is defining a function and directly assigning its Funcref to a
+Dictionary entry.  Example:
+```vim
+        :function dict.init() dict
+        :   let self.val = 0
+        :endfunction
+```
+
+The key of the Dictionary can start with a lower case letter.  The actual
+function name is not used here.  Also see numbered-function.
+
+A Funcref can also be used with the :call command:
+        :call Fn()
+        :call dict.init()
+
+The name of the referenced function can be obtained with string().
+        :let func = string(Fn)
+
+You can use call() to invoke a Funcref and use a list variable for the
+arguments:
+        :let r = call(Fn, mylist)
+
+                                                                Partial
+A Funcref optionally binds a Dictionary and/or arguments.  This is also called
+a Partial.  This is created by passing the Dictionary and/or arguments to
+function() or funcref().  When calling the function the Dictionary and/or
+arguments will be passed to the function.  Example:
+```vim
+        let Cb = function('Callback', ['foo'], myDict)
+        call Cb('bar')
+```
+
+This will invoke the function as if using:
+```vim
+        call myDict.Callback('foo', 'bar')
+```
+
+### binding a function to a Dictionary
+
+This is very useful when passing a function around, e.g. in the arguments of
+ch_open().
+
+Note that binding a function to a Dictionary also happens when the function is
+a member of the Dictionary:
+
+        let myDict.myFunction = MyFunction
+        call myDict.myFunction()
+
+Here MyFunction() will get myDict passed as "self".  This happens when the
+"myFunction" member is accessed.  When making assigning "myFunction" to
+otherDict and calling it, it will be bound to otherDict:
+
+```vim
+        let otherDict.myFunction = myDict.myFunction
+        call otherDict.myFunction()
+```
+
+Now "self" will be "otherDict".  But when the dictionary was bound explicitly
+this won't happen:
+
+```vim
+        let myDict.myFunction = function(MyFunction, myDict)
+        let otherDict.myFunction = myDict.myFunction
+        call otherDict.myFunction()
+```
+
+Here "self" will be "myDict", because it was bound explicitly.
+
+### Dictionary function
+
+Dictionary function
+                                Dictionary-function self E725 E862
+When a function is defined with the "dict" attribute it can be used in a
+special way with a dictionary.  Example:
+```vim
+        :function Mylen() dict
+        :   return len(self.data)
+        :endfunction
+        :
+        :let mydict = {'data': [0, 1, 2, 3], 'len': function("Mylen")}
+        :echo mydict.len()
+```
+
+This is like a method in object oriented programming.  The entry in the
+Dictionary is a Funcref.  The local variable "self" refers to the dictionary
+the function was invoked from.
+
+It is also possible to add a function without the "dict" attribute as a
+Funcref to a Dictionary, but the "self" variable is not available then.
+
+                                numbered-function anonymous-function
+To avoid the extra name for the function it can be defined and directly
+assigned to a Dictionary in this way:
+```vim
+        :let mydict = {'data': [0, 1, 2, 3]}
+        :
+        :function mydict.len()
+        :   return len(self.data)
+        :endfunction
+        :
+        :echo mydict.len()
+```
+
+The function will then get a number and the value of dict.len is a Funcref
+that references this function.  The function can only be used through a
+Funcref.  It will automatically be deleted when there is no Funcref
+remaining that refers to it.
+
+It is not necessary to use the "dict" attribute for a numbered function.
+
+If you get an error for a numbered function, you can find out what it is with
+a trick.  Assuming the function is 42, the command is:
+        :function {42}
+
+
+#### Functions for Dictionaries
+                                                        E715
+Functions that can be used with a Dictionary:
+        :if has_key(dict, 'foo')        " TRUE if dict has entry with key "foo"
+        :if empty(dict)                 " TRUE if dict is empty
+        :let l = len(dict)              " number of items in dict
+        :let big = max(dict)            " maximum value in dict
+        :let small = min(dict)          " minimum value in dict
+        :let xs = count(dict, 'x')      " count nr of times 'x' appears in dict
+        :let s = string(dict)           " String representation of dict
+        :call map(dict, '">> " . v:val')  " prepend ">> " to each item
+
 ## OOP
 [modularizing-vimscript](http://bling.github.io/blog/2013/08/16/modularizing-vimscript/)
 [vim-jslike-oop](https://github.com/t9md/vim-jslike-oop/blob/master/vim-jslike-oop.vim)
