@@ -12,6 +12,13 @@
 
 This will rename your "list" folder to "list.old" for backup purposes and then rebuild.
 
+## How to disable network-connectivity-check on linux mint?
+
+    https://unix.stackexchange.com/questions/513043/how-to-disable-network-connectivity-check-on-linux-mint
+
+    ### You can also remove the package network-manager-config-connectivity-ubuntu:
+    $ sudo apt purge network-manager-config-connectivity-ubuntu
+
 ## Step 1 - Find the version you want**
 
 **`apt policy` or `apt-cache policy`**  (or `apt-cache madison`)

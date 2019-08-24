@@ -24,7 +24,7 @@ Below are the instructions to follow:
 6. Run `make test` to check for possible errors.
 7. Backup current openssl binary: `sudo mv /usr/bin/openssl ~/tmp`
 8. Issue the command `sudo make install`.
-9. Create symbolic link from newly install binary to the default location: 
+9. Create symbolic link from newly install binary to the default location:
     ```
     sudo ln -s /usr/local/bin/openssl /usr/bin/openssl
     ```
@@ -50,7 +50,7 @@ Below are the instructions to follow:
 
 http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session
   http://www.ntu.edu.sg/home/ehchua/programming/webprogramming/http_ssl.html
-  
+
 The higher layer is stacked on top of the SSL Record Protocol, and comprises four subprotocols.
 Each of these protocols has a very specific purpose, and are used at different stages of the communication:
 - Handshake Protocol: It allows the peers to authenticate each other and to negotiate a cipher suite and other parameters of the connection. The SSL handshake protocol involves four sets of messages (sometimes called flights) that are exchanged between the client and server. Each set is typically transmitted in a separate TCP segment. The following diagram shows a summary of the process, which has several steps and offers optional ones. Please note that ChangeCipherSpec messages don’t belong to this protocol, as they are a protocol by themselves, as seen below.
@@ -232,6 +232,10 @@ These commands allow you to generate CSRs, Certificates, Private Keys and do oth
     $ curl --cert certificate_file.pem:password https://www.example.com/some_protected_page
 
 ## s_client
+
+### Displaying a remote SSL certificate details
+
+    $ echo | openssl s_client -showcerts -servername gnupg.org -connect gnupg.org:443 2>/dev/null | openssl x509 -inform pem -noout -text
 
     $ openssl s_client -connect test.example.com:443 -servername example.com
     $ openssl s_client -connect test.example.com:443 -ssl3

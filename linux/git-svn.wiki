@@ -946,6 +946,8 @@ then you can use `git reset` to rewrite the history so that it looks as though y
 
 ## Log & diff
 
+    git log --after=jun9 --before=jun10
+
     git format-patch -1 <sha>
     git diff bbc2845 -- > patch.diff          # Difference between a git commit <SHA1> and the unstaged working directory
 
