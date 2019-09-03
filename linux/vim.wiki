@@ -202,7 +202,7 @@ The active configuration is the merged result of the 'default', 'user' and 'work
 # vimscript
 
 ## variables
-  
+
 Vimscript Variable Scoping:
 
 g:varname	The variable is global
@@ -221,7 +221,7 @@ Vimscript Pseudovariables:
 &l:varname	A local Vim option
 &g:varname	A global Vim option
 @varname	A Vim register
-$varname	An environment variable<Paste> 
+$varname	An environment variable<Paste>
 
 Please install plugin [vim-eval](https://github.com/amiorin/vim-eval) which can be used to execute current snippets code.
 
@@ -590,4 +590,29 @@ In addition to filter(), dictionaries can use several other of the same built-in
         \    . introducer . " " . a:comment        . "\<CR>"
         \    . introducer . repeat(box_char,width) . "\<CR>"
     endfunction
+
+# Howtos
+
+## How to disable the leader key in vim insert mode
+
+    https://superuser.com/questions/945329/how-to-disable-the-leader-key-in-vim-insert-mode
+
+    The leader key is not special at all: if you don't use it in any mapping it works exactly like any other key.
+
+Think of <leader> as some kind of constant that is automatically expanded to its current value when it is used. When Vim sources your vimrc and sees something like:
+
+nnoremap <leader>b :ls<CR>:b
+it will use the current value of mapleader and actually do:
+
+nnoremap <Space>b :ls<CR>:b
+What causes the delay you are observing is the fact that <Space> is used (via the <leader> mechanism in your case) at the beginning of an insert mode mapping: Vim is simply waiting a bit to see if you actually want to insert a <Space> or trigger one of the registered insert mode mappings starting with <Space>.
+
+To see what insert mode mappings use your <leader> and where they come from, do:
+
+  :verbose imap <space>
+  :verbose imap <leader>
+
+If the culprit is defined by a plugin, search its documentation for a way to unmap it.
+
+Once you've found the culprits you can make a folder ~/.vim/after/plugin and put a new file in there called something like unmap.vim. In this file you can put unmap commands. One of mine are iunmap <Leader>is which is a mapping from a.vim. – Paymahn Moghadasian
 
