@@ -131,6 +131,9 @@
 
 # thunderbird
 
+## Create virtual dir base on search
+      https://superuser.com/questions/41599/is-there-any-way-to-search-for-tags-in-mozilla-thunderbird
+
 ## Export message filter
 
     The msgFilterrules.dat is just plain text file. Edit it as you needed—usually just the directory paths for duplicating an account's filter to another account.

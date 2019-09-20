@@ -271,6 +271,13 @@ migadmin/node_modules/grunt-jscs/*
 
 ### create patch
 
+#### patch和diff 的区别
+
+Git 提供了两种补丁方案，一是用git diff生成的UNIX标准补丁.diff文件，二是git format-patch生成的Git专用.patch 文件。
+  - .diff文件只是记录文件改变的内容，不带有commit记录信息,多个commit可以合并成一个diff文件。
+  - .patch文件带有记录文件改变的内容，也带有commit记录信息,每个commit对应一个patch文件
+
+#### commands
     ==from branch==
     git checkout -b feature1
     git format-patch master --stdout > fix_feature1.patch
@@ -283,7 +290,17 @@ migadmin/node_modules/grunt-jscs/*
     git format-patch commit-id-start..commit-id-end
 
     ==apply==
-    git apply --check fix_feature1.patch	# check the patch is OK or not
+    git apply --stat fix_feature1.patch     # check patch file status
+    git apply --check fix_feature1.patch	# dry-run to check the patch can patched succ or not
+        ==resolve conflict==
+        ###if fail, we should back to conflict resolve status:
+        git am newpatch.patch
+        git am --skip
+        git am --abort
+
+        git am --continue       <=== finally, commit it.
+
+    ==apply & commit==
     git am --signoff file.patch			# commit the patch with original author information
     <OR>
     git apply fix_feature1.patch		# apply the changes, not commit them.
