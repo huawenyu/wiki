@@ -4,6 +4,28 @@
 
 # Tools
 
+## Encrypt/Decrypt and Password Protect Files in Linux
+
+1. GnuPG
+GnuPG stands for GNU Privacy Guard and is often called as GPG which is a collection of cryptographic software. Written by GNU Project in C programming Language.
+In most of the today’s Linux distributions, the gnupg package comes by default, if in-case it’s not installed you may apt or yum it from repository.
+
+	$ sudo apt-get install gnupg
+	# yum install gnupg
+    $ gpg --version
+
+    ### Encrypt a file
+    $ cat ~/Desktop/Tecmint/tecmint.txt
+    $ gpg -c ~/Desktop/Tecmint/tecmint.txt
+    $ ls -l ~/Desktop/Tecmint
+         ~/Desktop/Tecmint/tecmint.txt
+         ~/Desktop/Tecmint/tecmint.txt.gpg
+    ### and remove the orginal file
+    $ rm ~/Desktop/Tecmint/tecmint.txt
+
+    ### Decrypt a file
+    $ gpg ~/Desktop/Tecmint/tecmint.txt.gpg
+
 ## curl
 
 ### options
