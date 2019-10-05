@@ -142,6 +142,10 @@ In most of the today’s Linux distributions, the gnupg package comes by default
     $ t lf ideas.txt apple
 ```
 
+# qutebrowser - vim-like browser
+
+https://qutebrowser.org/doc/quickstart.html
+
 # minicom
 
     1. set env var value
