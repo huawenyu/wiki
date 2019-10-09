@@ -1,11 +1,102 @@
 # Doc
 
-[Using Expect Scripts to Automate Tasks](http://www.admin-magazine.com/Articles/Automating-with-Expect-Scripts)
-[Expect Command And How To Automate Shell Scripts Like Magic](https://likegeeks.com/expect-command/)
-[Introduction to the Oracle VM Command Line Interface](https://docs.oracle.com/cd/E35328_01/E35336/html/vmcli-script.html)
+# Quick Start
+
+     nginx -V
+        nginx version: nginx/1.14.0 (Ubuntu)
+        built with OpenSSL 1.1.1  11 Sep 2018 (running with OpenSSL 1.1.0g  2 Nov 2017)
+        TLS SNI support enabled
+        configure arguments:
+          --prefix=/usr/share/nginx
+          --conf-path=/etc/nginx/nginx.conf             <=== config
+          --http-log-path=/var/log/nginx/access.log
+          --error-log-path=/var/log/nginx/error.log
+          --lock-path=/var/lock/nginx.lock
+          --pid-path=/run/nginx.pid
+
+    service nginx -v    <=== check version
+    service nginx -V
+
+    service nginx -h    <=== help
+    service nginx -?
+    service nginx status         <=== check status
+
+    nginx -t                    <=== run config test
+    service nginx configtest
+
+    service nginx start
+    service nginx stop           <=== Gracefully close
+    killall -9 nginx
+    service nginx quit
+
+    service nginx restart
+    service nginx reload        <=== more Gracefully close the old worker, and use the new config to start a new worker
+
+    nginx -s signal
+    Where signal may be one of the following:
+      - stop — fast shutdown
+      - quit — graceful shutdown
+      - reload — reloading the configuration file
+      - reopen — reopening the log files
 
 
-# Build our own `Formula`
+## Config
+
+    [How to Configure NGINX](https://www.linode.com/docs/web-servers/nginx/how-to-configure-nginx/)
+    [Beginner’s Guide](http://nginx.org/en/docs/beginners_guide.html)
+
+```conf
+    $ cat /etc/nginx/sites-enabled/default
+
+    # Default server configuration
+    #
+    server {
+            listen 80 default_server;
+            listen [::]:80 default_server;
+
+            root /var/www/html;
+
+            # Add index.php to the list if you are using PHP
+            index index.html index.htm index.nginx-debian.html;
+
+            server_name _;
+
+            location / {
+                    # First attempt to serve request as file, then
+                    # as directory, then fall back to displaying a 404.
+                    try_files $uri $uri/ =404;
+            }
+    }
+```
+## web host dir:
+   $ uname -a
+   Linux VAN-200912-PC6 4.15.0-20-generic #21-Ubuntu SMP Tue Apr 24 06:16:15 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+
+   [Linuxmint 19]: `/var/www/html`, also we can verify from the above config file.
+   There have another dir: /usr/share/nginx/html, but it not the real dir.
+
+
+## service vs systemctl
+
+`service` is an "high-level" command used for starting and stopping services in different unixes and linuxes.
+Depending on the "lower-level" service manager, service redirects on different binaries.  For example,
+  - on CentOS 7 it redirects to systemctl,
+  - while on CentOS 6 it directly calls the relative /etc/init.d script.
+  - On the other hand, in older Ubuntu releases it redirects to upstart.
+
+`service` is adequate for basic service management, while directly calling `systemctl` give greater control options.
+
+The `service` command is a wrapper script that allows system administrators to start, stop, and check the status of services
+  without worrying too much about the actual init system being used.
+
+Prior to systemd's introduction, it was a `wrapper` for `/etc/init.d scripts` and `Upstart's initctl` command,
+      and now it is a wrapper for these two and `systemctl` as well.
+
+# Install
+
+## method-1. apt install nginx
+
+## method-2. Build our own `Formula` for brew
 
 We can build from an existed tap.
 For example, we can build our own Formula of nginx debug version.
@@ -55,6 +146,7 @@ For example, we can build our own Formula of nginx debug version.
         <p><em>Thank you for using nginx.</em></p>
 
 ## How to submit a new formula
+
 * Fork this repository on GitHub.
 * Clone to your Mac.
 * Read and look at the other formule here.
@@ -64,3 +156,4 @@ For example, we can build our own Formula of nginx debug version.
 * `git push --set-upstream origin my-new-formula` to get it into your GitHub fork as a new branch.
 * If you have to change something, add a commit and `git push`.
 * On GitHub, select your new branch and then click the "Pull Request" button.
+

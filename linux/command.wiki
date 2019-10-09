@@ -697,9 +697,9 @@ Or find the original file have some softlink already point-to itself.
 At this point, I can use readlink to see what is the 'original' (well, I guess the usual term here is either 'target' or 'source', but those in my mind can be opposite concepts as well, so I'll just call it 'original') file of the symlinks, i.e.
 
 ```sh
-    $ readlink -f dirA/orig.file 
+    $ readlink -f dirA/orig.file
     /tmp/orig.file
-    $ readlink -f dirB/lorig.file 
+    $ readlink -f dirB/lorig.file
     /tmp/orig.file
 ```
 
@@ -1032,6 +1032,9 @@ merge two files by column
     tar xzf rarlinux-x64-5.0.b7.tar.gz
     sudo cp rar unrar /usr/local/bin/
     unrar x ~/Downloads/wps_symbol_fonts.rar
+
+## cp & rsync
+
 
 ## dns & reverse-dns
 
