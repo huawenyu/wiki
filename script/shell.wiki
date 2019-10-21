@@ -1,0 +1,88 @@
+# sed
+
+## How to pass a variable containing slashes to sed
+
+Use an alternate regex delimiter as sed allows you to use `any` delimiter (including control characters):
+
+    """ Common choices for the delimiter are the pipe character | or the hash #
+    sed "s~$var~replace~g" $file
+    <or>
+    sed "s;$var;replace;g" $file
+
+# awk
+
+## awk replace a specific pattern under another pattern
+
+    $ cat test.txt
+    [ABC]
+    value1=bla
+    value2=bla
+    value3=bla
+    [XYZ]
+    value1=bla
+    value2=bla
+    value3=bla
+
+    $ awk '
+      BEGIN {FS=OFS="=";}
+      /\[.*\]/ {if ($0 == "[ABC]") edit=1; else edit=0;}
+      {if (edit && $1 == "value1" ) $2="notbla";}1
+     ' test.txt
+
+## print only matching field itself and not line
+
+     $ awk 'match($0,/regexp/) {print substr($0,RSTART,RLENGTH)}' inputfile
+
+     !! for multiple matched
+     $ awk '/regexp/{for(i=1;i<=NF;++i)if($i~/regexp/)print $i}' /path/to/inputfile
+
+     <or>
+     !! <output> cd
+     $ echo "abcdef" | awk 'match($0, /b(.*)e/, arr) {print arr[1]}'
+     $ echo "abcdef" | awk 'match($0, /b[^e]*/) {print substr($0, RSTART+1, RLENGTH-1)}'
+
+## Substitute a regex pattern using awk
+
+     """ replace one or more '+' symbols present in a file with a space
+     $ echo This++++this+++is+not++done | awk '{gsub(/\++/," ");}1'
+
+# bash shell-script
+
+## get output of a command
+
+    """In addition to backticks `command` you can use $(command) or "$(command)" which I find easier to read, and allow for nesting.
+    """  Quoting (") does matter to preserve multi-line values.
+
+    OUTPUT="$(ls -1)"
+    echo "${OUTPUT}"
+
+    MULTILINE=$(ls \
+       -1)
+    echo "${MULTILINE}"
+
+
+## exit if a command failed?
+
+Try:
+
+    my_command || { echo 'my_command failed' ; exit 1; }
+
+Four changes:
+  - Change `&&` to `||`
+  - Use `{ }` in place of `( )`
+  - Introduce `;` after `exit` and
+  - spaces after `{` and before `}`
+
+Since you want to print the message and exit only when the command fails ( exits with non-zero value) you need a `||` not an `&&`.
+
+    cmd1 && cmd2
+
+will run `cmd2` when `cmd1` succeeds(exit value `0`). Where as
+
+    cmd1 || cmd2
+
+will run `cmd2` when `cmd1` fails(exit value non-zero).
+Using `( )` makes the command inside them run in a ***sub-shell*** and calling a `exit` from there causes you to exit the sub-shell and not your original shell, hence execution continues in your original shell.
+To overcome this use `{ }`
+The last two changes are required by bash.
+

@@ -1151,6 +1151,24 @@ batch rename all wad*.c files to extension *.cpp files
     But if you use a plus sign instead (find . -exec ls '{}' \+), all filenames will be passed as arguments to a single command:
     ls file1 file2 file3
 
+## fastmod
+
+  https://github.com/facebookincubator/fastmod
+  Fastmod is a fast partial replacement for codemod. Like codemod, it is a tool to assist you with large-scale codebase refactors.
+
+  Let's say you're deprecating your use of the <font> tag. From the command line, you might make progress by running:
+
+    $ fastmod -m -d /home/jrosenstein/www --extensions php,html \
+        '<font *color="?(.*?)"?>(.*?)</font>' \
+        '<span style="color: ${1};">${2}</span>'
+
+    $ fastmod -m ~/workref/compile_commands.json-v6.0.6 \
+        '/ssd/work/top3-ssl-offload/br_6-0_eps_proxy' \
+        '/ssd/work/bug-socks-log/6.0-kvm'
+
+    """ quiet and quicker
+    $ fastmod --accept-all -F '/ssd/work/top3-ssl-offload/br_6-0_eps_proxy' '/ssd/work/bug-socks-log/6.0-kvm' ./compile_commands.json
+
 ## wget
 
     --no-check-certificate, skip certificate
