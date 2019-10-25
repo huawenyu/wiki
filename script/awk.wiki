@@ -1,0 +1,2 @@
+https://github.com/freznicek/awesome-awk
+https://github.com/e36freak/awk-libs
