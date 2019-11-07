@@ -149,6 +149,11 @@ if __name__ == '__main__':
     For python 3.6:
     sudo apt-get install python3.6-tk
 
+## Lint
+
+    sudo pip install pylint
+    pylint --disable=all --enable=similarities <your-python-src-dir>
+
 ## Python shell
 
     bpython
