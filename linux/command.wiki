@@ -160,7 +160,7 @@ Let us add regular user as a sudo user. In my case user’s name is linuxtechi
 
     2) Add below line to allow sudo access to user linuxtechi:
 
-        linuxtechi ALL=(ALL) ALL
+        <your-user-name> ALL=(ALL) ALL
 
         In above command:
 
