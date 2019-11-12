@@ -1,0 +1,34 @@
+# Quick Start:
+
+## [Actually it's not work] Install from centos.org's cloud kvm image
+
+    ### https://www.theurbanpenguin.com/using-cloud-images-in-kvm/
+
+    ### https://cloud.centos.org/centos/7/images/
+    ### $ wget https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud-1907.qcow2
+
+    ### query current image's size
+    $ qemu-img info bionic-server-cloudimg-amd64.img
+
+    ### Extend image's size
+    $ qemu-img resize bionic-server-cloudimg-amd64.img 60G
+    $ qemu-img info bionic-server-cloudimg-amd64.img
+
+    $ sudo apt install virtinstall
+    Once installed we can either create a script to import the disks or run directly from the command line. Here is an example using the disk I created previously:
+
+    $ sudo virt-install \
+            --name proxy1\
+            --memory 1024 \
+            --disk /var/lib/libvirt/images/proxy1.img,device=disk,bus=virtio \
+            --disk /var/lib/libvirt/images/proxy1.iso,device=cdrom \
+            --os-type linux \
+            --os-variant ubuntu16.04 \
+            --virt-type kvm \
+            --graphics none \
+            --network network=default, model=virtio \
+            --import
+    On running the command, the Virtual Machine meta-data will be created and the image will fire up. We will be connected to the console of the system. We can log in as the user Ubuntu with the password we supplied to cloud-config.
+
+
+
