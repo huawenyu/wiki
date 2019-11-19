@@ -31,7 +31,7 @@
 
     cbnz site:infocenter.arm.com
 
-```
+```sh
     $ sudo apt-get install gdb-multiarch
     $ gdb-multiarch sysinit/init
     gdb> 
