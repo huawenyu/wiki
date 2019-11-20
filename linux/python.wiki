@@ -1353,7 +1353,18 @@ However, having found the package directory, it does not then scan that director
 
 ## how to find module source-code's path
 
-### method 1: __file__
+https://stackoverflow.com/questions/269795/how-do-i-find-the-location-of-python-module-sources
+
+### method 0:
+
+```python
+>>> import imp
+>>> imp.find_module('rbtools')
+(None, '/home/hyu/.local/lib/python2.7/site-packages/rbtools', ('', '', 5))
+>>> quit
+```
+
+### [not-work] method 1: __file__
 
 For modules coming from .py (or .pyc) files, you can use mymodule.__file__, e.g.
 
@@ -1362,7 +1373,7 @@ For modules coming from .py (or .pyc) files, you can use mymodule.__file__, e.g.
 'C:\\Python25\\lib\\random.pyc'
 
 
-### method 2: python -v
+### [not-work] method 2: python -v
 
 Running python -v from the command line should tell you what is being imported and from where. This works for me on Windows and Mac OS X.
 
