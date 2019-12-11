@@ -508,7 +508,7 @@ Quick revision tutorial taken from `git help gitrevisions`:
 
 ## git-svn
 
-### Routine
+### QuickStart
 
     # If use "-r r465327:HEAD" will fail
     git svn clone --prefix=svn/ -r465327:HEAD http://.../svn/FortiCache/trunk
