@@ -97,6 +97,12 @@ In most of the today’s Linux distributions, the gnupg package comes by default
 
     Prefix+q: show pane number
 
+## vifm: cli file manager
+
+```sh
+    sudo apt-get install vifm
+```
+
 ## todo.txt-cli: but taskwarrior is better
 
 ### install
