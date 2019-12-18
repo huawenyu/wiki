@@ -205,7 +205,38 @@ Your taps are Git repositories located at `$(brew --repository)/Library/Taps`.
 
 *   [mistydemeo/tigerbrew](https://github.com/mistydemeo/tigerbrew): Experimental Tiger PowerPC version.
 
-# troubleshoot
+# Howtos
+
+## Install by version
+
+```sh
+  ### 1) Check, whether the version is already installed (but not activated)
+    $ brew info postgresql
+    ### if the version is already exist, just switch
+    $ brew switch postgresql 9.1.5
+    $ brew info postgresql
+
+  ### 2) Check, whether the version is available as a tap
+    $ brew search postgresql
+    $ brew tap homebrew/versions
+    $ brew install postgresql@8
+
+  ### 3) Try some formula from the past
+    #$ brew versions postgresql
+
+    ### To find SHA from commit log
+    $ brew log tmux
+    $ brew uninstall tmux
+
+    $ brew install tmux --commit=<COMMIT-SHA>
+    <or>
+    $ brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/<COMMIT-SHA>/Formula/tmux.rb
+  ### 4) Pin the version
+    $ brew pin tmux
+    $ brew list --pinned
+```
+
+# troubleshooting
 
 ## fix compile error: install curl with TLS1.3 supported
 
@@ -225,3 +256,4 @@ Found there have compile error for libldap
 
 Check by:
       curl -kvvv https://www.tired.com --tlsv1.3
+
