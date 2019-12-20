@@ -1,4 +1,16 @@
-# Tags
+# neovim: substitue vim
+
+# handbook
+
+## `:! command`
+
+You can use the :! command to filter selected text through an external program. The text is
+fed to stdin and substituted with the results from stdout.
+
+    vnoremap <leader>jf :!fmt -c -w 100 -u -s <cr>
+
+# Tags system
+
 [Tags](https://zhuanlan.zhihu.com/p/36279445)
 [C++](https://www.zhihu.com/question/47691414/answer/373700711)
 
@@ -31,11 +43,17 @@ This only tool can support tags & cscope-likes at the sametime
 ```
 
 # Indexer
-- support `-fms-extentions`: unname struct
-- should not take too much space, also keep quick
-- support shares index-cache, or every project independ
 
-So far, `clang` could meet the requirement, we also choose `ccls`(@note:ccls) as clang-based indexer, and use coc.vim be the vim plugins.
+1. ctags
+2. cscope
+3. back-end: ccls base on clang, front-end: coc.vim
+4. features list:
+    - support `-fms-extentions`: unname struct
+    - should not take too much space, also keep quick
+    - support shares index-cache, or every project independ
+
+So far, `clang` could meet the requirement, we also choose `ccls`(@note:ccls) as clang-based
+indexer, and use coc.vim be the vim plugins.
 
 # vimscript
 
@@ -216,7 +234,9 @@ Functions that can be used with a Dictionary:
 
 ### Modularizing VimScript
 
-Let’s take a look at how we can create an object that is transient, has state, and contains methods you can invoke, like any modern OOP language can do.
+Let’s take a look at how we can create an object that is transient, has state, and contains
+methods you can invoke, like any modern OOP language can do.
+
 ```vim
 
     function! myobject#new()
@@ -242,7 +262,9 @@ Let’s take a look at how we can create an object that is transient, has state,
     call x.meow()
 ```
 
-This might look familiar to some of you. Yes, it’s almost the same as the JavaScript Module Pattern. Unfortunately, closures are not supported, but otherwise all of the usual benefits apply here, mainly controlled visibility into private state and transience!
+This might look familiar to some of you. Yes, it’s almost the same as the JavaScript Module
+Pattern. Unfortunately, closures are not supported, but otherwise all of the usual benefits
+apply here, mainly controlled visibility into private state and transience!
 
 ### static,public,private functions
 
@@ -330,7 +352,8 @@ This special limited notation makes dictionaries very easy to use as records or 
 
 ### Iterator
 
-Vimscript provides functions that allow you to get a list of all the keys in a dictionary, a list of all its values, or a list of all its key/value pairs:
+Vimscript provides functions that allow you to get a list of all the keys in a dictionary,
+a list of all its values, or a list of all its key/value pairs:
 
     let keylist   = keys(dict)
     let valuelist = values(dict)
@@ -375,8 +398,10 @@ Vimscript provides functions that allow you to get a list of all the keys in a d
 ### Batch-processing of dictionaries
 
 #### function filter()
+
 When removing multiple entries from a dictionary, it is cleaner and more efficient to use filter().
-The filter() function works much the same way as for lists, except that in addition to testing each entry's value using v:val, you can also test its key using v:key. For example:
+The filter() function works much the same way as for lists, except that in addition to testing
+each entry's value using v:val, you can also test its key using v:key. For example:
 
     " Remove any entry whose key starts with C...
     call filter(diagnosis, 'v:key[0] != "C"')
@@ -391,15 +416,22 @@ The filter() function works much the same way as for lists, except that in addit
 #### function map
 
 The map() built-in is particularly handy for normalizing the data in a dictionary.
-For example, given a dictionary containing the preferred names of users (perhaps indexed by userids), you could ensure that each name was correctly capitalized, like so:
+For example, given a dictionary containing the preferred names of users (perhaps indexed by
+userids), you could ensure that each name was correctly capitalized, like so:
 
     call map( names, 'toupper(v:val[0]) . tolower(v:val[1:])' )
 
-The call to map() walks through each value, aliases it to v:val, evaluates the expression in the string, and replaces the value with the result of that expression.
-In this example, it converts the first character of the name to uppercase, and the remaining characters to lowercase, and then uses that modified string as the new name value.
+The call to map() walks through each value, aliases it to v:val, evaluates the expression in
+the string, and replaces the value with the result of that expression.
+In this example, it converts the first character of the name to uppercase, and the remaining
+characters to lowercase, and then uses that modified string as the new name value.
 
 ### Other dictionary-related functions
-In addition to filter(), dictionaries can use several other of the same built-in functions and procedures as lists. In almost every case (the notable exception being string()), a list function applied to a dictionary behaves as if the function had been passed a list of the values of the dictionary. Listing 3 shows the most commonly used functions.
+
+In addition to filter(), dictionaries can use several other of the same built-in functions and
+procedures as lists. In almost every case (the notable exception being string()), a list function
+applied to a dictionary behaves as if the function had been passed a list of the values of the
+dictionary. Listing 3 shows the most commonly used functions.
 
     let is_empty = empty(dict)           " True if no entries at all
 
@@ -437,13 +469,19 @@ In addition to filter(), dictionaries can use several other of the same built-in
 
     The leader key is not special at all: if you don't use it in any mapping it works exactly like any other key.
 
-Think of <leader> as some kind of constant that is automatically expanded to its current value when it is used. When Vim sources your vimrc and sees something like:
+Think of <leader> as some kind of constant that is automatically expanded to its current value
+when it is used. When Vim sources your vimrc and sees something like:
 
-nnoremap <leader>b :ls<CR>:b
+    nnoremap <leader>b :ls<CR>:b
+
 it will use the current value of mapleader and actually do:
 
-nnoremap <Space>b :ls<CR>:b
-What causes the delay you are observing is the fact that <Space> is used (via the <leader> mechanism in your case) at the beginning of an insert mode mapping: Vim is simply waiting a bit to see if you actually want to insert a <Space> or trigger one of the registered insert mode mappings starting with <Space>.
+    nnoremap <Space>b :ls<CR>:b
+
+What causes the delay you are observing is the fact that <Space> is used (via the <leader>
+mechanism in your case) at the beginning of an insert mode mapping: Vim is simply waiting a
+bit to see if you actually want to insert a <Space> or trigger one of the registered insert
+mode mappings starting with <Space>.
 
 To see what insert mode mappings use your <leader> and where they come from, do:
 
@@ -452,5 +490,7 @@ To see what insert mode mappings use your <leader> and where they come from, do:
 
 If the culprit is defined by a plugin, search its documentation for a way to unmap it.
 
-Once you've found the culprits you can make a folder ~/.vim/after/plugin and put a new file in there called something like unmap.vim. In this file you can put unmap commands. One of mine are iunmap <Leader>is which is a mapping from a.vim. – Paymahn Moghadasian
+Once you've found the culprits you can make a folder ~/.vim/after/plugin and put a new file
+in there called something like unmap.vim. In this file you can put unmap commands. One of mine
+are iunmap <Leader>is which is a mapping from a.vim. – Paymahn Moghadasian
 

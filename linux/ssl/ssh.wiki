@@ -23,13 +23,20 @@ This is actually pretty easy to accomplish, even though it's somewhat buried in 
     $ ssh -R 8080:localhost:80 -N username@your-server.dyndns.org
 ```
 
-This will open a listening socket on port 8080 of your-server.dyndns.org, and any connections that are made onto your-server.dyndns.org:8080 will be forwarded over the SSH tunnel to the computer which has opened that SSH connection, and from there will be directed to localhost:80.
+This will open a listening socket on port 8080 of your-server.dyndns.org, and any connections
+that are made onto your-server.dyndns.org:8080 will be forwarded over the SSH tunnel to the
+computer which has opened that SSH connection, and from there will be directed to localhost:80.
 
-The -N option instructs SSH not to open a shell or whatever, just to establish the port forwarding, so you can send it into the background and leave it running.
+The -N option instructs SSH not to open a shell or whatever, just to establish the port forwarding,
+so you can send it into the background and leave it running.
 
-Putty uses pretty much the same syntax, but wrapped into some sort of GUI. The principle is the same though.
+Putty uses pretty much the same syntax, but wrapped into some sort of GUI. The principle is
+the same though.
 
-But be careful in what you do. Since you're essentially funneling external traffic into your network, you are pushing a hole in your network's firewall. If it is not your network, your admin may object to this and take you responsible—usually there is a reason why you are not allowed certain kinds of traffic.
+But be careful in what you do. Since you're essentially funneling external traffic into your
+network, you are pushing a hole in your network's firewall. If it is not your network, your
+admin may object to this and take you responsible—usually there is a reason why you are not
+allowed certain kinds of traffic.
 
 ### A2:
 
@@ -37,7 +44,8 @@ If you check the man page for ssh, you'll find that the syntax for `-R` reads:
 
 <pre>-R [<i>bind_address</i>:]<i>port</i>:<i>host</i>:<i>hostport</i></pre>
 
-When *`bind_address`* is omitted (as in your example), the port is bound on the loopback interface only. In order to make it bind to all interfaces, use
+When *`bind_address`* is omitted (as in your example), the port is bound on the loopback
+interface only. In order to make it bind to all interfaces, use
 
     ssh -R \*:8080:localhost:80 -N root@example.com
 
@@ -48,11 +56,20 @@ or
 
     ssh -R "[::]:8080:localhost:80" -N root@example.com
 
-The first version binds to all interfaces individually. The second version creates a general IPv4-only bind, which means that the port is accessible on all interfaces via IPv4. The third version is probably technically equivalent to the first, but again it creates only a single bind to `::`, which means that the port is accessible via IPv6 natively and via IPv4 through [IPv4-mapped IPv6 addresses](http://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses) (doesn't work on Windows, OpenBSD).  (You need the quotes because `[::]` could be interpreted as a glob otherwise.)
+The first version binds to all interfaces individually. The second version creates a general
+IPv4-only bind, which means that the port is accessible on all interfaces via IPv4. The third
+version is probably technically equivalent to the first, but again it creates only a single
+bind to `::`, which means that the port is accessible via IPv6 natively and via IPv4 through
+[IPv4-mapped IPv6 addresses](http://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses)
+(doesn't work on Windows, OpenBSD).  (You need the quotes because `[::]` could be interpreted
+as a glob otherwise.)
 
 
-@Note that **if you use OpenSSH `sshd` server, the server's `GatewayPorts` option needs to be enabled** (set to `yes` or `clientspecified`) for this to work (check file `/etc/ssh/sshd_config` on the server).
-Otherwise (default value for this option is `no`), the server will always force the port to be bound on the loopback interface only.
+@Note that **if you use OpenSSH `sshd` server, the server's `GatewayPorts` option needs to be
+enabled** (set to `yes` or `clientspecified`) for this to work (check file `/etc/ssh/sshd_config`
+on the server).
+Otherwise (default value for this option is `no`), the server will always force the port to be
+bound on the loopback interface only.
 
 
 ## explain with examples
@@ -65,50 +82,79 @@ There are two ways to create an SSH tunnel:
 
 The best way to understand these is by an example, let’s start with local port forwarding.
 
-Imagine you’re on a private network which doesn’t allow connections to a specific server. Let’s say you’re at work and imgur.com is being blocked.
-To get around this we can create a tunnel through a server which isn’t on our network and thus can access Imgur.
+Imagine you’re on a private network which doesn’t allow connections to a specific
+server. Let’s say you’re at work and imgur.com is being blocked.
+To get around this we can create a tunnel through a server which isn’t on our network and
+thus can access Imgur.
 
     $ ssh -L 9000:imgur.com:80 user@example.com
 
-The key here is -L which says we’re doing local port forwarding. Then it says we’re forwarding our local port 9000 to imgur.com:80, which is the default port for HTTP. Now open your browser and go to http://localhost:9000.
+The key here is -L which says we’re doing local port forwarding. Then it says we’re forwarding
+our local port 9000 to imgur.com:80, which is the default port for HTTP. Now open your browser
+and go to http://localhost:9000.
 
-The awesome thing about SSH tunnels is that they are encrypted. Nobody is going to see what sites you’re visiting, they’ll only see an SSH connection to your server.
+The awesome thing about SSH tunnels is that they are encrypted. Nobody is going to see what
+sites you’re visiting, they’ll only see an SSH connection to your server.
 
 ### Connecting to a database behind a firewall
 
-Another good example is if you need to access a port on your server which can only be accessed from localhost and not remotely.
+Another good example is if you need to access a port on your server which can only be accessed
+from localhost and not remotely.
 
-An example here is when you need to connect to a database console, which only allows local connection for security reasons. Let’s say you’re running PostgreSQL on your server, which by default listens on the port 5432.
+An example here is when you need to connect to a database console, which only allows local
+connection for security reasons. Let’s say you’re running PostgreSQL on your server, which
+by default listens on the port 5432.
 
     $ ssh -L 9000:localhost:5432 user@example.com
 
-The part that changed here is the localhost:5432, which says to forward connections from your local port 9000 to localhost:5432 on your server. Now we can simply connect to our database.
+The part that changed here is the localhost:5432, which says to forward connections from your
+local port 9000 to localhost:5432 on your server. Now we can simply connect to our database.
 
     $ psql -h localhost -p 9000
 
-Now let’s stop here for a little bit an explain what is actually going on. In the first example the 9000:imgur.com:80 is actually saying forward my local port 9000 to imgur.com at port 80. You can imagine SSH on your server actually making a connection (a tunnel) between those two ports, one on your local machine, and one on the target destination.
+Now let’s stop here for a little bit an explain what is actually going on. In the first example
+the 9000:imgur.com:80 is actually saying forward my local port 9000 to imgur.com at port 80. You
+can imagine SSH on your server actually making a connection (a tunnel) between those two ports,
+one on your local machine, and one on the target destination.
 
-If we however say something like 9000:localhost:5432, it means localhost from the server’s perspective, not localhost on your machine. This means forward my local port 9000 to port 5432 on the server, because when you’re on the server, localhost means the server itself.
+If we however say something like 9000:localhost:5432, it means localhost from the server’s
+perspective, not localhost on your machine. This means forward my local port 9000 to port 5432
+on the server, because when you’re on the server, localhost means the server itself.
 
-This might be a bit confusing, but it is important to understand what the syntax actually means here.
+This might be a bit confusing, but it is important to understand what the syntax actually
+means here.
 
 ### Remote port forwarding
 
-Now [comes](comes) the second part of this tutorial, which is remote port forwarding. This is again best to explain with an example.
+Now comes the second part of this tutorial, which is remote port forwarding. This is again best
+to explain with an example.
 
-Say that you’re developing a Rails application on your local machine, and you’d like to show it to a friend. Unfortunately your ISP didn’t provide you with a public IP address, so it’s not possible to connect to your machine directly via the internet.
+Say that you’re developing a Rails application on your local machine, and you’d like to
+show it to a friend. Unfortunately your ISP didn’t provide you with a public IP address,
+so it’s not possible to connect to your machine directly via the internet.
 
-Sometimes this can be solved by configuring NAT (Network Address Translation) on your router, but this doesn’t always work, and it requires you to change the configuration on your router, which isn’t always desirable. This solution also doesn’t work when you don’t have admin access on your network.
+Sometimes this can be solved by configuring NAT (Network Address Translation) on your router,
+but this doesn’t always work, and it requires you to change the configuration on your router,
+which isn’t always desirable. This solution also doesn’t work when you don’t have admin
+access on your network.
 
-To fix this problem you need to have another computer, which is publicly accessible and have SSH access to it. It can be any server on the internet, as long as you can connect to it. We’ll tell SSH to make a tunnel that opens up a new port on the server, and connects it to a local port on your machine.
+To fix this problem you need to have another computer, which is publicly accessible and have SSH
+access to it. It can be any server on the internet, as long as you can connect to it. We’ll
+tell SSH to make a tunnel that opens up a new port on the server, and connects it to a local
+port on your machine.
 
     $ ssh -R 9000:localhost:3000 user@example.com
 
-The syntax here is very similar to local port forwarding, with a single change of -L for -R. But as with local port forwarding, the syntax remains the same.
+The syntax here is very similar to local port forwarding, with a single change of -L for -R. But
+as with local port forwarding, the syntax remains the same.
 
-First you need to specify the port on which th remote server will listen, which in this case is 9000, and next follows localhost for your local machine, and the local port, which in this case is 3000.
+First you need to specify the port on which th remote server will listen, which in this case
+is 9000, and next follows localhost for your local machine, and the local port, which in this
+case is 3000.
 
-There is one more thing you need to do to enable this. SSH doesn’t by default allow remote hosts to forwarded ports. To enable this open /etc/ssh/sshd_config and add the following line somewhere in that config file.
+There is one more thing you need to do to enable this. SSH doesn’t by default allow remote
+hosts to forwarded ports. To enable this open /etc/ssh/sshd_config and add the following line
+somewhere in that config file.
 
     GatewayPorts yes
 
@@ -120,42 +166,188 @@ And restart SSH
 
     $ sudo service ssh restart
 
-After this you should be able to connect to the server remotely, even from your local machine. The way this would work is that you would first create an SSH tunnel that forwards traffic from the server on port 9000 to your local machine on port 3000. This means that if you connect to the server on port 9000 from your local machine, you’ll actually make a request to your machine through the SSH tunnel.
+After this you should be able to connect to the server remotely, even from your local machine. The
+way this would work is that you would first create an SSH tunnel that forwards traffic from the
+server on port 9000 to your local machine on port 3000. This means that if you connect to the
+server on port 9000 from your local machine, you’ll actually make a request to your machine
+through the SSH tunnel.
 
 #### A few closing tips
 
-You might have noticed that every time we create a tunnel you also SSH into the server and get a shell. This isn’t usually necessary, as you’re just trying to create a tunnel. To avoid this we can run SSH with the -nNT flags, such as the following, which will cause SSH to not allocate a tty and only do the port forwarding.
+You might have noticed that every time we create a tunnel you also
+SSH into the server and get a shell. This isn’t usually necessary,
+as you’re just trying to create a tunnel. To avoid this we can run SSH
+with the -nNT flags, such as the following, which will cause SSH to not
+allocate a tty and only do the port forwarding.
 
     $ ssh -nNT -L 9000:imgur.com:80 user@example.com
 
-SSH has a huge number of features, so I’d recommend you to checkout the manual page at man ssh, which contains even more tips.
+SSH has a huge number of features, so I’d recommend you to checkout the manual page at man ssh,
+which contains even more tips.
 
 ## Dynamic Port Forwarding (SOCKS): `-D`
 
 https://zaiste.net/ssh_port_forwarding/
 
-Dynamic Port Forwarding allows a communication not on a single port, but across a range of ports. This port forwarding is created using -D parameter. This option will make SSH acts as a SOCKS proxy server.
+Dynamic Port Forwarding allows a communication not on a single port, but across a range of
+ports. This port forwarding is created using -D parameter. This option will make SSH acts as
+a SOCKS proxy server.
 
-SOCKS5 is an internet protocol which routes packets between a server and a client using a proxy server. SOCKS5 proxy servers use both TCP and UDP protocols (SOCKS4 only uses TCP). A SOCKS proxy is simply a SSH tunnel in which specific applications forward their traffic down the tunnel to the remote server, and then on the server end, the proxy forwards the traffic out to the general Internet. Unlike a VPN, a SOCKS proxy has to be configured for each application separately on the client machine. There is, however, no need to install 3rd party applications to use it.
+SOCKS5 is an internet protocol which routes packets between a server and a client using a proxy
+server. SOCKS5 proxy servers use both TCP and UDP protocols (SOCKS4 only uses TCP). A SOCKS proxy
+is simply a SSH tunnel in which specific applications forward their traffic down the tunnel to
+the remote server, and then on the server end, the proxy forwards the traffic out to the general
+Internet. Unlike a VPN, a SOCKS proxy has to be configured for each application separately on
+the client machine. There is, however, no need to install 3rd party applications to use it.
 
-Proxies usually rewrite data packet headers. This may leads to decrease performance and mislabeling errors. SOCKS5 proxy servers do not rewrite data packet headers. They are more performant and less prone to data routing errors. Unlike HTTP proxies which can only interpret and work with webpages, SOCKS5 proxies can work with any kind of traffic. This is because SOCKS proxy servers are low-level proxies that can handle any program, protocol and any type of traffic.
+Proxies usually rewrite data packet headers. This may leads to decrease performance and mislabeling
+errors. SOCKS5 proxy servers do not rewrite data packet headers. They are more performant and
+less prone to data routing errors. Unlike HTTP proxies which can only interpret and work with
+webpages, SOCKS5 proxies can work with any kind of traffic. This is because SOCKS proxy servers
+are low-level proxies that can handle any program, protocol and any type of traffic.
 
-Dynamic Port Forwarding can handle connections from multiple ports. It analyzes the traffic to determine the proper destination for the given connection. For example, a browser configured to use it as a SOCKS proxy can then access HTTP, HTTPS, FTP, etc. over the same connection. If you're using dynamic port forwarding, you need to configure programs to use a SOCKS proxy server.
+Dynamic Port Forwarding can handle connections from multiple ports. It analyzes the traffic to
+determine the proper destination for the given connection. For example, a browser configured
+to use it as a SOCKS proxy can then access HTTP, HTTPS, FTP, etc. over the same connection. If
+you're using dynamic port forwarding, you need to configure programs to use a SOCKS proxy server.
 
 Here's an example.
 
     $ ssh -D 8123 -f -C -q -N via_host
 
- -D tells SSH to create a SOCKS tunnel on the the port 8123.
- -f forks the process to the background.
- -C compresses the data before sending it.
- -q enables quiet mode.
- -N tells SSH that no command will be sent once the tunnel is up.
+     -D tells SSH to create a SOCKS tunnel on the the port 8123.
+     -f forks the process to the background.
+     -C compresses the data before sending it.
+     -q enables quiet mode.
+     -N tells SSH that no command will be sent once the tunnel is up.
+
+### ssh socks proxy
+
+[socks-proxy-as-poor-mans-vpn](https://www.redpill-linpro.com/sysadvent/2015/12/13/socks-proxy-as-poor-mans-vpn.html)
+[`proxychains`-Access the two layers server](https://netsec.ws/?p=278)
+
+    $ proxychains rdesktop 10.6.6.88 -u Administrator -p password -g 90%
+
+    ### Scan the 10.6.6.88 machine to tell us if anything else other than RDP was open.
+    $ proxychains nmap -sTV -n -PN 10.6.6.88
+
+Have no VPN access, but there is an emergency ssh port available, but no other port is open.
+ssh port-forwarding and fix /etc/hosts. Doable perhaps? VNC over ssh? Awkward. Enter the ssh socks proxy!
+
+### Enable SOCKS-proxy service on server side
+
+	$ ssh -D 1080 login.example.com
+
+Now, we create a local socket listen on port 1080 which forwarding any received traffic to the ssh.server-side.SOCKS-proxy which will meet our SOCKS's request.
+
+So now if we have tool which support socks-protocol can work as our Office-local-env, for example, like firefox.
+
+####  Firefox (natively support SOCKS client protocol)
+
+1. enable socks proxy
+
+    Settings -> Advanced -> Network -> Configure how Firefox connects to the Internet -> Manual settings, Socks: localhost, Port: 1080
+
+2. enable remote dns resolve
+
+    If you need to resolve addresses from the server side, add that to the config.
+    Type about:config , then search for key, Set it to true.
+
+    network.proxy.socks_remote_dns
+
+That is all. You are now surfing as if Firefox was running locally on the login server.
+
+### command not support SOCKS-protocol
+
+But wait, there’s more. With a local SOCKS proxy, you may also use other programs, and they
+don’t even have to support SOCKS themselves. Install `tsocks`, and set localhost as the socks
+proxy host:
+
+    $ sudo yum install tsocks || sudo apt-get install tsocks
+    $ echo "server = 127.0.0.1" | sudo tee /etc/tsocks.conf
+
+`tsocks` is a little gem of a program. It hooks into other programs, and redirects network traffic to
+the local SOCKS proxy. Now, while the ssh SOCKS proxy is still running (the ssh -D1080 command),
+just use tsocks to run your favourite program through the proxy:
+
+    ### Log into a server on a closed network behind the firewall
+    $ tsocks ssh server.behind.firewall.example.com
+
+    ### Download a file from remote Office env
+    $ tsocks sh -c "wget -q -O- http://whatismyipaddress.com/|grep 'LOOKUPADDRESS'"
+
+    ### Run a local psql shell against a remote server through the SOCKS proxy
+    $ tsocks psql -U pg_admin_user -W -h database.behind.firewall.example.com -W template1
+
+    Or to run a whole session of commands through the socks proxy, start with “. tsocks on” (note the leading dot), and stop it with “. tsocks off”
+
+    $. tsocks on
+    $ command
+    $ command
+    $ command
+    $. tsocks off
+
+To run Firefox through the SOCKS proxy, but without changing its configuration:
+
+    $ tsocks firefox http://ripe.net   # Stop firefox first
+
+To check tsocks status, run
+
+    $ tsocks show
+
+If the LD_PRELOAD variable is empty, tsocks is disabled for this shell.
+
+**Note** that all Internet traffic is not routed via tsocks. For example, ICMP is not.
+
+## tsocks: a wrapper network base on SOCKS
+
+### Config
+
+First of all, you should edit /etc/tsocks.conf and set a forwarding port there (using the
+server_port variable). Pick a value larger than 10000. I use port 19999. The file should look
+like this:
+
+    server = 127.0.0.1
+    server_port = 19999
+    server_type = 5
+
+with-tsocks can be configured either through command line options or environment variables. Command
+line options take precedence over environment variable. The environment variables, and their
+respective command line options, are:
+
+ * WITH_TSOCKS_SERVER: contains the server argument given to ssh, with the username. It is of
+   the form username@example.com. The equivalent command line option is --server=SERVER. This
+   parameter is required.
+ * WITH_TSOCKS_SSHOPTS: space-separated additionnal options to pass to ssh. The equivalent
+   command line option is --sshopts=OPTS
+ * WITH_TSOCKS_NOPASS: whether with-tsocks should ask for a password when connecting to the
+   SSH server. If 1, do not ask, otherwise ask. The equivalent command line option is --nopass
+ * WITH_TSOCKS_FORWARD_PORT: the port number to use for local forwarding. The equivalent command
+   line option is --forward-port=PORT. This parameter is required.
+
+with-tsocks takes as argument the program to run through the tunnel. For example, to run mutt
+through an ssh tunnel at example.com, you would do something like:
+
+    $ with-tsocks --server=luser@example.com --forward-port=19999 mutt
+
+### How tsocks works
+
+https://plenz.com/tunnel-everything.php
+
+I won't go into detail about how this program works, but it basically does the following:
+
+ * Before the actual program is loaded tsocks loads its own shared library.
+ * This library overwrites the kernel's connect() function and replaces it with its own.
+ * Whenever the program tries to send a request the request is forwarded through your proxy server (and then over the secure tunnel).
+
+All this is done through setting the environment variable LD_PRELOAD to /usr/lib/libtsocks.so.
+
+The `tsocks` program itself is just a simple shell wrapper script. All the actual redirecting stuff is done via the library.
 
 ## Tips & Tricks
 
 The -nNT flags will cause SSH to not allocate a tty and only do the port forwarding.
 
-$ ssh -nNT -L 9000:imgur.com:80 user@example.com
+    $ ssh -nNT -L 9000:imgur.com:80 user@example.com
 
 
