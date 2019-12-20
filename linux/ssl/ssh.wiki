@@ -1,17 +1,21 @@
 # Secure Shell(ssh)
 
-## ssh tunnel
+## tsocks: a transparent SOCKS proxy
+
+https://github.com/zyxar/tsocks
+
+# SSH tunnel
 
 [how-does-reverse-ssh-tunnel-work](https://unix.stackexchange.com/questions/46235/how-does-reverse-ssh-tunneling-work)
 
-### tunnel a local port onto a remote server
+## tunnel a local port onto a remote server
 
 Q: I have a domain that i bought from DynDNS. I pointed the domain at my ip adress so i can run servers.
 The problem I have is that I don't live near the server computer... Can I use an ssh tunnel?
 As I understand it, this will let me have access to my servers.
 I want the remote computer to direct traffic from port 8080 over the ssh tunnel to the ssh client, being my laptop's port 80. Is this possible?
 
-#### A1:
+### A1:
 
 This is actually pretty easy to accomplish, even though it's somewhat buried in the ssh documentation. Assuming OpenSSH, the basic syntax is as follows:
 
@@ -27,7 +31,7 @@ Putty uses pretty much the same syntax, but wrapped into some sort of GUI. The p
 
 But be careful in what you do. Since you're essentially funneling external traffic into your network, you are pushing a hole in your network's firewall. If it is not your network, your admin may object to this and take you responsible—usually there is a reason why you are not allowed certain kinds of traffic.
 
-#### A2:
+### A2:
 
 If you check the man page for ssh, you'll find that the syntax for `-R` reads:
 
@@ -51,7 +55,7 @@ The first version binds to all interfaces individually. The second version creat
 Otherwise (default value for this option is `no`), the server will always force the port to be bound on the loopback interface only.
 
 
-### explain with examples
+## explain with examples
 
 https://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html
 
@@ -70,7 +74,7 @@ The key here is -L which says we’re doing local port forwarding. Then it says 
 
 The awesome thing about SSH tunnels is that they are encrypted. Nobody is going to see what sites you’re visiting, they’ll only see an SSH connection to your server.
 
-#### Connecting to a database behind a firewall
+### Connecting to a database behind a firewall
 
 Another good example is if you need to access a port on your server which can only be accessed from localhost and not remotely.
 
@@ -88,7 +92,7 @@ If we however say something like 9000:localhost:5432, it means localhost from th
 
 This might be a bit confusing, but it is important to understand what the syntax actually means here.
 
-#### Remote port forwarding
+### Remote port forwarding
 
 Now [comes](comes) the second part of this tutorial, which is remote port forwarding. This is again best to explain with an example.
 
@@ -125,4 +129,33 @@ You might have noticed that every time we create a tunnel you also SSH into the 
     $ ssh -nNT -L 9000:imgur.com:80 user@example.com
 
 SSH has a huge number of features, so I’d recommend you to checkout the manual page at man ssh, which contains even more tips.
+
+## Dynamic Port Forwarding (SOCKS): `-D`
+
+https://zaiste.net/ssh_port_forwarding/
+
+Dynamic Port Forwarding allows a communication not on a single port, but across a range of ports. This port forwarding is created using -D parameter. This option will make SSH acts as a SOCKS proxy server.
+
+SOCKS5 is an internet protocol which routes packets between a server and a client using a proxy server. SOCKS5 proxy servers use both TCP and UDP protocols (SOCKS4 only uses TCP). A SOCKS proxy is simply a SSH tunnel in which specific applications forward their traffic down the tunnel to the remote server, and then on the server end, the proxy forwards the traffic out to the general Internet. Unlike a VPN, a SOCKS proxy has to be configured for each application separately on the client machine. There is, however, no need to install 3rd party applications to use it.
+
+Proxies usually rewrite data packet headers. This may leads to decrease performance and mislabeling errors. SOCKS5 proxy servers do not rewrite data packet headers. They are more performant and less prone to data routing errors. Unlike HTTP proxies which can only interpret and work with webpages, SOCKS5 proxies can work with any kind of traffic. This is because SOCKS proxy servers are low-level proxies that can handle any program, protocol and any type of traffic.
+
+Dynamic Port Forwarding can handle connections from multiple ports. It analyzes the traffic to determine the proper destination for the given connection. For example, a browser configured to use it as a SOCKS proxy can then access HTTP, HTTPS, FTP, etc. over the same connection. If you're using dynamic port forwarding, you need to configure programs to use a SOCKS proxy server.
+
+Here's an example.
+
+    $ ssh -D 8123 -f -C -q -N via_host
+
+ -D tells SSH to create a SOCKS tunnel on the the port 8123.
+ -f forks the process to the background.
+ -C compresses the data before sending it.
+ -q enables quiet mode.
+ -N tells SSH that no command will be sent once the tunnel is up.
+
+## Tips & Tricks
+
+The -nNT flags will cause SSH to not allocate a tty and only do the port forwarding.
+
+$ ssh -nNT -L 9000:imgur.com:80 user@example.com
+
 
