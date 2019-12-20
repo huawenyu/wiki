@@ -1,0 +1,168 @@
+# zlib
+
+[zlib source](https://github.com/zlib-ng/zlib-ng)
+
+## git clone code
+
+## build
+
+    ./configure --help
+    ./configure --zlib-compat --with-gzfileops
+    make
+    make test
+
+## test code: put file t1.c in current zlib-ng dir
+
+```
+    #include "zbuild.h"
+    #ifdef ZLIB_COMPAT
+    #  include "zlib.h"
+    #else
+    #  include "zlib-ng.h"
+    #endif
+    #include "deflate.h"
+
+    #include <stdio.h>
+
+    #include <string.h>
+    #include <stdlib.h>
+    #include <inttypes.h>
+
+    #define TESTFILE "/tmp/my.gz"
+
+    /* @return bool */
+    static inline int gzchk_err(gzFile stream)
+    {
+    	int errnum = Z_OK;
+    	const char *err;
+
+    	err = gzerror(stream, &errnum);
+    	if (errnum != Z_OK) {
+    		fprintf(stderr, "gzerror: %s\n", err);
+    		return 1;
+    	}
+    	return 0;
+    }
+
+    /** read at most the buff-size with terminating '\0' and consume the whole line
+     * @return >0,  the length of data
+     *          0,  end of file
+     *         -1,  gzerror
+     */
+    int gzgets_oneline(gzFile stream, char *buf, int buf_sz)
+    {
+    	int len = 0, tmp_len;
+    	char *p;
+
+    	if (gzeof(stream))
+    		return 0;
+    	p = gzgets(stream, buf, buf_sz);
+    	if (gzchk_err(stream))
+    		return -1;
+    	if (gzeof(stream))
+    		return 0;
+    	if (!p)
+    		return -1;
+    	len = strlen(buf);
+    	if (!len)
+    		return -1;
+    	/* skip the current line'buf remain data */
+    	tmp_len = len;
+    	while (p[tmp_len-1] != '\n') {
+    		char tmp_buf[128];
+
+    		p = gzgets(stream, tmp_buf, sizeof(tmp_buf));
+    		if (gzchk_err(stream))
+    			return -1;
+    		if (gzeof(stream))
+    			break;
+    		tmp_len = strlen(p);
+    	}
+
+    	return len;
+    }
+
+    void read_file(const char *fname)
+    {
+    	int ret=0, len;
+    	gzFile file;
+    	char uncompr[4096];
+
+    	file = gzopen(fname, "rb");
+    	if (file == NULL) {
+    		fprintf(stderr, "gzopen error\n");
+    		exit(1);
+    	}
+
+    	while (1) {
+    		len = gzgets_oneline(file, uncompr, sizeof(uncompr));
+    		if (len < 0) {
+    			ret = -1;
+    			goto out;
+    		}
+    		else if (len == 0)
+    			break;
+
+    		fprintf(stdout, "gzgets len=%d[%s]\n", len, uncompr);
+    	}
+
+    out:
+    	gzclose(file);
+    	return ret;
+    }
+
+
+    int main(int argc, char *argv[])
+    {
+    	if (argc < 2)
+    		read_file(TESTFILE);
+    	else
+    		read_file(argv[1]);
+
+    	return 0;
+    }
+
+```
+
+## build & run
+
+    $ gcc -g -O0 -I. -DZLIB_COMPAT -L/ssd/work/bug-webf-blk/zlib-ng -Wall -o t1 t1.c -lz
+    $ ./t1
+    $ LD_PRELOAD=./libz.so ./t1
+
+# handle error
+
+## fake error
+
+The `gzip -t` command only returns an exit code to the shell saying whether the file passed the integrity test or not.
+
+Example (in a script):
+
+    if gzip -t file.gz; then
+        echo 'file is ok'
+    else 
+        echo 'file is corrupt'
+    fi
+
+Adding `-v` will make it actually report the result with a message.
+
+Example:
+
+    $ gzip -v -t file.gz
+    file.gz:        OK
+
+So the file is ok.  Let's corrupt the file (by writing the character `0` at byte 40 in the file) and try again.
+
+    $ [dd](dd) seek=40 bs=1 count=1 of=file.gz <<<"0"
+    1+0 records in
+    1+0 records out
+    1 bytes transferred in 0.000 secs (2028 bytes/sec)
+
+<!-- -->
+
+    $ gzip -v -t file.gz
+    file.gz:        gzip: file.gz: Inappropriate file type or format
+
+The integrity of a file with respect to its compression does *not* guarantee that the file *contents* is what you believe it is.  If you have an MD5 checksum (or some similar checksum) of the file from whomever provided it, then you would be able to get an additional confirmation that the file not only is a valid `gzip` archive, but also that its contents is what you expect it to be.
+
+

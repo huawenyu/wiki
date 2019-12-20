@@ -1,4 +1,4 @@
-# sample1 - hello world
+# sample - hello world
 
 http://www.yolinux.com/TUTORIALS/LibraryArchives-StaticAndDynamic.html
 [Shared libraries with GCC on Linux](https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html)
@@ -114,79 +114,6 @@ What is position independent code? PIC is code that works no matter where in mem
 GCC first searches for libraries in /usr/local/lib, then in /usr/lib. Following that, it searches for libraries in the directories specified by the -L parameter, in the order specified on the command line. ↩
 
 The default GNU loader, ld.so, looks for libraries in the following order
-
-# sample2 - zlib
-
-[zlib source](https://github.com/zlib-ng/zlib-ng)
-
-## git clone code
-
-## build
-
-    ./configure --help
-    ./configure --zlib-compat --with-gzfileops
-    make
-    make test
-
-## test code: put file t1.c in current zlib-ng dir
-
-```
-    #include "zbuild.h"
-    #ifdef ZLIB_COMPAT
-    #  include "zlib.h"
-    #else
-    #  include "zlib-ng.h"
-    #endif
-    #include "deflate.h"
-
-    #include <stdio.h>
-
-    #include <string.h>
-    #include <stdlib.h>
-    #include <inttypes.h>
-
-    #define TESTFILE "/tmp/my.gz"
-
-    void read_line(const char *fname, unsigned char *uncompr, z_size_t uncomprLen)
-    {
-    	int err;
-    	gzFile file;
-
-    	file = gzopen(fname, "rb");
-    	if (file == NULL) {
-    		fprintf(stderr, "gzopen error\n");
-    		exit(1);
-    	}
-
-    	gzgets(file, (char*)uncompr, (int)uncomprLen);
-    	if (gzerror(file, &err)) {
-    		fprintf(stderr, "gzgets err after gzseek: %s\n", gzerror(file, &err));
-    		exit(1);
-    	}
-
-    	gzclose(file);
-    }
-
-
-    int main(int argc, char *argv[])
-    {
-    	unsigned char uncompr[4096];
-
-    	if (argc < 2)
-    		read_line(TESTFILE, uncompr, sizeof(uncompr));
-    	else
-    		read_line(argv[1], uncompr, sizeof(uncompr));
-
-    	return 0;
-    }
-
-```
-
-## build & run
-
-    $ gcc -g -O0 -I. -DZLIB_COMPAT -L/ssd/work/bug-webf-blk/zlib-ng -Wall -o t1 t1.c -lz
-    $ ./t1
-    $ LD_PRELOAD=./libz.so ./t1
 
 # cmd: ldconfig
 ```sh
