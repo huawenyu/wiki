@@ -225,6 +225,7 @@ Here's an example.
 
 [socks-proxy-as-poor-mans-vpn](https://www.redpill-linpro.com/sysadvent/2015/12/13/socks-proxy-as-poor-mans-vpn.html)
 [`proxychains`-Access the two layers server](https://netsec.ws/?p=278)
+[hackers-tools-work-proxychains](https://0x00sec.org/t/how-do-those-hackers-tools-work-proxychains/426)
 
     $ proxychains rdesktop 10.6.6.88 -u Administrator -p password -g 90%
 
