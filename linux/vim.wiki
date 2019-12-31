@@ -235,6 +235,29 @@ Functions that can be used with a Dictionary:
         :let s = string(dict)           " String representation of dict
         :call map(dict, '">> " . v:val')  " prepend ">> " to each item
 
+## lambda
+
+```vim
+    let Counter = {
+    \   -> function({
+    \       value -> [
+    \           execute("let value[0] += 1"),
+    \           value[0]
+    \       ][-1]
+    \   }, [[0]])
+    \}
+
+    let Count = Counter()
+
+    echo Count()
+    echo Count()
+    echo Count()
+
+    " => 1
+    " 2
+    " 3
+```
+
 ## OOP
 [modularizing-vimscript](http://bling.github.io/blog/2013/08/16/modularizing-vimscript/)
 [vim-jslike-oop](https://github.com/t9md/vim-jslike-oop/blob/master/vim-jslike-oop.vim)
