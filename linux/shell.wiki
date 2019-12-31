@@ -1,7 +1,7 @@
 # Shell Setup
 
 ## Change Shell
-
+```sh
     [ejr@hobbes ejr]$ cat /etc/shells
         /bin/bash
         /bin/sh
@@ -17,10 +17,11 @@
 
     ejr@hobbes ~ $ su - ejr     <=== check the new shell
         Password:
+```
 
 ## Shortkey
 
-[Command Line Shortkey][6]
+Command Line Shortkey
 
 ```
     CTRL + A                <<< Move to the beginning of the line
