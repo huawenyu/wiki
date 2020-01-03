@@ -13,7 +13,7 @@
 
 ## test code: put file t1.c in current zlib-ng dir
 
-```
+```c
     #include "zbuild.h"
     #ifdef ZLIB_COMPAT
     #  include "zlib.h"
