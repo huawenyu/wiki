@@ -92,7 +92,19 @@ Please install plugin [vim-eval](https://github.com/amiorin/vim-eval) which can 
 
   https://vim-jp.org/vimdoc-en/eval.html
 
-1.2 Function references
+### functor
+
+```vim
+    " Usage: selected; Press <leader>ee; then <leader>el to show output
+    function! s:functor(a, b)
+        call vlog#debug(a:a + a:b)
+    endfunction
+
+    let Func1 = function('s:functor', [16])
+    call Func1(3)
+```
+
+### 1.2 Function references
                                         Funcref E695 E718
 A Funcref variable is obtained with the function() function, the funcref()
 function or created with the lambda expression expr-lambda.  It can be used
