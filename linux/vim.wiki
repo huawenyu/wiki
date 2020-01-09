@@ -55,6 +55,92 @@ This only tool can support tags & cscope-likes at the sametime
 So far, `clang` could meet the requirement, we also choose `ccls`(@note:ccls) as clang-based
 indexer, and use coc.vim be the vim plugins.
 
+# text handle
+
+## "Zoom" anchors
+
+Vim support two kinds of regex-lookaround mode, perl-mode:
+ - \@=      positive lookahead
+ - \@!      negative lookahead
+ - \@<=     positive lookbehind
+ - \@<!     negative lookbehind
+
+vim-mode (better use and understand):
+ - \zs      set the match start pos
+ - \ze      set the match end pos
+
+There are many situations where you can use the zero-width anchors `\zs` and `\ze` instead of
+positive lookaround. These anchors define the start (`\zs`) and the end (`\ze`) of the match
+within the full pattern.
+
+### Search/match Examples
+
+`https://jdhao.github.io/2018/10/18/regular_expression_nvim/`
+
+The text is `foobar foo barfoo`
+
+```vim
+    1. To match foo which is followed by bar (bar not part of the match):
+    /foo\(bar\)\@=
+    <or> The `very magic` mode is activate by preceding the search pattern with \v. In the very magic mode, you have to remove the \ character from the look around pattern.
+    /\vfoo(bar)@=
+    <or>
+    /foo\zebar
+
+    2. Match foo which is not followed by bar
+    /foo\(bar\)\@!
+
+    3. Match foo which is preceded by bar
+    /\(bar\)\@<=foo
+    <or>
+    /bar\zsfoo
+
+    4. Match foo which is not preceded by bar
+    /\(bar\)\@<!foo
+
+* `foo\zsbar` will match `bar` preceded by `foo` (`foo` not part of the match)
+* `foo\zebar` will match `foo` followed by `bar` (`bar` not part of the match)
+* `myFunction(\zs.*\ze)` will match the parameters in a function call *(for demonstration purposes, I'm not focusing on greedy vs non-greedy matching)*
+```
+
+### Putting it to use
+
+These become most useful when using the `:substitute` command. For example, say I wanted to replace the parameters in a function call to `myFunction()` with `foo`:
+
+    :%s/myFunction(\zs.*\ze)/foo/
+
+This will leave `myFunction(` and `)` intact, and you don't have to worry about capturing them in your *pattern* or repeating them in your *replacement*.
+
+You could do this using the lookaround feature of Vim's regex, but it's quite clunky:
+
+    :%s/\(myFunction(\)\@<=.*\()\)\@=/foo/
+
+(I find this syntax causes me to forget what I was trying to do in the first place.)
+
+### You still need lookaround sometimes
+
+There are still situations where you need lookaround. Using `\zs` and `\ze` are great for
+simple situations where you have *something before* followed by *text to match* followed by
+*something after*. But if it's more complex than that, you'll probably have to stick to the
+heavier lookaround syntax.
+
+### Fun fact
+
+Though they're considerably uglier, Vim's lookarounds are more powerful than those in PCRE! They
+support variable-length negative lookbehind, meaning you can assert that some pattern whose
+length is not predetermined is *not* before your match.
+
+PCRE doesn't support this, as it's fairly computationally expensive. That's not a huge concern
+in Vim, since the most common use cases of regex tend to involve interactive searching where
+the computation time is nearly imperceptible to the user. You'd probably notice it if it were
+used for syntax highlighting, though.
+
+### Relevant Help Topics
+
+* `:help \zs`
+* `:help \ze`
+* `:help perl-patterns`
+
 # vimscript
 
 ## Ref docs
