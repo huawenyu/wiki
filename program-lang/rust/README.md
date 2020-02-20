@@ -26,6 +26,13 @@ Base on ctags:
     /// <or> reuse the old name
     rusty-tags vi --output=".tags".
 
+### work-with coc.vim
+
+https://github.com/neoclide/coc-rls
+
+Execute vim command like this:
+:CocInstall coc-rls
+
 # Language
 
 ## Macro
