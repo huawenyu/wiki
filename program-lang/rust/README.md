@@ -3,6 +3,29 @@
 https://rustcc.gitbooks.io/rustprimer/content/macro/macro.html
 https://kaisery.github.io/trpl-zh-cn/ch15-05-interior-mutability.html
 
+## QuickStart
+
+### Setup env for R&D
+
+https://hoverbear.org/blog/setting-up-a-rust-devenv/
+
+## vim plugs
+
+### tags
+https://github.com/dan-t/rusty-tags
+
+Base on ctags:
+
+    $ cargo install rusty-tags
+    /// generate tags for vi
+    $ rusty-tags vi
+    $ rustup component add rust-src
+
+    ///tags names: Put this into your ~/.vimrc file:
+      autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/
+    /// <or> reuse the old name
+    rusty-tags vi --output=".tags".
+
 # Language
 
 ## Macro
