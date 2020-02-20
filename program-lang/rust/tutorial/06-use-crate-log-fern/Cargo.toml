@@ -1,0 +1,13 @@
+[package]
+name = "cmdout"
+version = "0.1.0"
+authors = ["test"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+log = "0.4"
+fern = { git = "https://github.com/daboross/fern" }
+chrono = "0.4.10"
+clap = "2.33.0"
