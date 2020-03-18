@@ -272,7 +272,9 @@ The solution is setting a specific Settings -> General -> Persistent root (/) di
 
     $ apt-get install vim
 
-## Bash profile
+## Local shell: Bash profile
+
+    $ ln -s ~/dotfiles/.bash_windows ~/.bash_profile
 
     $ cat .bash_profile
         parse_git_branch() {
