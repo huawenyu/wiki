@@ -234,6 +234,50 @@ F11         toggle fullscreen
   $ open `pwd`
 ```
 
+## Config file
+
+https://blog.mobatek.net/post/mobaxterm-configuration-settings/
+
+How to locate my MobaXterm configuration file?
+Well, it depends… Your MobaXterm.ini configuration file should be located:
+
+in the same folder as MobaXterm executable if you are using MobaXterm Portable Edition
+in %MyDocuments%\MobaXterm folder if you are using MobaXterm Installer Edition
+in %MyDocuments%\MobaXterm folder if you are using MobaXterm Portable Edition and if you only have read access to the folder where the executable is
+Moreover, you can use the -i commandline setting in order to determine the configuration file path for MobaXterm. For instance, you can specify the configuration file path manually at MobaXterm startup using the following command:
+C:\Some\place\MobaXterm.exe -i “D:\Data\MobaXterm.ini”
+
+or you can use a network shared folder:
+C:\Some\place\MobaXterm.exe -i “\MySharedFolder\MobaXterm.ini”
+
+or you can even use a web (HTTP) address in order to retrieve the configuration file:
+C:\Some\place\MobaXterm.exe -i https://MyIntranetServer/MobaXterm.ini
+In this case, the configuration file will be read from your intranet and any modification made by the user will be saved in a new MobaXterm.ini file created under %MyDocuments%\MobaXterm folder.
+
+
+
+
+Which settings can be put in this INI file?
+There are many settings which could be put in this MobaXterm.ini configuration file. We will just list the settings which cannot be set using the graphical interface. All these settings should be put under the [Misc] section of the configuration file. These options should be used by advanced users only:
+
+Setting	Default value	Comment
+MobaTempDir	%TEMP%	Path to MobaXterm temp folder
+XWinSwitches	-hostintitle +bs	Additional X11 commandline parameters
+Scrollbar	1	Toggle scrollbar visibility in terminal
+SeparationLine	1	Toggle separation line visibility in terminal
+BoldAsFont	no	Render bold text using bold font
+BoldAsColour	yes	Render bold text using different colour
+BellSound	no	Play a "beep" sound when terminal bell is triggered
+BellFlash	no	Flash terminal when terminal bell is triggered
+AllowBlinking	no	Allow font blinking in terminal
+CtrlAltIsAltGr	no	Use Ctrl+Alt keys to simulate AltGr key press
+NbPenguins	4	Number of penguins for the "consolesaver"
+TimerConst	600	Time (in seconds) before starting the "consolesaver"
+TimerInt	100	Time (in ms) between each penguin move in the "consolesaver"
+PgUpDnScroll	0	Use PageUp/PageDown without "Shift" modifier for terminal scrolling
+ScrollMod	shift	Change scroll modifier to ctrl/alt/shift
+ScrollbackLines	360000	Specify scrollback buffer size
+
 ## Howto install [plugins](plugins)
 
 1. Download plugin from Plugins list: https://mobaxterm.mobatek.net/plugins.html
