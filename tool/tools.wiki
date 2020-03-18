@@ -239,6 +239,7 @@ Whenever I install any package with
 
 $ apt-get install nano
 $ apt-get install vim
+$ apt-get install tmux
 $ apt-get install bind-utils
 
 I can use the package for the whole MobaXterm session. But these packages vanish when closing MobaXterm.
@@ -266,6 +267,11 @@ The solution is setting a specific Settings -> General -> Persistent root (/) di
              git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
         }
         export PS1="\[\033[32m\]\W\[\033[31m\]\$(parse_git_branch)\[\033[00m\] $ "
+
+## tmux: should listen local socket to solve the permission issues
+
+  $ tmux -S ~/.tmsock new work
+  $ tmux -S ~/.tmsock list-keys
 
 # Static code analyzers/checker for C
 
