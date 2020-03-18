@@ -270,6 +270,7 @@ The solution is setting a specific Settings -> General -> Persistent root (/) di
 
 ## tmux: should listen local socket to solve the permission issues
 
+  $ apt-get install tmux
   $ tmux -S ~/.tmsock new work
   $ tmux -S ~/.tmsock list-keys
 
