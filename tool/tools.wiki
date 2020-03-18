@@ -218,6 +218,55 @@ The suggested workaround is:
   $ sudo /usr/NX/bin/nxserver --restart
 ```
 
+# window's best terminal: Mobaxterm
+
+We have two methods to add more tool into our Mobaxterm: download plugins, or `apt-get install bind-utils`
+
+## Howto install [plugins](plugins)
+
+1. Download plugin from Plugins list: https://mobaxterm.mobatek.net/plugins.html
+2. Then put the plugin file into:
+    - go into the C:\Program Files (x86)\Mobatek\MobaXterm Personal Edition or whichever edition you have and place the plugin there.
+    - Restart MobaXterm and it should work.
+
+## make apt-get packages also permanent
+
+Q: If using install-version, no such issue at all, so don't need resolve.
+
+I am using MobaXterm 10.8 portable.
+
+Whenever I install any package with
+
+$ apt-get install nano
+$ apt-get install vim
+$ apt-get install bind-utils
+
+I can use the package for the whole MobaXterm session. But these packages vanish when closing MobaXterm.
+
+On the other hand, plugins are persistent.
+
+Is there any way to make apt-get packages also permanent?
+
+A:
+
+The solution is setting a specific Settings -> General -> Persistent root (/) directory, instead of the default <Temp>:
+
+## howto access windows native path
+    $ cd /cygdrive/c            <=== if from cygwin env
+    $ cd /drives/D/Downloads/   <=== if from Mobaxterm local shell env
+
+## Install vim 8.0 + vim-plugins
+
+    $ apt-get install vim
+
+## Bash profile
+
+    $ cat .bash_profile
+        parse_git_branch() {
+             git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+        }
+        export PS1="\[\033[32m\]\W\[\033[31m\]\$(parse_git_branch)\[\033[00m\] $ "
+
 # Static code analyzers/checker for C
 
 ## cppchecker
