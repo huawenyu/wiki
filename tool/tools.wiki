@@ -222,6 +222,11 @@ The suggested workaround is:
 
 We have two methods to add more tool into our Mobaxterm: download plugins, or `apt-get install bind-utils`
 
+## Shortcuts
+
+Ctrl+Tab    toggle tab
+F11         toggle fullscreen
+
 ## Howto install [plugins](plugins)
 
 1. Download plugin from Plugins list: https://mobaxterm.mobatek.net/plugins.html
