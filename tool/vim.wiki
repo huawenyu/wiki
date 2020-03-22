@@ -60,6 +60,16 @@ TX  til previous 'X'
 
 See :help {command} (for example, :help g_) for all of the above if you want more details.
 
+## vim command line move:
+
+  :h cmdline-editing
+
+for details. I am listing a few of the interesting non-arrow commands that do something similar to what you want.
+
+ctrl-b: cursor to beginning of command-line
+ctrl-e: cursor to end of command-line
+ctrl-w: delete the word before the cursor
+ctrl-u: remove all characters between the cursor position and the beginning of the line
 
 # handbook
 

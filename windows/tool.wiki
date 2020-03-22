@@ -1,0 +1,19 @@
+# Terminal: MoboXterm
+
+Maybe wsl(Windows SubLinux) is another choise.
+
+## We get a pretty Terminal Client support ssh
+
+## Also we get a cygwin Environment:
+
+Which support python, node, emacs, vim8.0, git, svn, curl, and more ...
+
+# GUI editor: Notepad++
+
+## Dark theme
+
+https://github.com/chriskempson/tomorrow-theme
+
+copy from tomorrow-theme/notepad++ to `C:\Users\Kids\AppData\Roaming\Notepad++\Themes`
+
+
