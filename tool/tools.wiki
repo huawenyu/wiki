@@ -163,6 +163,10 @@ https://qutebrowser.org/doc/quickstart.html
 
 # thunderbird
 
+## Dark theme: use default dark theme, then just add user.js to our profile dir:
+
+      https://www.reddit.com/r/Thunderbird/comments/bxkymy/thunderbird_dark_theme_background_and_text_color/
+
 ## Create virtual dir base on search
       https://superuser.com/questions/41599/is-there-any-way-to-search-for-tags-in-mozilla-thunderbird
 
