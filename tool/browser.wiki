@@ -1,4 +1,13 @@
-# Firefox ignore invalid ssl-certificates
+# Let browser ignore the invalid ssl-certificates
+
+## [works] Opera
+
+Change opera run-cmd from:
+    opera %U
+<to>
+    opera --ignore-certificate-errors %U
+
+## [Not work] Firefox ignore invalid ssl-certificates
 
 https://stackoverflow.com/questions/20088/is-there-a-way-to-make-firefox-ignore-invalid-ssl-certificates
 
@@ -12,6 +21,6 @@ This will lower your security as you will be able to view sites with invalid cer
 will still prompt you that the cert is invalid and you have the choice to proceed forward,
 so it was worth the risk for me.
 
-# Firefox privacy & addons
+## [Stricter addons] Firefox privacy & addons
 
 https://www.privacytools.io/browsers/#addons
