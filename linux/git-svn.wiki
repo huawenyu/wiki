@@ -1202,39 +1202,45 @@ $ git config --global alias.diffh 'diff HEAD'
       9ca4a06 TODO: Check if feature X works under edge-case
       ca343b0 implemented awesometastic feature X
 
-# Tig: command-line based front-end for git
+# Tig: command-line-ui based front-end for git
 
-[Getit from here][4]
+    [Getit from here][4]
+    The author manual site: http://jonas.nitro.dk/tig/manual.html
+    $ sudo apt-get install tig
 
 It is the mutt to your Outlook, the Vim to your Emacs, the w3m to your Firefox.
+
+## commands
 
     $ tig               <<< It’s basically a git log, with a bit of ASCII-art to represent the history (you can hide the graph with `g`)
       - option: the name of a branch
       - Without any argument, it displays the current branch.
-      - "--all" for all branches.
+      - "--all" for all branches, show the branch relation with pretty graphic.
       - a range of commits as git log would expect (e.g. tig master..branch).
 
-## Shortcuts
+    $ tig grep "patch-string"
 
-### Routine
+## Routine
+    Open with the list of commits in the history view.
 
-    <q> key             <<< Press q to close the child views (and press q a second time to quit tig).
-    arrow keys or <j/k> <<< navigate through the commits, navigate in the diff view
-    the </> key         <<< search (match is done on summary or author).
     <Enter> key         <<< opens that commit in a split diff view.
       At the beginning of the diff is the list of files that the commit touched.
       If you select one of them and press <Enter>, you will directly jump to the beginning of that file in the diff.
+    <t> key             <<< open the tree view, with the files at the commit point even don't need checkout the old version.
+    <q> key             <<< Press q to close the child views (and press q a second time to quit tig).
+    arrow keys or <j/k> <<< navigate through the commits, navigate in the diff view
+    the </> key         <<< search (match is done on summary or author).
 
 ### [Killer feature] Status view: interactive git status
 
-    $ tig status  <or> shift-S in the main view
+    $ tig status <or> shift-s in the main view
 
     ### list three kinds of files:
-    - the files that you’ve modified and staged
-    - the files you’ve modified but haven’t staged yet,
+    - the files that you've modified and staged
+    - the files you've modified but haven't staged yet,
     - and the files that are no yet tracked by git.
 
-    <shift-C>           <<< open editor to enter the commit message (make sure you close any open diff view first).
+    <shift-c>           <<< open editor to enter the commit message (make sure you close any open diff view first).
     <u> key             <<< Toggle stage/unstage the selected file
     <!> key             <<< Revert all uncommitted changes to the selected file. No need to remember that pesky git reset HEAD <file> command.
     <Enter> key         <<< View the diff that file, Move like `j/k` keys (line by line), or the `@` key (chunk by chunk)
@@ -1246,6 +1252,42 @@ It is the mutt to your Outlook, the Vim to your Emacs, the w3m to your Firefox.
 
 ### View old version of repos:
     <t> key on a commit in the history view     <<< open the tree view. In this view, you browse the content of your repository in exactly the state it was at that point in time (just use the arrow keys and Enter), without having to do a git checkout.
+
+## Shortcuts
+
+1. View Switching
+    m   Switch to main view.
+    d   Switch to diff view.
+    l   Switch to log view.
+    p   Switch to pager view.
+    t   Switch to (directory) tree view.
+    f   Switch to (file) blob view.
+    g   Switch to grep view.
+    b   Switch to blame view.
+    r   Switch to refs view.
+    y   Switch to stash view.
+    h   Switch to help view
+    s   Switch to status view
+    c   Switch to stage view
+
+2. View Manipulation
+    q       Close view, if multiple views are open it will jump back to the previous view in the view stack. If it is the last open view it will quit. Use Q to quit all views at once.
+    Enter   This key is "context sensitive" depending on what view you are currently in. When in log view on a commit line or in the main view, split the view and show the commit diff. In the diff view pressing Enter will simply scroll the view one line down.
+    Tab     Switch to next view.
+    R       Reload and refresh the current view.
+    O       Maximize the current view to fill the whole display.
+    Up      This key is "context sensitive" and will move the cursor one line up. However, if you opened a diff view from the main view (split- or full-screen) it will change the cursor to point to the previous commit in the main view and update the diff view to display it.
+    Down    Similar to Up but will move down.
+    ,       Move to parent. In the tree view, this means switch to the parent directory. In the blame view it will load blame for the parent commit. For merges the parent is queried.
+
+3. View Specific Actions
+    u   Update status of file. In the status view, this allows you to add an untracked file or stage changes to a file for next commit (similar to running git-add <filename>). In the stage view, when pressing this on a diff chunk line stages only that chunk for next commit, when not on a diff chunk line all changes in the displayed diff are staged.
+    M   Resolve unmerged file by launching git-mergetool(1). Note, to work correctly this might require some initial configuration of your preferred merge tool. See the manpage of git-mergetool(1).
+    !   Checkout file with unstaged changes. This will reset the file to contain the content it had at last commit.
+    1   Stage single diff line.
+    @   Move to next chunk in the stage view.
+    ]   Increase the diff context.
+    [   Decrease the diff context.
 
 # Svn
 
