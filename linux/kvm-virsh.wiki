@@ -92,7 +92,7 @@ If you make lot of changes to your VM, it is recommended that you save the confi
 
 2. Attach the virtual disk image to the VM
 ```sh
-    # virsh attach-disk myRHELVM1 --source /var/lib/libvirt/images/myRHELVM1-disk2.img --target vdb --persistent
+    # virsh attach-disk myRHELVM1 --source /var/lib/libvirt/images/myRHELVM1-disk2.img --target [vdb ](vdb )--persistent
         Disk attached successfully
     # virsh detach-disk myRHELVM1 vdb
         Disk detached successfully
