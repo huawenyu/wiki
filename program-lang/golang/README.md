@@ -24,6 +24,12 @@ sudo apt-get update
 sudo apt-get install golang
 ```
 
+## update
+
+    $ git clone https://github.com/udhos/update-golang
+    $ cd update-golang
+    $ sudo ./update-golang.sh
+
 ## Set GOPATH
 
 Just add the following lines to `~/.bashrc` and this will persist. However, you can use other paths you like as GOPATH instead of $HOME/go in my sample.
