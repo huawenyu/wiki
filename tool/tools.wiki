@@ -79,6 +79,34 @@ In most of the today’s Linux distributions, the gnupg package comes by default
     4. If meld requre GTK 3.14, so far it's hard to upgrade GTK 3.14 from 3.10, we should use old meld:
         Download a old release version from github/meld, install this old one.
 
+## Mosh (Mobile Shell): SSH without the connectivity issues
+
+    ### Server & Client side
+    $ sudo apt update
+    $ sudo apt install mosh
+
+    ### Server
+    $ sudo ufw allow 60000:61000/udp
+
+    ### Working from Client
+    $ mosh seeni@LinuxHandBook.com
+
+    ### specify a different ssh port
+    $ mosh seeni@LinuxHandBook.com --ssh="ssh -p 2222"
+
+    ### But it's terrible using vi: local buffer for avoiding latency
+    $ mosh --predict=experimental user@server.com
+
+### re-attach to a detached mosh session (You can't)
+
+    Once the client is dead, you can't re-attach to the server session.
+
+    https://github.com/keithw/mosh/issues/394
+
+    For security reasons, you can only resume a connection to a mosh-server from the corresponding mosh-client.
+    If the client is dead (e.g. the user quit the client while it was off the network),
+    the only option is to kill the server with that PID (e.g. kill 12726).
+
 ## tmux
 
 ### copy history

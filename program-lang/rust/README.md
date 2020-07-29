@@ -9,6 +9,10 @@ https://kaisery.github.io/trpl-zh-cn/ch15-05-interior-mutability.html
 
 https://hoverbear.org/blog/setting-up-a-rust-devenv/
 
+## Best Rust IDE
+
+IntelliJ IDEA (Comunity Version) + Rust plugin + Vim plugin
+
 ## vim plugs
 
 ### tags
