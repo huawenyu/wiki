@@ -1,3 +1,20 @@
+# Another pkg tool: snap
+
+## Install
+
+$ sudo apt update
+$ sudo apt install snapd
+
+### Add path
+You have to verify if /snap/bin is included in this $PATH
+
+$ snap find <search_text>
+$ sudo snap install <package>
+$ sudo snap install --channel=edge <package>
+
+$ sudo snap refresh <package>
+$ sudo snap remove <package>
+
 # Intro
 
 Linuxbrew Homepage: http://linuxbrew.sh/.
