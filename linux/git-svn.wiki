@@ -104,7 +104,21 @@ global-ignores = *.o *.lo *.la *.al .libs *.so *.so.[0-9]* *.a *.pyc *.pyo __pyc
 
 ### Merge
 
-    svn merge
+    When trying to merge a feature branch into trunk:
+
+    $ svn co https://foo.bar.com/subversion/project/trunk project
+    $ cd project
+    $ svn merge https://foo.com/subversion/project/trunk https://foo.com/subversion/project/branches/feature1
+    $ svn st
+
+    If there are any conflicts, you can resolve them with:
+
+        ... edit the conflict files, ...
+    $ svn resolve --accept=working <file-1>
+    $ svn resolve --accept=working <file-2>
+
+    Commit the changes:
+    $ svn commit -m "Merged DEV to trunk."
 
 ### Status
 

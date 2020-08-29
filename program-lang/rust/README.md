@@ -39,6 +39,14 @@ Execute vim command like this:
 
 # Language
 
+## file struct
+https://doc.rust-lang.org/stable/rust-by-example/mod/split.html
+https://riptutorial.com/rust/example/29562/basic-code-organization
+
+## modules
+
+https://journal.infinitenegativeutility.com/the-basic-principles-of-rust-modules
+
 ## Macro
 
 match type: ident, expr, block, stmt, ...

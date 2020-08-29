@@ -46,17 +46,17 @@ Now view this folder instead of your inbox, and you will only see unread message
 
 The 'vfolder' isn't as simple as just showing unread messages.  I actually have the following in my vfolder rules:
 
- - "Date sent" "is after" "2 days ago" or 
- - "Status" "is not" "Read" or 
- - "Label" "is" "Important" 
+ - "Date sent" "is after" "2 days ago" or
+ - "Status" "is not" "Read" or
+ - "Label" "is" "Important"
 
 This shortens my inbox with ~800 messages down to less than 20!
-I also have "Include threads - all related", so that I get replies and 
-originals that fall outside of the above criteria. 
+I also have "Include threads - all related", so that I get replies and
+originals that fall outside of the above criteria.
 
-It's great!  Evolution is the only mail reader I know that lets you do 
-so much with vfolders.  Even thunderbird's search folders can't do as 
-well as this! 
+It's great!  Evolution is the only mail reader I know that lets you do
+so much with vfolders.  Even thunderbird's search folders can't do as
+well as this!
 
 # To reset your lost or fogotten password:
 
@@ -66,11 +66,11 @@ well as this!
 4. Use the Arrow keys to navigate to a line that looks similar to this:
 
     linux /boot/vmlinuz-[kernel version]-generic root=UUID=[letters and numbers]\[letters and numbers] ro quiet splash vt.handoff=7
- 
+
 Change ro quiet splash vt.handoff=7 to rw init=/bin/bash so it now reads:
 
     linux /boot/vmlinuz-[kernel version]-generic root=UUID=[letters and numbers]\[letters and numbers] rw init=/bin/bash
- 
+
 5. Press F10 to boot your system.
    Your system will boot up to a passwordless root shell.
 6. Type in `passwd <yourusername>`
@@ -135,32 +135,45 @@ The hard limit is the maximum server limit that can be set without tuning the ke
 
 ## Format a raw disk
 
-cat /proc/partitions
-ls /dev/sd*
-sudo fdisk /dev/sdb
-sudo mkfs.ext3 -L /photos /dev/sdb1
-sudo mkdir /photos
-sudo mount /dev/sdb1 /photos
+    cat /proc/partitions
+    ls /dev/sd*
+    sudo fdisk /dev/sdb
+    sudo mkfs.ext3 -L /photos /dev/sdb1
+    sudo mkdir /photos
+    sudo mount /dev/sdb1 /photos
 
 ## add to fstab
 
-$ ls -l /dev/disk/by-uuid
-lrwxrwxrwx 1 root root 10 Jun  3 13:26 237d1b39-de75-400f-ae65-aa41661cbd75 -> ../../sda2
-lrwxrwxrwx 1 root root 10 Jun  3 13:26 74435dd8-635d-4d8e-999a-c2fe86210b3f -> ../../sda1
-lrwxrwxrwx 1 root root 10 Jun  3 13:25 bff3bd70-7ca0-4f25-aeba-a4e6c95b07ef -> ../../sdb1
+    $ ls -l /dev/disk/by-uuid
+        lrwxrwxrwx 1 root root 10 Jun  3 13:26 237d1b39-de75-400f-ae65-aa41661cbd75 -> ../../sda2
+        lrwxrwxrwx 1 root root 10 Jun  3 13:26 74435dd8-635d-4d8e-999a-c2fe86210b3f -> ../../sda1
+        lrwxrwxrwx 1 root root 10 Jun  3 13:25 bff3bd70-7ca0-4f25-aeba-a4e6c95b07ef -> ../../sdb1
 
-$ cat /etc/fstab
-# /etc/fstab: static file system information.
-#
-# Use 'blkid' to print the universally unique identifier for a
-# device; this may be used with UUID= as a more robust way to name devices
-# that works even if disks are added and removed. See fstab(5).
-#
-# <file system> <mount point>   <type>  <options>       <dump>  <pass>
-# / was on /dev/sda1 during installation
-UUID=74435dd8-635d-4d8e-999a-c2fe86210b3f /               ext4    errors=remount-ro 0       1
-UUID=237d1b39-de75-400f-ae65-aa41661cbd75 /data           ext4    errors=remount-ro 0       1
-UUID=bff3bd70-7ca0-4f25-aeba-a4e6c95b07ef /ssd            ext4    defaults          0       0    <=== Append this line
+        $ cat /etc/fstab
+        # /etc/fstab: static file system information.
+        #
+        # Use 'blkid' to print the universally unique identifier for a
+        # device; this may be used with UUID= as a more robust way to name devices
+        # that works even if disks are added and removed. See fstab(5).
+        #
+        # <file system> <mount point>   <type>  <options>       <dump>  <pass>
+        # / was on /dev/sda1 during installation
+        UUID=74435dd8-635d-4d8e-999a-c2fe86210b3f /               ext4    errors=remount-ro 0       1
+        UUID=237d1b39-de75-400f-ae65-aa41661cbd75 /data           ext4    errors=remount-ro 0       1
+        UUID=bff3bd70-7ca0-4f25-aeba-a4e6c95b07ef /ssd            ext4    defaults          0       0    <=== Append this line
 
 
+# Add a temp user, share screen with tmux
+
+    $ sudo useradd guest
+    $ sudo passwd guest
+
+    ### To Start a new session
+    $ tmux -S /tmp/socket
+    ### Change its permission for other users to access
+    $ chmod 777 /tmp/socket
+    ### for other users to attach to the session
+    $ tmux -S /tmp/socket attach
+
+    $ sudo userdel -r guest       <=== with -r: del home-dir, mail-spool
 
