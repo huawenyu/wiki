@@ -44,7 +44,19 @@ This will only limit "virtual" memory of your process, taking into account—and
 
 If your program spawns children, and it's them which allocate memory, it becomes more complex, and you should write auxiliary scripts to run processes under [your control](http://coldattic.info/page/resourcelimit/).
 
+# Tricks
 
+## which process eat memory
+
+This will show you top 10 process that using the most memory:
+
+    $ ps aux --sort=-%mem | head
+
+Using top: when you open `top, pressing m` will sort processes based on memory usage.
+
+But this will not solve your problem, in Linux everything is either file or process. So the files you opened will eating the memory too. So this will not help.
+
+`lsof` will give you all opened files with the size of the file or the file offset in bytes.
 
 # Slow Server
 
@@ -67,7 +79,7 @@ KiB Swap:        0 total,        0 free,        0 used. 14150748 avail Mem
 Netflix性能工程团队的Brendan Gregg写下了这篇博文，
 怎样通过十条命令在一分钟内对机器性能问题进行诊断。
 
-# 概述
+# Index
 
 通过执行以下命令，可以在1分钟内对系统资源使用情况有个大致的了解。
 
