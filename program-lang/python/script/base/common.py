@@ -1,6 +1,7 @@
 """Common base for every class."""
 
 import logging
+import logging.config
 from config.logger import LOGGING_CONFIG
 
 
@@ -14,7 +15,6 @@ class BaseCommon:
         """Construct to propagate context."""
         self.ctx = ctx
         self.args = args
-        self.args.verbosity = verbosity
 
         if not BaseCommon.load_logconf:
             BaseCommon.load_logconf = True
@@ -72,9 +72,9 @@ class BaseCommon:
         # https://docs.scrapy.org/en/latest/_modules/scrapy/utils/log.html
         # https://docs.python.org/3/howto/argparse.html
         #
-        #print(f'verbosity={self.args.verbosity}')
+        #print(f'verbosity={verbosity}')
         #logging.root.removeHandler
-        if self.args.verbosity >= 3:
+        if verbosity >= 3:
             logger.setLevel(logging.DEBUG)
             for handler in logger.handlers:
                 if isinstance(handler, logging.handlers.RotatingFileHandler):
@@ -84,7 +84,7 @@ class BaseCommon:
                     handler.setLevel(logging.DEBUG)
                 elif isinstance(handler, logging.StreamHandler):
                     handler.setLevel(logging.DEBUG)
-        elif self.args.verbosity >= 2:
+        elif verbosity >= 2:
             logger.setLevel(logging.DEBUG)
             for handler in logger.handlers:
                 #print(f"isinstance stream={isinstance(handler, logging.StreamHandler)}, file={isinstance(handler, logging.handlers.RotatingFileHandler)}")
@@ -96,7 +96,7 @@ class BaseCommon:
                     handler.setLevel(logging.DEBUG)
                 elif isinstance(handler, logging.StreamHandler):
                     handler.setLevel(logging.INFO)
-        elif self.args.verbosity >= 1:
+        elif verbosity >= 1:
             logger.setLevel(logging.INFO)
             for handler in logger.handlers:
                 if isinstance(handler, logging.handlers.RotatingFileHandler):

@@ -24,3 +24,8 @@ args:  (1, 2)  kwargs:  {'param': 3}
 # what's setup.py
 
 https://stackoverflow.com/questions/1471994/what-is-setup-py#:~:text=setup.py%20is%20a%20python,%24%20pip%20install%20.
+
+## Import a module from a relative path
+
+https://stackoverflow.com/questions/14132789/relative-imports-for-the-billionth-time
+https://stackoverflow.com/questions/279237/import-a-module-from-a-relative-path
