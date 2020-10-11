@@ -2,7 +2,7 @@ import os
 import re
 import cmd2
 
-from base.common import Common
+from base.common import *
 
 class CommandAbs(cmd2.Cmd, Common):
     prompt = "(Cmd) "
@@ -78,7 +78,7 @@ class CommandAbs(cmd2.Cmd, Common):
 
 
     def _cmd_task(self, args):
-        self.logger.debug(f'connect@args={args}')
+        self.logger.log(DEBUG, f'{tagNormal}@args={args}')
         if not args:
             self.cmdloop()
         elif args == '*':

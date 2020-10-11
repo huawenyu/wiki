@@ -18,7 +18,7 @@ if cmd_folder not in sys.path:
 
 
 from cmdssh.dut.dut import Dut
-from base.common import Common, BaseCommon
+from base.common import *
 
 class CmdSSH:
 

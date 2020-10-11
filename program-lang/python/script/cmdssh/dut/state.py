@@ -6,7 +6,7 @@ import cmd2
 import uuid
 import pexpect
 
-from base.common import Common
+from base.common import *
 from base.data import EventExit, EventDelay
 from cmdssh.dut.info import DutType, DutInfo
 
@@ -59,7 +59,7 @@ class StateInit(State):
 
 
     def parse_line(self, line, next_cmds):
-        self.logger.debug(f"{line}")
+        self.logger.log(DEBUG, f"{line}")
         if not line:
             return True
         self.ctx.trans_state(StatePrompt(self, self.ctx), next_cmds)
@@ -107,7 +107,7 @@ class StatePrompt(State):
         #
         # Set command prompt to something more unique.
         #
-        self.logger.info(f'os={str(self.ctx.dutType.osType)}: {line}')
+        self.logger.log(INFO, f'os={str(self.ctx.dutType.osType)}: {line}')
         if self.ctx.dutType.osType == DutType.Dummy:
             return False
         elif self.ctx.dutType.osType == DutType.Linux:
@@ -132,7 +132,7 @@ class StatePrompt(State):
                     next_cmds.append('')
                     return False
             elif self.substate == 3:
-                self.logger.info(f'os={self.ctx.dutType.osType}: guess prompt fail, use default')
+                self.logger.log(INFO, f'os={self.ctx.dutType.osType}: guess prompt fail, use default')
                 self.ctx.dutInfo.Prompt = "=PEXPECT= # "
                 self.ctx.trans_state(StateInfo(self, self.ctx), next_cmds)
                 return False
@@ -141,19 +141,19 @@ class StatePrompt(State):
                 m = self.rePromptKVM.search(line)
                 if m:
                     self.ctx.dutInfo.Prompt = m.group(1)
-                    self.logger.debug(f"  Guess prompt: '{self.ctx.dutInfo.Prompt}'")
+                    self.logger.log(DEBUG, f"  Guess prompt: '{self.ctx.dutInfo.Prompt}'")
                     self.ctx.trans_state(StateInfo(self, self.ctx), next_cmds)
                     return False
                 else:
                     self.substate = 1
                     next_cmds.append('')
-                    self.logger.debug(f"  Guess prompt fail")
+                    self.logger.log(DEBUG, f"  Guess prompt fail")
                     return False
             elif self.substate == 1:
                 m = self.rePromptKVM.search(line)
                 if m:
                     self.ctx.dutInfo.Prompt = m.group(1)
-                    self.logger.debug(f"  Guess prompt: '{self.ctx.dutInfo.Prompt}'")
+                    self.logger.log(DEBUG, f"  Guess prompt: '{self.ctx.dutInfo.Prompt}'")
                     self.ctx.trans_state(StateInfo(self, self.ctx), next_cmds)
                     return False
                 else:
@@ -248,7 +248,7 @@ class StateInfo(State):
             if re.search(rf"^{self.ctx.dutInfo.Prompt}$", line):
                 self.substate = 100
                 self.ctx.trans_state(StateTask(self, self.ctx), next_cmds)
-                self.logger.info(f'dutInfo: {str(self.ctx.dutInfo)}')
+                self.logger.log(INFO, f'dutInfo: {str(self.ctx.dutInfo)}')
                 return False
 
         # Continue match the following lines
@@ -272,7 +272,7 @@ class StateTask(State):
 
 
     def parse_line(self, line, next_cmds):
-        self.logger.info(f'{line}')
+        self.logger.log(INFO, f'{line}')
         if self.args.task:
             self.ctx.topCmd._cmd_task(self.args.task)
         return True
@@ -294,7 +294,7 @@ class StatePass(State):
 
 
     def parse_line(self, line, next_cmds):
-        self.logger.info(f'{line}')
+        self.logger.log(INFO, f'{line}')
         return True
 
 
@@ -331,14 +331,14 @@ class StateCmd(State):
         try:
             res = self.matched_res[self.currGrpIdx]
         except IndexError:
-            self.logger.info(f'Get match-group index error: {self.currGrpIdx}')
+            self.logger.log(WARNING, f'Get match-group index error: {self.currGrpIdx}')
             self.ctx.child.sendline(self.currAction)
             return
 
         grp1 = ''
         grp2 = ''
         grp3 = ''
-        self.logger.info(f'matched {self.currGrpIdx} as: {res.groups()}')
+        self.logger.log(INFO, f'matched {self.currGrpIdx} as: {res.groups()}')
         grpNum = len(res.groups())
         if grpNum == 1:
             grp1 = res.group(1)
@@ -360,16 +360,16 @@ class StateCmd(State):
         self.ctx.child.sendline(cmdstr)
 
     def parse_line(self, line, next_cmds):
-        self.logger.debug(f'{self.substate} do {self.currCmd} {self.ctx.cmd_list}')
+        self.logger.log(TRACE, f'{self.substate} do {self.currCmd} {self.ctx.cmd_list}')
         if self.substate == self.subStateExpect and self.currCmd:
             matcher = re.compile(self.currMatch)
             res = matcher.match(line)
             if not res:
-                #self.logger.debug(f'no match, wait ...')
+                self.logger.log(TRACE2, f'no match, wait ...')
                 return True     # continue wait
 
             # Store matcher
-            self.logger.info(f'matched {self.currGrpIdx} as: {res.groups()}')
+            self.logger.log(DEBUG, f'matched {self.currGrpIdx} as: {res.groups()}')
             if self.currGrpIdx >= 90:
                 self.matched_res.clear()    # flush all before store
                 self.currGrpIdx -= 100
@@ -402,7 +402,7 @@ class StateCmd(State):
                 elif cmdLen == 5:
                     self.currPre, self.currMatch, self.currMatchBy, self.currGrpIdx, self.currAction = self.currCmd
                 else:
-                    self.logger.error(f'cmd touple error: {self.currCmd}')
+                    self.logger.log(ERROR, f'cmd touple error: {self.currCmd}')
                     return True
 
                 if self.currMatch:

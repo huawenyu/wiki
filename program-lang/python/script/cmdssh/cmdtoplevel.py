@@ -2,7 +2,7 @@ import os
 import re
 import cmd2
 
-from base.common import Common
+from base.common import *
 from cmdssh.cmdAbs import CommandAbs
 from cmdssh.cmdsubLog import CmdLog
 from cmdssh.cmdsubGdb import CmdGdb
@@ -36,7 +36,7 @@ class CmdTopLevel(CommandAbs):
             ]))
 
     def do_gdb(self, args):
-        self.logger.debug(f'connect@args={args}')
+        self.logger.log(TRACE, f'{tagString}@args={args}')
         return self._cmd_subcmd(CmdGdb(self), args)
 
 

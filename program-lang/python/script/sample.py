@@ -8,7 +8,7 @@ __date__ = "Sep 13, 2020"
 import os
 import argparse
 
-from base.common import BaseCommon, Common
+from base.common import *
 from student.student import Student
 
 class Sample:

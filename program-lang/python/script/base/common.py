@@ -6,6 +6,30 @@ import logging.config
 from config.logger import LOGGING_CONFIG
 
 
+#from base.common import *
+# <or>
+#from base.common import DETAIL, TRACE, TRACE2, DEBUG, INFO, WARNING, ERROR, CRITICAL
+#from base.common import tagNormal, tagKeyword, tagString, tagNumber, tagFunction
+
+# Add log level: trace, detail
+CRITICAL    = 50
+ERROR       = 40
+WARNING     = 30
+INFO        = 20
+DEBUG       = 10
+TRACE       = 5
+TRACE2      = 5
+DETAIL      = 2
+NOTSET      = 0
+
+# Work with thirdpart colorize tool
+tagNormal   = '@normal@'
+tagKeyword  = '@keyword@'
+tagString   = '@string@'
+tagNumber   = '@number@'
+tagFunction = '@function@'
+
+
 class BaseCommon:
     """Common base part of all classes."""
 
@@ -77,11 +101,12 @@ class BaseCommon:
         #print(f'verbosity={verbosity}')
         #logging.root.removeHandler
         # @note
-        # v    console at info-level
-        # vv   file at debug-level
-        # vvv  console+file at debug-level
-        if verbosity >= 3:
-            logger.setLevel(logging.DEBUG)
+        # v     set console at info-level
+        # vv    set file at debug-level
+        # vvv   set file at trace-level
+        # vvvv  set file at detail-level
+        if verbosity >= 4:
+            logger.setLevel(DETAIL)
             for handler in logger.handlers:
                 if isinstance(handler, logging.handlers.RotatingFileHandler):
                     if logfile:
@@ -90,9 +115,22 @@ class BaseCommon:
                     if not BaseCommon.info_debugfile:
                         BaseCommon.info_debugfile = True
                         logger.info(f"Debug file '{handler.baseFilename}' ...")
-                    handler.setLevel(logging.DEBUG)
+                    handler.setLevel(DETAIL)
                 elif isinstance(handler, logging.StreamHandler):
-                    handler.setLevel(logging.DEBUG)
+                    handler.setLevel(logging.INFO)
+        elif verbosity >= 3:
+            logger.setLevel(TRACE)
+            for handler in logger.handlers:
+                if isinstance(handler, logging.handlers.RotatingFileHandler):
+                    if logfile:
+                        handler.close()
+                        handler.baseFilename = os.path.abspath(logfile)
+                    if not BaseCommon.info_debugfile:
+                        BaseCommon.info_debugfile = True
+                        logger.info(f"Debug file '{handler.baseFilename}' ...")
+                    handler.setLevel(TRACE)
+                elif isinstance(handler, logging.StreamHandler):
+                    handler.setLevel(logging.INFO)
         elif verbosity >= 2:
             logger.setLevel(logging.DEBUG)
             for handler in logger.handlers:
@@ -108,6 +146,7 @@ class BaseCommon:
                     handler.setLevel(logging.DEBUG)
                 elif isinstance(handler, logging.StreamHandler):
                     handler.close()
+                    handler.setLevel(logging.INFO)
                     logger.removeHandler(handler)
         elif verbosity >= 1:
             logger.setLevel(logging.INFO)
@@ -118,7 +157,7 @@ class BaseCommon:
                 elif isinstance(handler, logging.StreamHandler):
                     handler.setLevel(logging.INFO)
         else:
-            logger.setLevel(logging.INFO)
+            logger.setLevel(logging.WARNING)
             for handler in logger.handlers:
                 if isinstance(handler, logging.handlers.RotatingFileHandler):
                     handler.close()

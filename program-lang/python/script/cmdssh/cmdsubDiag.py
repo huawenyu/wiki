@@ -2,7 +2,7 @@ import os
 import re
 import cmd2
 
-from base.common import Common
+from base.common import *
 from cmdssh.cmdAbs import CommandAbs
 
 class CmdLog(CommandAbs):

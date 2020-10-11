@@ -7,7 +7,7 @@ import pexpect
 import threading
 from queue import Queue, Empty
 
-from base.common import Common, BaseCommon
+from base.common import *
 from base.data import EventExit, EventDelay
 from cmdssh.cmdtoplevel import CmdTopLevel
 from cmdssh.dut.state import StateInit, StateCmd
@@ -29,7 +29,7 @@ class EventThread(threading.Thread):
         while True:
             if not self.que.empty():
                 evt = self.que.get()
-                self.ctx.logger.info(f"thread evt{evt}")
+                self.ctx.logger.log(INFO, f"thread evt{evt}")
                 if isinstance(evt, EventExit):
                     break       # exit thread
                 elif isinstance(evt, EventDelay):
@@ -58,7 +58,7 @@ class Dut(Common):
         self.next_cmds = []
 
     def trans_state(self, state, next_cmds):
-        self.logger.info(f"Transfer: from {self.state.name} to {state.name}")
+        self.logger.log(INFO, f"Transfer: from {self.state.name} to {state.name}")
         if self.state.name != state.name:
             state.init_cmds(next_cmds)
         self.oldstate = self.state
@@ -66,12 +66,12 @@ class Dut(Common):
 
 
     def rollback_state(self, next_cmds):
-        self.logger.info(f"Rollback: from {self.state.name} to {self.oldstate.name}")
+        self.logger.log(INFO, f"Rollback: from {self.state.name} to {self.oldstate.name}")
         self.state = self.oldstate
 
 
     def set_matcher(self, matchstr):
-        self.logger.info(f"filter-match: '{matchstr}'")
+        self.logger.log(INFO, f"filter-match: '{matchstr}'")
         self.filter_matcher = re.compile(matchstr)
 
 
@@ -107,7 +107,7 @@ class Dut(Common):
         bash_prompt = re.compile('bash-[.0-9]+[$#] $')
 
         cmdStr = self.get_command()
-        self.logger.info(f"Connect: {cmdStr}")
+        self.logger.log(INFO, f"{tagKeyword}{cmdStr}")
 
         #self.child = pexpect.spawn('bash --noprofile --norc')
         self.child = pexpect.spawn(cmdStr, echo=True)
@@ -132,7 +132,7 @@ class Dut(Common):
             except Empty:
                 pass
             except Exception as e:
-                self.logger.error(f"thread exception: {str(e)}")
+                self.logger.log(ERROR, f"thread exception: {str(e)}")
             else:
                 if line == 'TriggerOutfilter':
                     if self.child and not self.child.isalive():
@@ -208,7 +208,7 @@ class Dut(Common):
             self.filter_matcher = None
             line = self.outfilter_buf
             self.outfilter_buf = ''
-            self.logger.debug(f'"{self.state.name}": {line}')
+            self.logger.log(DEBUG, f'"{self.state.name}": {line}')
             self.state.parse_line(line, self.next_cmds)
             return True
         return False
@@ -222,14 +222,14 @@ class Dut(Common):
         self.outfilter_buf += s.decode('utf-8')
 
         # debug
-        #if self.filter_matcher:
-        #    self.logger.debug(f'wilson State-{self.state.name}: {self.outfilter_buf}')
+        if self.filter_matcher:
+            self.logger.log(DETAIL, f'wilson State-{self.state.name}: {self.outfilter_buf}')
 
         if "\n" in self.outfilter_buf:
             lines = self.outfilter_buf.split("\n")
             if not lines:
                 return s
-            #self.logger.debug(f'{lines}')
+            #self.logger.log(DEBUG, f'{lines}')
             if self.outfilter_buf.endswith("\n"):
                 self.outfilter_buf = ''
             else:
@@ -238,7 +238,7 @@ class Dut(Common):
 
             for line in lines:
                 line = line.strip('\r')
-                self.logger.debug(f'State-{self.state.name}: {line}')
+                self.logger.log(TRACE, f'State-{self.state.name}: {line}')
                 if not self.state.parse_line(line, self.next_cmds):
                     break
 

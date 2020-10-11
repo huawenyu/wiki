@@ -2,7 +2,7 @@ import os
 import re
 import cmd2
 
-from base.common import Common
+from base.common import *
 from cmdssh.cmdAbs import CommandAbs
 from cmdssh.dut.state import StateCmd
 
@@ -37,7 +37,7 @@ class CmdGdb(CommandAbs):
 
 
     def do_wad(self, args):
-        self.logger.debug(f'connect@args={args}')
+        self.logger.log(TRACE, f'{tagString}@args={args}')
         self._do_global()
 
         if args and args.startswith("dis"):
