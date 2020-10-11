@@ -37,7 +37,7 @@ class CmdGdb(CommandAbs):
 
 
     def do_wad(self, args):
-        self.logger.log(TRACE, f'{tagString}@args={args}')
+        self.logger.log(TRACE, f'{tag_yellow}@args={args}')
         self._do_global()
 
         if args and args.startswith("dis"):

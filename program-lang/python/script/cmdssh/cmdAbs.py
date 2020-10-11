@@ -78,7 +78,7 @@ class CommandAbs(cmd2.Cmd, Common):
 
 
     def _cmd_task(self, args):
-        self.logger.log(DEBUG, f'{tagNormal}@args={args}')
+        self.logger.log(DEBUG, f'{tag_green}@args={args}')
         if not args:
             self.cmdloop()
         elif args == '*':

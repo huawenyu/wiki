@@ -107,7 +107,7 @@ class Dut(Common):
         bash_prompt = re.compile('bash-[.0-9]+[$#] $')
 
         cmdStr = self.get_command()
-        self.logger.log(INFO, f"{tagKeyword}{cmdStr}")
+        self.logger.log(INFO, f"{tag_blink}{cmdStr}")
 
         #self.child = pexpect.spawn('bash --noprofile --norc')
         self.child = pexpect.spawn(cmdStr, echo=True)

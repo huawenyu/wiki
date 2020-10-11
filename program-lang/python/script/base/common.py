@@ -9,25 +9,40 @@ from config.logger import LOGGING_CONFIG
 #from base.common import *
 # <or>
 #from base.common import DETAIL, TRACE, TRACE2, DEBUG, INFO, WARNING, ERROR, CRITICAL
-#from base.common import tagNormal, tagKeyword, tagString, tagNumber, tagFunction
 
 # Add log level: trace, detail
-CRITICAL    = 50
-ERROR       = 40
-WARNING     = 30
-INFO        = 20
-DEBUG       = 10
-TRACE       = 5
-TRACE2      = 5
-DETAIL      = 2
-NOTSET      = 0
+CRITICAL       = 50
+ERROR          = 40
+WARNING        = 30
+INFO           = 20
+DEBUG          = 10
+TRACE          = 5
+TRACE2         = 5
+DETAIL         = 2
+NOTSET         = 0
 
-# Work with thirdpart colorize tool
-tagNormal   = '@normal@'
-tagKeyword  = '@keyword@'
-tagString   = '@string@'
-tagNumber   = '@number@'
-tagFunction = '@function@'
+# Work with thirdpart colorize tool like 'grc'
+tag_beep       = "@beep@"
+tag_default    = "@default"
+tag_bold       = "@bold@"
+tag_underline  = "@underline@"
+tag_blink      = "@blink@"
+tag_reverse    = "@reverse@"
+tag_concealed  = "@concealed@"
+tag_black      = "@black@"
+tag_green      = "@green@"
+tag_yellow     = "@yellow@"
+tag_blue       = "@blue@"
+tag_magenta    = "@magenta@"
+tag_cyan       = "@cyan@"
+tag_white      = "@white@"
+tag_on_black   = "@onBlack@"
+tag_on_green   = "@onGreen@"
+tag_on_yellow  = "@onYellow@"
+tag_on_blue    = "@onBlue@"
+tag_on_magenta = "@onMagenta@"
+tag_on_cyan    = "@onCyan@"
+tag_on_white   = "@onWhite@"
 
 
 class BaseCommon:

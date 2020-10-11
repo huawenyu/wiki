@@ -36,7 +36,7 @@ class CmdTopLevel(CommandAbs):
             ]))
 
     def do_gdb(self, args):
-        self.logger.log(TRACE, f'{tagString}@args={args}')
+        self.logger.log(TRACE, f'{tag_yellow}@args={args}')
         return self._cmd_subcmd(CmdGdb(self), args)
 
 
