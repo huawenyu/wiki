@@ -1,5 +1,6 @@
 """Common base for every class."""
 
+import os
 import logging
 import logging.config
 from config.logger import LOGGING_CONFIG
@@ -20,12 +21,12 @@ class BaseCommon:
             BaseCommon.load_logconf = True
             logging.config.dictConfig(LOGGING_CONFIG)
             # @todo ???: call once have no use
-            #BaseCommon.args_verbose(logging.root, self.args.verbosity)
+            #BaseCommon.args_verbose(logging.root, self.args.verbosity, self.args.logfile)
 
-        BaseCommon.args_verbose(logging.root, self.args.verbosity)
+        BaseCommon.args_verbose(logging.root, self.args.verbosity, self.args.logfile)
         self.logger = logging.getLogger(type(self).__name__)
         #print(f"logger {self.logger.handlers}")
-        #BaseCommon.args_verbose(self.logger, self.args.verbosity)
+        #BaseCommon.args_verbose(self.logger, self.args.verbosity, self.args.logfile)
 
     def treat_the_linter(self):
         """Let the linter be happy."""
@@ -37,6 +38,7 @@ class BaseCommon:
     def add_arg_verbose(parser):
         parser.add_argument("-v", "--verbosity", action="count", default=0,
                 help="increase output verbosity")
+        parser.add_argument("-l", "--logfile", help="log file")
 
     @staticmethod
     def print(obj):
@@ -68,16 +70,23 @@ class BaseCommon:
     vars
 
     @staticmethod
-    def args_verbose(logger, verbosity):
+    def args_verbose(logger, verbosity, logfile):
         # https://docs.scrapy.org/en/latest/_modules/scrapy/utils/log.html
         # https://docs.python.org/3/howto/argparse.html
         #
         #print(f'verbosity={verbosity}')
         #logging.root.removeHandler
+        # @note
+        # v    console at info-level
+        # vv   file at debug-level
+        # vvv  console+file at debug-level
         if verbosity >= 3:
             logger.setLevel(logging.DEBUG)
             for handler in logger.handlers:
                 if isinstance(handler, logging.handlers.RotatingFileHandler):
+                    if logfile:
+                        handler.close()
+                        handler.baseFilename = os.path.abspath(logfile)
                     if not BaseCommon.info_debugfile:
                         BaseCommon.info_debugfile = True
                         logger.info(f"Debug file '{handler.baseFilename}' ...")
@@ -89,13 +98,17 @@ class BaseCommon:
             for handler in logger.handlers:
                 #print(f"isinstance stream={isinstance(handler, logging.StreamHandler)}, file={isinstance(handler, logging.handlers.RotatingFileHandler)}")
                 if isinstance(handler, logging.handlers.RotatingFileHandler):
+                    if logfile:
+                        handler.close()
+                        handler.baseFilename = os.path.abspath(logfile)
                     #print(f"{BaseCommon.tostr(handler)}")
                     if not BaseCommon.info_debugfile:
                         BaseCommon.info_debugfile = True
                         logger.info(f"Debug file '{handler.baseFilename}' ...")
                     handler.setLevel(logging.DEBUG)
                 elif isinstance(handler, logging.StreamHandler):
-                    handler.setLevel(logging.INFO)
+                    handler.close()
+                    logger.removeHandler(handler)
         elif verbosity >= 1:
             logger.setLevel(logging.INFO)
             for handler in logger.handlers:
