@@ -22,9 +22,12 @@
     Clone pexpect from github, cd the pexepct:
     $ pip3 install --editable .
 
+6. Can't find the command
+    please append the path `$HOME/.local/bin` in our $PATH
+
 # Usage
 
-    $ dut -vvv -d dut -u admin -p '' -t 'gdb wad'
+    $ cmdssh -vvv -d dut -u admin -p '' -t 'gdb wad'
 
 # Requirement
 
