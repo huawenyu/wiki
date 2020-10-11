@@ -44,9 +44,10 @@ class CommandAbs(cmd2.Cmd, Common):
     def _cmd_docmd(self, args):
         self.cmd_args = args
         cmds = self.get_all_commands()
-        self.logger.debug(f'connect@args={args}: {cmds}')
-        if args in cmds:
-            return self.onecmd(args)
+        arg_list = args.split(' ')
+        if arg_list:
+            if arg_list[0] in cmds:
+                return self.onecmd(args)
 
 
     def _cmd_doloop(self, subCmdObj):
@@ -70,6 +71,30 @@ class CommandAbs(cmd2.Cmd, Common):
                 ret = subCmdObj._cmd_docmd(cmdstr)
                 if subCmdObj.exit_code == self.codeFinish:
                     return self.do_done('all')
+                elif subCmdObj.exit_code == self.codeDone:
+                    return self.do_done('all')
+                elif subCmdObj.exit_code == self.codeExit:
+                    return self.do_exit('all')
+
+
+    def _cmd_task(self, args):
+        self.logger.debug(f'connect@args={args}')
+        if not args:
+            self.cmdloop()
+        elif args == '*':
+            cmds = self.get_all_commands()
+            for cmdstr in cmds:
+                self._cmd_docmd(cmdstr)
+        else:
+            ret = self._cmd_docmd(args)
+            self.ctx.prepare_run_cmdlist()
+
+            if self.exit_code == self.codeFinish:
+                return self.do_done('all')
+            elif self.exit_code == self.codeDone:
+                return self.do_done('all')
+            elif self.exit_code == self.codeExit:
+                return self.do_exit('all')
 
 
     def _cmd_complete(self, subCmdObj, text):
@@ -93,11 +118,14 @@ class CommandAbs(cmd2.Cmd, Common):
             self.cmd_list.append(args)
         elif isinstance(args, list):
             self.cmd_list.extend(args)
+        #self.cmdlist_dump()
+
 
     def cmdlist_dump(self):
+        import yaml
         #from pprint import pprint
         #self.poutput(pprint.pformat(self.cmd_list, indent=4))
-        self.poutput(self.cmd_list)
+        self.poutput(yaml.dump(self.cmd_list, default_flow_style=False))
 
 
     def _do_global(self):

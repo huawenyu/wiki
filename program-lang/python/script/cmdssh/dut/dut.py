@@ -22,6 +22,7 @@ class EventThread(threading.Thread):
         self.name = name
         self.que = que
         self.ctx = ctx
+        self.topCmd = None
         return
 
     def run(self):
@@ -160,28 +161,34 @@ class Dut(Common):
             # Default: <C-]> exit the interact mode, then into the command mode
                 self.child.close()
                 self.connect()
+
+            self.topCmd = CmdTopLevel(self)
             # Default: <C-]> exit the interact mode, then into the command mode
             self.child.interact(input_filter=None, output_filter=self.output_filter)
-            cmd1 = CmdTopLevel(self)
-            #cmd1._cmd_docmd("hello")
-            #cmd1._cmd_docmd("level1")
-            cmd1.cmdloop()
-            if cmd1.exit_code == cmd1.codeDone:
-                pass    # continue execute the cmd list
-            elif cmd1.exit_code == cmd1.codeExit:
-                break
+            self.topCmd.cmdloop()
 
-            self.cmd_list.extend(cmd1.cmd_list)
-            cmd1.cmd_list = []
-            self.trans_state(StateCmd(self, self), self.cmd_list)
-            #self.que.put('TriggerOutfilter')
-            self.child.sendline('')    # trigger output_filter
+            self.prepare_run_cmdlist()
+            if self.cmd_list and not self.filter_matcher:
+                self.set_matcher(r'.*')
+
+            if self.topCmd.exit_code == self.topCmd.codeDone:
+                pass    # continue execute the cmd list
+            elif self.topCmd.exit_code == self.topCmd.codeExit:
+                break
 
         if os.path.exists(f'{self.alive}'):
             os.remove(f'{self.alive}')
 
         self.que.put(EventExit())
         print("BYE")
+
+
+    def prepare_run_cmdlist(self):
+        self.cmd_list.extend(self.topCmd.cmd_list)
+        self.topCmd.cmd_list.clear()
+        self.trans_state(StateCmd(self, self), self.cmd_list)
+        #self.que.put('TriggerOutfilter')
+        self.child.sendline('')    # trigger output_filter
 
 
     def input_filter(self, s):
@@ -231,7 +238,7 @@ class Dut(Common):
 
             for line in lines:
                 line = line.strip('\r')
-                #self.logger.debug(f'State-{self.state.name}: {line}')
+                self.logger.debug(f'State-{self.state.name}: {line}')
                 if not self.state.parse_line(line, self.next_cmds):
                     break
 

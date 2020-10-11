@@ -15,6 +15,7 @@ class State(Common):
     DutStatePrompt  = 'prompt'
     DutStateInfo    = 'info'
     DutStateCmd     = 'cmd'
+    DutStateTask    = 'task'     # parse task and execute them
     DutStatePass    = 'pass'     # interact mode
     DutStateMatcher = 'match'    # matched -> cb
 
@@ -246,12 +247,36 @@ class StateInfo(State):
         elif self.substate == 8:
             if re.search(rf"^{self.ctx.dutInfo.Prompt}$", line):
                 self.substate = 100
-                self.ctx.trans_state(StatePass(self, self.ctx), next_cmds)
+                self.ctx.trans_state(StateTask(self, self.ctx), next_cmds)
                 self.logger.info(f'dutInfo: {str(self.ctx.dutInfo)}')
                 return False
 
         # Continue match the following lines
         return True
+
+
+class StateTask(State):
+
+    def __init__(self, common, ctx):
+        """ctor."""
+        super().__init__(State.DutStateTask, common, ctx)
+        if self.args.task:
+            self.ctx.child.sendline('')     # trigger
+
+    def init_cmds(self, next_cmds):
+        pass
+
+
+    def is_filter(self):
+        return True
+
+
+    def parse_line(self, line, next_cmds):
+        self.logger.info(f'{line}')
+        if self.args.task:
+            self.ctx.topCmd._cmd_task(self.args.task)
+        return True
+
 
 
 class StatePass(State):
@@ -335,7 +360,7 @@ class StateCmd(State):
         self.ctx.child.sendline(cmdstr)
 
     def parse_line(self, line, next_cmds):
-        #self.logger.debug(f'{self.substate} do {self.currCmd}')
+        self.logger.debug(f'{self.substate} do {self.currCmd} {self.ctx.cmd_list}')
         if self.substate == self.subStateExpect and self.currCmd:
             matcher = re.compile(self.currMatch)
             res = matcher.match(line)
@@ -398,6 +423,8 @@ class StateCmd(State):
                 self.substate = self.subStateExecute
                 self.ctx.child.sendline(self.currCmd)
                 # continue next cmd
+
+        self.ctx.trans_state(StatePass(self, self.ctx), next_cmds)
         return True
 
 

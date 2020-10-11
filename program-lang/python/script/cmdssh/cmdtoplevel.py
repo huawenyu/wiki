@@ -36,6 +36,7 @@ class CmdTopLevel(CommandAbs):
             ]))
 
     def do_gdb(self, args):
+        self.logger.debug(f'connect@args={args}')
         return self._cmd_subcmd(CmdGdb(self), args)
 
 
