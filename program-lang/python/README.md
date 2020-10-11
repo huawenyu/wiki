@@ -1,3 +1,16 @@
+# Install python3.8
+
+    $ sudo apt install python3.8
+    $ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2
+    $ sudo update-alternatives --config python3
+
+## Install Error
+
+1. ImportError: cannot import name 'sysconfig' from 'distutils'
+    $ sudo apt install python3-distutils
+2. ModuleNotFoundError: No module named 'setuptools'
+    $ sudo apt-get install python3-setuptools
+
 
 # interactive command line
 

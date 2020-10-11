@@ -1,3 +1,31 @@
+# Install
+
+    $ pip3 install --editable .
+    <or>
+    $ python3 setup.py develop --user
+
+## Install error
+
+1. error: invalid command 'bdist_wheel'
+
+    $ pip3 install -U wheel
+    $ python3 setup.py bdist_wheel
+
+2. ModuleNotFoundError: No module named 'pip._internal'
+    $ python3 -m pip install --upgrade pip
+
+4. pexpect error:
+
+  File "/usr/lib/python3/dist-packages/pexpect/spawnbase.py", line 224
+    def expect(self, pattern, timeout=-1, searchwindowsize=-1, async=False):
+
+    Clone pexpect from github, cd the pexepct:
+    $ pip3 install --editable .
+
+# Usage
+
+    $ dut -vvv -d dut -u admin -p '' -t 'gdb wad'
+
 # Requirement
 
 	https://pysvn.sourceforge.io/downloads.html

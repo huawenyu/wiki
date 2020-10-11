@@ -61,6 +61,9 @@ class CmdSSH:
         act.run()
 
 
+def main():
+    CmdSSH.main()
+
 if __name__ == "__main__":
     cmd1 = CmdSSH.main()
 

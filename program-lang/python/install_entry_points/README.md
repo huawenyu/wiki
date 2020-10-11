@@ -10,3 +10,5 @@ abilities to your existing Python package at runtime.
 # version
 
     $ pip install --editable .
+    <or>
+    $ python setup.py install --user
