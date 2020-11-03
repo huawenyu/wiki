@@ -1,0 +1,58 @@
+http://derekmolloy.ie/hello-world-introductions-to-cmake/
+[The sample code](https://github.com/derekmolloy/exploringBB/tree/master/extras/cmake)
+
+# Usage
+```shell
+
+    $ tree studentlib_shared/
+     studentlib_shared/
+     |-- CMakeLists.txt
+     |-- build
+     |-- include
+     |   \-- Student.h
+     \-- src
+     .   \-- Student.cpp
+     3 directories, 3 files
+
+    $ mkdir build; cd build
+    $ cmake ..
+    $ make
+    $ sudo make install
+```
+
+## howto print cmake vars
+
+
+```cmake
+macro(print_all_variables)
+    message(STATUS "print_all_variables------------------------------------------{")
+    get_cmake_property(_variableNames VARIABLES)
+    foreach (_variableName ${_variableNames})
+        message(STATUS "${_variableName}=${${_variableName}}")
+    endforeach()
+    message(STATUS "print_all_variables------------------------------------------}")
+endmacro()
+
+
+function(dump_cmake_variables)
+    get_cmake_property(_variableNames VARIABLES)
+    list (SORT _variableNames)
+    foreach (_variableName ${_variableNames})
+        if (ARGV0)
+            unset(MATCHED)
+            string(REGEX MATCH ${ARGV0} MATCHED ${_variableName})
+            if (NOT MATCHED)
+                continue()
+            endif()
+        endif()
+        message(STATUS "${_variableName}=${${_variableName}}")
+    endforeach()
+endfunction()
+    
+    
+# call like this:
+
+print_all_variables()
+dump_cmake_variables("^shmlib")
+
+```
