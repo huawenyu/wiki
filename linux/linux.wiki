@@ -168,12 +168,21 @@ The hard limit is the maximum server limit that can be set without tuning the ke
     $ sudo useradd guest
     $ sudo passwd guest
 
+    Sample-1:
+    /// Create session
+    tmux -S /tmp/shareds new -s sharedsession
+    /// Change ownership to group
+    chgrp mutual_group_name /tmp/shareds
+    /// Run this in other user or ssh session to attach yourself
+    tmux -S /tmp/shareds attach -t sharedsession
+
+    Sample-2:
     ### To Start a new session
-    $ tmux -S /tmp/socket
+    $ tmux -S /tmp/socket new -s sharesess
     ### Change its permission for other users to access
     $ chmod 777 /tmp/socket
     ### for other users to attach to the session
-    $ tmux -S /tmp/socket attach
+    $ tmux -S /tmp/socket attach -t sharesess
 
     $ sudo userdel -r guest       <=== with -r: del home-dir, mail-spool
 
