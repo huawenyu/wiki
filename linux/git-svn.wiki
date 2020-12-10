@@ -138,6 +138,7 @@ Should add option `--no-ignore` and check two beginwith characters 'I', '?'.
     2591
 
     svn st --no-ignore | awk '/^[I?]/{print $2}' | xargs rm -rf
+    svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
 
     ### svn status | egrep '^\?' | cut -c 8- | xargs rm
     ### svn status | grep ^\? | cut -c 9- | xargs -d \\n rm -r     <<< It handles unversioned folders and spaces in filenames
