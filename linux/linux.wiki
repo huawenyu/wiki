@@ -58,7 +58,9 @@ It's great!  Evolution is the only mail reader I know that lets you do
 so much with vfolders.  Even thunderbird's search folders can't do as
 well as this!
 
-# To reset your lost or fogotten password:
+# Linux
+
+## To reset your lost or fogotten password:
 
 1. Reboot your computer / Turn your computer on.
 2. Hold down the Shift key at the start of the boot process to enable the GNU GRUB2 boot menu (if it does not show)
@@ -78,9 +80,9 @@ Change ro quiet splash vt.handoff=7 to rw init=/bin/bash so it now reads:
     Set your new password.
 7. Restart your system.
 
-# chrome browser write disk and too slow
+## chrome browser write disk and too slow
 
-# File Descriptor Limit: ulimit -n
+## File Descriptor Limit: ulimit -n
 
 To ensure good server performance, the total number of client connections, database files, and log files must not exceed the maximum file descriptor limit on the operating system (ulimit -n).
 By default, the directory server allows an unlimited number of connections but is restricted by the file descriptor limit on the operating system.
@@ -131,9 +133,9 @@ The hard limit is the maximum server limit that can be set without tuning the ke
 
 6. Restart your system.
 
-# Add a new SSD to current LINUX
+## Add a new SSD to current LINUX
 
-## Format a raw disk
+### Format a raw disk
 
     cat /proc/partitions
     ls /dev/sd*
@@ -142,7 +144,7 @@ The hard limit is the maximum server limit that can be set without tuning the ke
     sudo mkdir /photos
     sudo mount /dev/sdb1 /photos
 
-## add to fstab
+### add to fstab
 
     $ ls -l /dev/disk/by-uuid
         lrwxrwxrwx 1 root root 10 Jun  3 13:26 237d1b39-de75-400f-ae65-aa41661cbd75 -> ../../sda2
@@ -163,7 +165,7 @@ The hard limit is the maximum server limit that can be set without tuning the ke
         UUID=bff3bd70-7ca0-4f25-aeba-a4e6c95b07ef /ssd            ext4    defaults          0       0    <=== Append this line
 
 
-# Add a temp user, share screen with tmux
+## Tmux user: Add a temp user, share screen with tmux
 
     $ sudo useradd guest
     $ sudo passwd guest
@@ -185,4 +187,38 @@ The hard limit is the maximum server limit that can be set without tuning the ke
     $ tmux -S /tmp/socket attach -t sharesess
 
     $ sudo userdel -r guest       <=== with -r: del home-dir, mail-spool
+
+### Create restricted user 'user1'
+
+    https://superuser.com/questions/149404/create-an-ssh-user-who-only-has-permission-to-access-specific-folders
+
+The easiest way to create restricted user that cannot wander off the given directory (e.g., to the upper directory etc).
+
+    sudo ln -s /bin/bash /bin/rbash
+
+    #sudo adduser --home /home/user1 user1
+    sudo useradd -s /bin/rbash -d /home/user1 user1
+    cd /home
+    sudo mkdir user1
+    sudo chmod 755 user1
+
+    # create a tmux session which we can share with other user1
+    tmux -S /tmp/tmux_share new -s share
+    sudo chmod 777 ./tmux_share             <=== let user1 can access it
+
+    # user1 remote login, then attach to the same session
+    tmux -S /tmp/tmux_share attach -t share
+
+    # delete the user1
+    sudo userdel -r user1     <=== delete that user's home directory and mail spool by using the -r flag
+
+    # if want the restrict user1 can execute more command, we can link the command to his home-directory.
+        # Moreover/Optionally, to restrict the user to a limited/picked set of command to use, you can create a .bash_profile read-only to that user, with
+
+        PATH=$HOME/bin
+
+        # and symlink whatever commands you allows into the ~/bin folder to that user:
+        ln -s /bin/ls /home/restricted_folder/bin/ls
+        ln -s /bin/mkdir /home/restricted_folder/bin/mkdir
+        ln -s /bin/rm /home/restricted_folder/bin/rm
 
