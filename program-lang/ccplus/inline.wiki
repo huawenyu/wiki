@@ -72,7 +72,7 @@ collect2: error: ld returned 1 exit status
 ## Add translate unit: get global function symbol
 
 ```c
-    #include "inline2.h"#
+    #include "inline2.h"
 
     int x2(int num)
     {

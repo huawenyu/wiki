@@ -60,6 +60,16 @@ well as this!
 
 # Linux
 
+# Determine if a specific process is 32- or 64-Bit
+https://unix.stackexchange.com/questions/106234/determine-if-a-specific-process-is-32-or-64-bit
+http://en.wikipedia.org/wiki/Executable_and_Linkable_Format#File_header
+
+/proc/$PID/exe yourself. It's quite trivial: if the 5th byte in the file is 1, it's a 32-bit binary. If it's 2, it's 64-bit. For added sanity checking:
+
+If the first 5 bytes are 0x7f, "ELF", 1: it's a 32 bit ELF binary.
+If the first 5 bytes are 0x7f, "ELF", 2: it's a 64 bit ELF binary.
+Otherwise: it's inconclusive.
+
 ## To reset your lost or fogotten password:
 
 1. Reboot your computer / Turn your computer on.
