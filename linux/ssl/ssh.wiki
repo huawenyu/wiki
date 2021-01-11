@@ -4,6 +4,84 @@
 
 https://github.com/zyxar/tsocks
 
+# ssh config
+
+## ssh password-less login
+
+https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
+
+In this example, we will set up SSH password-less automatic login from server 192.168.0.12 as user tecmint to 192.168.0.11 with user sheena.
+SSH Client : 192.168.0.12 ( Fedora 21 )
+SSH Remote Host : 192.168.0.11 ( CentOS 7 )
+
+1. Create Authentication SSH-Keygen Keys on – (192.168.0.12)
+
+    `[tecmint@tecmint.com ~]$` ssh-keygen -t rsa
+        Your identification has been saved in /home/tecmint/.ssh/id_rsa.
+        Your public key has been saved in /home/tecmint/.ssh/id_rsa.pub.
+
+2. Create .ssh Directory on – 192.168.0.11
+
+    `[tecmint@tecmint ~]$` ssh sheena@192.168.0.11 mkdir -p .ssh
+
+3. Upload Generated Public Keys to – 192.168.0.11
+
+    `[tecmint@tecmint ~]$` cat .ssh/id_rsa.pub | ssh sheena@192.168.0.11 'cat >> .ssh/authorized_keys'
+
+4. Set Permissions on – 192.168.0.11
+    Due to different SSH versions on servers, we need to set permissions on .ssh directory and authorized_keys file.
+    `[tecmint@tecmint ~]$` ssh sheena@192.168.0.11 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
+
+5. Login from 192.168.0.12 to 192.168.0.11 Server without Password
+    From now onwards you can log into 192.168.0.11 as sheena user from server 192.168.0.12 as tecmint user without a password.
+    `[tecmint@tecmint ~]$` ssh sheena@192.168.0.11
+
+## config
+
+### Client:
+    Alternatively, use the AddressFamily (specifies the address family to use when connecting)
+    directive in your ssh configuration file:
+     - `/etc/ssh/ssh_config (global configuration)`
+     - `~/.ssh/config (user specific file)`.
+
+     1. Force SSH Connection Over IPV4: `ssh -4 username@example.com`
+     2. Reuse SSH Connection:
+         Enable this in your `~/.ssh/config` file.
+
+```python
+            Host *      <=== enable it for all connection
+                ControlMaster auto
+                ControlPath  ~/.ssh/sockets/%r@%h-%p
+                ControlPersist 600
+```
+
+            ControlMaster – enables the sharing of multiple sessions over a single network
+                            connection.
+            ControlPath – defines a path to the control socket used for connection sharing.
+            ControlPersist – if used together with ControlMaster, tells ssh to keep the
+                            master connection open in the background (waiting for future client connections)
+                            once the initial client connection has been closed.
+```python
+            Host server1        <===  Or enable this for connections to a specific remote server, for instance:
+                HostName   www.example.com
+                IdentityFile  ~/.ssh/webserver.pem
+                    User username_here
+                ControlMaster auto
+                ControlPath  ~/.ssh/sockets/%r@%h-%p
+                ControlPersist  600
+```
+     4.
+     3.
+
+### Server: `/etc/ssh/sshd_config`: UseDNS  no
+
+    The UseDNS directive controls the above functionality; to disable it, search and uncomment it
+    in the /etc/ssh/sshd_config file. If it’s not set, add it with the value no.
+
+    $ sudo systemctl restart sshd	    #Systemd
+    $ sudo service sshd restart 		#SysVInit
+
+
 # SSH tunnel
 
 [how-does-reverse-ssh-tunnel-work](https://unix.stackexchange.com/questions/46235/how-does-reverse-ssh-tunneling-work)
