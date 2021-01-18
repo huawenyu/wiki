@@ -1,3 +1,4 @@
+
 # Secure Shell(ssh)
 
 ## tsocks: a transparent SOCKS proxy
@@ -6,7 +7,19 @@ https://github.com/zyxar/tsocks
 
 # ssh config
 
-## ssh password-less login
+## ssh login without paswd
+https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604
+
+From Client:
+
+1. $ ssh-keygen  [default]
+2. $ ssh-copy-id username@remote_host
+   <or>
+   $ cat ~/.ssh/id_rsa.pub | ssh username@remote_host "mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && cat >> ~/.ssh/authorized_keys"
+3. Disable server's passwd login:
+   - sudo nano /etc/ssh/sshd_config       +===  PasswordAuthentication no
+   - sudo systemctl restart ssh
+
 
 https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
 
@@ -32,7 +45,7 @@ SSH Remote Host : 192.168.0.11 ( CentOS 7 )
     Due to different SSH versions on servers, we need to set permissions on .ssh directory and authorized_keys file.
     `[tecmint@tecmint ~]$` ssh sheena@192.168.0.11 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
 
-5. Login from 192.168.0.12 to 192.168.0.11 Server without Password
+5. Login [from](from) 192.168.0.12 to 192.168.0.11 Server without Password
     From now onwards you can log into 192.168.0.11 as sheena user from server 192.168.0.12 as tecmint user without a password.
     `[tecmint@tecmint ~]$` ssh sheena@192.168.0.11
 
@@ -49,20 +62,18 @@ SSH Remote Host : 192.168.0.11 ( CentOS 7 )
          Enable this in your `~/.ssh/config` file.
 
 ```python
-            Host *      <=== enable it for all connection
+            Host *      +=== enable it for all connection
                 ControlMaster auto
                 ControlPath  ~/.ssh/sockets/%r@%h-%p
                 ControlPersist 600
-```
 
-            ControlMaster – enables the sharing of multiple sessions over a single network
-                            connection.
-            ControlPath – defines a path to the control socket used for connection sharing.
-            ControlPersist – if used together with ControlMaster, tells ssh to keep the
-                            master connection open in the background (waiting for future client connections)
-                            once the initial client connection has been closed.
-```python
-            Host server1        <===  Or enable this for connections to a specific remote server, for instance:
+                || ControlMaster – enables the sharing of multiple sessions over a single network connection.
+                || ControlPath – defines a path to the control socket used for connection sharing.
+                || ControlPersist – if used together with ControlMaster, tells ssh to keep the
+                ||                 master connection open in the background (waiting for future client connections)
+                ||                 once the initial client connection has been closed.
+
+            Host server1        +===  Or enable this for connections to a specific remote server, for instance:
                 HostName   www.example.com
                 IdentityFile  ~/.ssh/webserver.pem
                     User username_here
@@ -70,32 +81,164 @@ SSH Remote Host : 192.168.0.11 ( CentOS 7 )
                 ControlPath  ~/.ssh/sockets/%r@%h-%p
                 ControlPersist  600
 ```
-     4.
-     3.
 
 ### Server: `/etc/ssh/sshd_config`: UseDNS  no
 
     The UseDNS directive controls the above functionality; to disable it, search and uncomment it
     in the /etc/ssh/sshd_config file. If it’s not set, add it with the value no.
 
-    $ sudo systemctl restart sshd	    #Systemd
-    $ sudo service sshd restart 		#SysVInit
+    $ sudo systemctl restart ssh	    #Systemd
+    $ sudo service ssh restart 		#SysVInit
 
 
 # SSH tunnel
 
 [how-does-reverse-ssh-tunnel-work](https://unix.stackexchange.com/questions/46235/how-does-reverse-ssh-tunneling-work)
+https://linuxize.com/post/how-to-setup-ssh-tunneling
+https://medium.com/maverislabs/proxyjump-the-ssh-option-you-probably-never-heard-of-2d7e41d43464
+https://www.ssh.com/ssh/tunneling/example
+
+## Local port forwarding
+
+Local port forwarding allows you to forward a port on the local (ssh client) machine to a port
+on the remote (ssh server) machine, which is then forwarded to a port on the destination machine.
+In this forwarding type, the SSH client listens on a given port and tunnels any connection to
+that port to the specified port on the remote SSH server, which then connects to a port on the
+destination machine. The destination machine can be the remote SSH server or any other machine.
+
+Local port forwarding is mostly used to connect to a remote service on an remote-office internal
+network such as a office internal database or VNC server.
+The destination hostname must be resolvable from the SSH server.
+
+    [HomePC]$ ssh -L [LOCAL_IP:]LOCAL_PORT:DESTINATION:DESTINATION_PORT [USER@]SSH_SERVER
+
+### troubleshooting
+
+If you are having trouble setting up tunneling, check your remote SSH server configuration and
+make sure `AllowTcpForwarding` is not set to no. By default, forwarding is allowed.
+
+### sample1: From home access office internal private database-server directly
+
+Let's say you have a MySQL database server running on machine db001.host on an internal (private)
+network, on port 3306, which is accessible from the machine pub001.host, and you want to connect
+using your local machine MySQL client to the database server. To do so, you can forward the
+connection using the following command:
+
+	[HomePC]$ ssh -L 3336:db001.host:3306 user@pub001.host
+
+Once you run the command, you’ll be prompted to enter the remote SSH user password. Once
+entered, you will be logged into the remote server, and the SSH tunnel will be established. It
+is also a good idea to set up an SSH key-based authentication and connect to the server without
+entering a password.
+Now, if you point your local machine database client to 127.0.0.1:3336, the connection will be
+forwarded to the db001.host:3306 MySQL server through the pub001.host machine that acts as an
+intermediate server.
+
+You can forward multiple ports to multiple destinations in a single ssh command. For example,
+you have another MySQL database server running on machine db002.host, and you want to connect
+to both servers from your local client, you would run:
+
+	[HomePC]$ ssh -L 3336:db001.host:3306 3337:db002.host:3306 user@pub001.host
+
+### sample2: From home access office private server by VNC
+
+Say you need to connect to a remote machine through VNC, which runs on the same server, and it
+is not accessible from the outside. The command you would use is:
+
+	[HomePC]$ ssh -L 5901:127.0.0.1:5901 -N -f user@remote.host
+
+The -f option tells the ssh command to run in the background and -N not to execute a remote
+command. We are using localhost because the VNC and the SSH server are running on the same host.
+
+## Remote Port Forwarding:
+
+Like `Opening Backdoors into the Enterprise`.
+
+Remote port forwarding is the opposite of local port forwarding. It allows you to forward a
+port on the remote (ssh server) machine to a port on the local (ssh client) machine, which is
+then forwarded to a port on the destination machine.
+
+In this forwarding type, the SSH server(Office-server) listens on a given port and tunnels any
+connection to that port to the specified port on the local SSH client(HomePC), which the SSH
+client(HomePC) then connects to a port on the destination machine.
+The destination machine can be the local or any other machine, which should resolveable by ssh-client-HomePC.
+
+	[HomePC]$ ssh -R [REMOTE:]REMOTE_PORT:DESTINATION:DESTINATION_PORT [USER@]SSH_SERVER
+
+### Troubleshooting
+
+If you are having trouble setting up remote port forwarding, make sure `GatewayPorts` is set to
+yes in the remote SSH server configuration, maybe also `GatewayPorts clientspecified`.
+
+### Sample1: Let office co-worker access your office demo-webserver which running on your home pc
+
+Let’s say you are developing a web application on your local machine, and you want to show a
+preview to your fellow developer. You do not have a public IP, so the other developer can’t
+access the application via the Internet.
+
+If you have access to a remote SSH server, you can set up a remote port forwarding as follows:
+
+	[HomePC]$ ssh -R 8080:127.0.0.1:3000 -N -f user@remote.host
+
+The command above will make the ssh server listen on port 8080, and tunnel all traffic from
+this port to your local machine on port 3000.
+
+Now your fellow developer can type the_ssh_server_ip:8080 in his/her browser and preview your
+awesome application.
+
+## Dynamic Port Forwarding
+
+Dynamic port forwarding allows you to create a socket on the local (ssh client) machine, which acts
+as a `(client also act-as) SOCKS proxy server`. When a client connects to this port, the connection is forwarded to the
+remote (ssh server) machine, which is then forwarded to a dynamic port on the destination machine.
+This way, all the applications using the SOCKS proxy will connect to the SSH server, and the
+server will forward all the traffic to its actual destination.
+
+	[HomePC]$ ssh -D [LOCAL_IP:]LOCAL_PORT [USER@]SSH_SERVER
+
+### Sample: Test office DUT under transparent http traffic from HomePC's firefox
+
+A typical example of a dynamic port forwarding is to tunnel the web browser traffic through an
+SSH server.
+
+	Host dev
+		Hostname 172.16.80.142
+	Host kvm
+		Hostname 172.16.80.141
+	Host client
+		comment office client pc
+		Hostname 10.1.1.143
+		ProxyJump dev
+
+	[HomePC]$ ssh -D 1337 -q -N -C -f client
+
+	this will open a socks server on localhost, using the client vm. then config socks proxy in
+	firefox, you can test use your local firefox
+
+The following command will create a SOCKS tunnel on port 9090:
+
+	[HomePC]$ ssh -D 9090 -N -f user@remote.host
+
+Once the tunneling is established, you can configure your application to use it. This article
+explains how to configure Firefox and Google Chrome browser to use the SOCKS proxy.
+
+The port forwarding has to be separately configured for each application that you want to tunnel
+the traffic thought it.
+
 
 ## tunnel a local port onto a remote server
 
-Q: I have a domain that i bought from DynDNS. I pointed the domain at my ip adress so i can run servers.
+Q: I have a domain that i bought from DynDNS. I pointed the domain at my ip adress so i can
+run servers.
 The problem I have is that I don't live near the server computer... Can I use an ssh tunnel?
 As I understand it, this will let me have access to my servers.
-I want the remote computer to direct traffic from port 8080 over the ssh tunnel to the ssh client, being my laptop's port 80. Is this possible?
+I want the remote computer to direct traffic from port 8080 over the ssh tunnel to the ssh
+client, being my laptop's port 80. Is this possible?
 
 ### A1:
 
-This is actually pretty easy to accomplish, even though it's somewhat buried in the ssh documentation. Assuming OpenSSH, the basic syntax is as follows:
+This is actually pretty easy to accomplish, even though it's somewhat buried in the ssh
+documentation. Assuming OpenSSH, the basic syntax is as follows:
 
 ```sh
     $ ssh -R 8080:localhost:80 -N username@your-server.dyndns.org
@@ -143,7 +286,7 @@ bind to `::`, which means that the port is accessible via IPv6 natively and via 
 as a glob otherwise.)
 
 
-@Note that **if you use OpenSSH `sshd` server, the server's `GatewayPorts` option needs to be
+@Note that **if you use OpenSSH `ssh` server, the server's `GatewayPorts` option needs to be
 enabled** (set to `yes` or `clientspecified`) for this to work (check file `/etc/ssh/sshd_config`
 on the server).
 Otherwise (default value for this option is `no`), the server will always force the port to be
@@ -311,21 +454,25 @@ Here's an example.
     $ proxychains nmap -sTV -n -PN 10.6.6.88
 
 Have no VPN access, but there is an emergency ssh port available, but no other port is open.
-ssh port-forwarding and fix /etc/hosts. Doable perhaps? VNC over ssh? Awkward. Enter the ssh socks proxy!
+ssh port-forwarding and fix /etc/hosts. Doable perhaps? VNC over ssh? Awkward. Enter the ssh
+socks proxy!
 
 ### Enable SOCKS-proxy service on server side
 
 	$ ssh -D 1080 login.example.com
 
-Now, we create a local socket listen on port 1080 which forwarding any received traffic to the ssh.server-side.SOCKS-proxy which will meet our SOCKS's request.
+Now, we create a local socket listen on port 1080 which forwarding any received traffic to the
+ssh.server-side.SOCKS-proxy which will meet our SOCKS's request.
 
-So now if we have tool which support socks-protocol can work as our Office-local-env, for example, like firefox.
+So now if we have tool which support socks-protocol can work as our Office-local-env, for example,
+like firefox.
 
-####  Firefox (natively support SOCKS client protocol)
+#### Firefox (natively support SOCKS client protocol)
 
 1. enable socks proxy
 
-    Settings -> Advanced -> Network -> Configure how Firefox connects to the Internet -> Manual settings, Socks: localhost, Port: 1080
+    Settings -> Advanced -> Network -> Configure how Firefox connects to the Internet -> Manual
+    settings, Socks: localhost, Port: 1080
 
 2. enable remote dns resolve
 
@@ -345,7 +492,8 @@ proxy host:
     $ sudo yum install tsocks || sudo apt-get install tsocks
     $ echo "server = 127.0.0.1" | sudo tee /etc/tsocks.conf
 
-`tsocks` is a little gem of a program. It hooks into other programs, and redirects network traffic to
+`tsocks` is a little gem of a program. It hooks into other programs, and redirects network
+traffic to
 the local SOCKS proxy. Now, while the ssh SOCKS proxy is still running (the ssh -D1080 command),
 just use tsocks to run your favourite program through the proxy:
 
@@ -358,7 +506,8 @@ just use tsocks to run your favourite program through the proxy:
     ### Run a local psql shell against a remote server through the SOCKS proxy
     $ tsocks psql -U pg_admin_user -W -h database.behind.firewall.example.com -W template1
 
-    Or to run a whole session of commands through the socks proxy, start with “. tsocks on” (note the leading dot), and stop it with “. tsocks off”
+    Or to run a whole session of commands through the socks proxy, start with “. tsocks on”
+    (note the leading dot), and stop it with “. tsocks off”
 
     $. tsocks on
     $ command
@@ -368,7 +517,7 @@ just use tsocks to run your favourite program through the proxy:
 
 To run Firefox through the SOCKS proxy, but without changing its configuration:
 
-    $ tsocks firefox http://ripe.net   # Stop firefox first
+    $ tsocks firefox http://ripe.net # Stop firefox first
 
 To check tsocks status, run
 
@@ -417,11 +566,13 @@ I won't go into detail about how this program works, but it basically does the f
 
  * Before the actual program is loaded tsocks loads its own shared library.
  * This library overwrites the kernel's connect() function and replaces it with its own.
- * Whenever the program tries to send a request the request is forwarded through your proxy server (and then over the secure tunnel).
+ * Whenever the program tries to send a request the request is forwarded through your proxy
+ server (and then over the secure tunnel).
 
 All this is done through setting the environment variable LD_PRELOAD to /usr/lib/libtsocks.so.
 
-The `tsocks` program itself is just a simple shell wrapper script. All the actual redirecting stuff is done via the library.
+The `tsocks` program itself is just a simple shell wrapper script. All the actual redirecting
+stuff is done via the library.
 
 ## Tips & Tricks
 

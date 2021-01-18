@@ -3,14 +3,16 @@ First check with
 dmesg | grep tty 
 
 if system recognize your adapter. Then try run minicom with 
-$ sudo minicom -s
+
+	$ sudo minicom -s
+
 go to "Serial port setup" and change first line with /dev/ttyUSB0.  (/dev/ttyS0 for BIOS port "COM1", /dev/ttyS1 for BIOS port "COM2")
 Speed 9600 8 bits, no parity, 1 stop for all FGT
 Press F and G to set both the hardware and software flow control to "none"
 Don't forget to save config as default with "Save setup as dfl". 
 
 $ sudo chmod ua+rwx /dev/ttyUSB0
-$ minicom	<<< succ connect to our box
+$ minicom	+=== succ connect to our box
 
 You can try different bt
 Power off the FGT unit and use the following :
