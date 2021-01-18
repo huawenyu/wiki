@@ -42,7 +42,8 @@ https://gist.github.com/heiswayi/350e2afda8cece810c0f6116dadbe651
 
 ### First Method
 
-Deleting the .git folder may cause problems in our git repository. If we want to delete all of our commits history, but keep the code in its current state, try this:
+Deleting the .git folder may cause problems in our git repository. If we want to delete all of
+our commits history, but keep the code in its current state, try this:
 
 # Check out to a temporary branch:
 git checkout --orphan TEMP_BRANCH
@@ -61,6 +62,7 @@ git branch -m master
 
 # Finally, force update to our repository:
 git push -f origin master
+
 This will not keep our old commits history around. But if this doesn't work, try the next method below.
 
 ### Second Method
