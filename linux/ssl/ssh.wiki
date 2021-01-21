@@ -45,7 +45,7 @@ SSH Remote Host : 192.168.0.11 ( CentOS 7 )
     Due to different SSH versions on servers, we need to set permissions on .ssh directory and authorized_keys file.
     `[tecmint@tecmint ~]$` ssh sheena@192.168.0.11 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
 
-5. Login [from](from) 192.168.0.12 to 192.168.0.11 Server without Password
+5. Login from 192.168.0.12 to 192.168.0.11 Server without Password
     From now onwards you can log into 192.168.0.11 as sheena user from server 192.168.0.12 as tecmint user without a password.
     `[tecmint@tecmint ~]$` ssh sheena@192.168.0.11
 
@@ -110,7 +110,7 @@ Local port forwarding is mostly used to connect to a remote service on an remote
 network such as a office internal database or VNC server.
 The destination hostname must be resolvable from the SSH server.
 
-    [HomePC]$ ssh -L [LOCAL_IP:]LOCAL_PORT:DESTINATION:DESTINATION_PORT [USER@]SSH_SERVER
+	[HomePC]$ ssh -L [LOCAL_IP:]LOCAL_PORT:DESTINATION:DESTINATION_PORT [USER@]SSH_SERVER
 
 ### troubleshooting
 
@@ -152,7 +152,54 @@ command. We are using localhost because the VNC and the SSH server are running o
 
 ## Remote Port Forwarding:
 
+### SSH PC at office in local network from home
 Like `Opening Backdoors into the Enterprise`.
+
+	# enable HomeModen's port-forwarding feature,
+	[OfficePC]$ ssh -R [HomeModenPublicIP:]HomePORT:DESTINATION:DESTINATION_PORT [homeUSER@]HomeModenPublicIP
+
+#### sample 1:
+
+1. [execute from office machine] Setup connection Office --+ Home (as Home has public IP). This
+will setup reverse tunnel from your office machine to home.
+
+    $ ssh -CNR 19999:localhost:22 homeuser@home
+
+2. [execute from home machine] Connect to your office from home. This will use tunnel from the step 1.
+
+    $ ssh -p 19999 officeuser@home
+
+Please ensure, that ssh tunneling is not against your company policies, cause sometimes you
+can get fired for such connection schema (e.g. my employer will fire me for that).
+
+ps. In the first step you may want to use `autossh` or something like that, so your tunnel
+connection will be automatically restored in case of unstable network.
+
+#### sample 1:
+
+Assuming that you have control over your home network, and that there you setup your internal
+IP address fixed (e.g. based on the MAC address of your home PC),
+
+1. then you can open up a port (e.g. 4321) on your home router to forward to your PC also on 4321.
+2. At home make sshd listen on that port.
+
+Create a new user locally as you (of course) don't want to use your normal public/private key-pair
+to run on your office computer while you are not there. Create a public/private keypair on your
+office computer and copy the public key over to the new user on you home computer.
+
+Assuming that your home IP (as given by your provider to your router) is relatively stable, and
+that you can have some place to publish this home IP address (e.g. by uploading it to some web
+site), where your office PC, can retrieve it, then your office PC can set up a reverse ssh tunnel.
+
+Your office PC should retrieve the home IP on a regular basis (e.g. every 5 minutes) and if
+the IP has changed set up the reverse ssh tunnel:
+
+	$ ssh -N -R 12345:localhost:22 homeuser@home-ip -p 4321
+
+and you can connect to the local port 12345 with ssh to connect to your office PC:
+
+	$ ssh -p 12345 officeuser@localhost
+
 
 Remote port forwarding is the opposite of local port forwarding. It allows you to forward a
 port on the remote (ssh server) machine to a port on the local (ssh client) machine, which is
@@ -172,9 +219,9 @@ yes in the remote SSH server configuration, maybe also `GatewayPorts clientspeci
 
 ### Sample1: Let office co-worker access your office demo-webserver which running on your home pc
 
-Let’s say you are developing a web application on your local machine, and you want to show a
-preview to your fellow developer. You do not have a public IP, so the other developer can’t
-access the application via the Internet.
+Let's say you are developing a web application on your local machine, and you want to show a
+preview to your fellow developer. You do not have a public IP, so the other developer can't
+access the application via the Internet direcly.
 
 If you have access to a remote SSH server, you can set up a remote port forwarding as follows:
 
@@ -201,26 +248,46 @@ server will forward all the traffic to its actual destination.
 A typical example of a dynamic port forwarding is to tunnel the web browser traffic through an
 SSH server.
 
-	Host dev
-		Hostname 172.16.80.142
-	Host kvm
-		Hostname 172.16.80.141
-	Host client
-		comment office client pc
-		Hostname 10.1.1.143
-		ProxyJump dev
+[From Home pc]:
 
-	[HomePC]$ ssh -D 1337 -q -N -C -f client
+	$ chmod 600 ~/.ssh/config
+	$ cat ~/.ssh/config
 
-	this will open a socks server on localhost, using the client vm. then config socks proxy in
-	firefox, you can test use your local firefox
+		Host work
+			Hostname work
+			User hyu
+		Host kvm
+			Hostname kvm
+			User hyu
+		Host client
+			Hostname 10.1.1.122
+			User hyu
+			# We have no route for 10.1.1.122,
+			#   but enable ProxyJump, the traffic will forward to `work`,
+			#   then work know how to access 10.1.1.122
+			ProxyJump work
+
+	$ ssh-copy-id hyu@work
+	$ ssh-copy-id hyu@client
+	$ ssh-copy-id hyu@kvm
+
+	$ ssh -D 9090 -q -N -C -f hyu@client
+
+	this will open a socks server on local-homePC host, which listen 9090,
+	then config socks proxy in local-homePC's firefox, we can test our kvm's DUT use our local-homePC's firefox,
+	from the DUT's view, the http traffic come from client.
+
+	$ netstat -lntp
+		Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+		tcp        0      0 127.0.0.1:9090          0.0.0.0:*               LISTEN      18093/ssh
+
 
 The following command will create a SOCKS tunnel on port 9090:
 
 	[HomePC]$ ssh -D 9090 -N -f user@remote.host
 
-Once the tunneling is established, you can configure your application to use it. This article
-explains how to configure Firefox and Google Chrome browser to use the SOCKS proxy.
+Once the tunneling is established, you can configure your application to use it. Here think
+you know how to configure Firefox and Google Chrome browser to use the `SOCKS-proxy:9090`.
 
 The port forwarding has to be separately configured for each application that you want to tunnel
 the traffic thought it.
@@ -392,6 +459,17 @@ way this would work is that you would first create an SSH tunnel that forwards t
 server on port 9000 to your local machine on port 3000. This means that if you connect to the
 server on port 9000 from your local machine, you’ll actually make a request to your machine
 through the SSH tunnel.
+
+```todo
+(B) Call Mom @Phone +Family
+(A) Schedule annual checkup +Health
+(B) Outline chapter 5 +Novel @Computer
+(C) Add cover sheets @Office +TPSReports
+Plan backyard herb garden @Home
+Pick up milk @GroceryStore
+x Research self-publishing services +Novel @Computer
+x Download Todo.txt mobile app @Phone
+```
 
 #### A few closing tips
 

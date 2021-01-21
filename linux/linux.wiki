@@ -58,6 +58,43 @@ It's great!  Evolution is the only mail reader I know that lets you do
 so much with vfolders.  Even thunderbird's search folders can't do as
 well as this!
 
+## Howto install Google-Pinyin(base on fcitx) in LinuxMint
+
+Following is what I did to install/configure Google Pinyin in Linux Mint (English version) using "fcitx" so that I can switch input method to enter either English or Chinese at will in Linux Mint 18.3.
+
+(Step 1): Use software manager to install the following package:
+
+Menu → Administration → Software Manager, enter “fcitx” in search box and find the following from the search result and click to install:
+
+fcitx
+fcitx-config-gtk
+fcitx-frontend-gtk2
+fcitx-frontend-gtk3
+fcitx-googlepinyin
+fcitx-ui-classic
+Close (x) software manager
+
+(Step 2): Change Input Method to “Fcitx”:
+Menu ⇒ Preferences ⇒ Input Method ⇒ set Input method to [Fcitx]
+
+(Step 3): Logout and Login
+
+(Step 4): Verify a small keyboard icon appears in the system tray area
+
+(Step 5): Add “Google Pinyin” to Fcitx:
+- Right-click keyboard icon in system tray ⇒ Configure, this would bring up "Input Method Configuration" window
+- click (+) sign
+- click (x) to uncheck "Only Show Current Language" so to list all the available languages
+- Select Google Pinyin (I found it at the very bottom of the list)
+- click OK
+- click [Appearance] Tab ⇒ change ClassicUI Font size from ‘0’ to ‘12’
+- click [Addon] Tab ⇒ Input method selector ⇒ Configure ⇒ IMSelector ⇒ Global Input Method SelectKey ⇒ click first [Empty] box ⇒ press Ctrl+Shift+Space on the keyboard ⇒ OK
+ps. this Ctrl+Shift+Space is my keyboard shortcut to switch the input language.
+
+(Step 6): Test Chinese input:
+- Open Terminal (or a browser)
+- Enter (Ctrl+Shift+Space) and value '2' on the keyboard to select Google Pinyin (or use mouse to select) 
+
 # Linux
 
 # Determine if a specific process is 32- or 64-Bit
