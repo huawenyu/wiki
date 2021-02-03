@@ -1,6 +1,8 @@
 # doc
+
 https://www.cyberciti.biz/tips/understanding-linux-unix-umask-value-usage.html
-`umask` is remove the right from user-group-others.
+
+`umask` is used to remove the right from user-group-others when user create a new file/directory.
 
 ## Explain Octal umask Mode 022 And 002
 
@@ -28,3 +30,4 @@ data if umask is set to 077.
 A umask of 002 is good when you share data with other users in the same group. Members of your
 group can create and modify data files; those outside your group can read data file, but cannot
 modify it. Set your umask to 007 to completely exclude users who are not group members.
+
