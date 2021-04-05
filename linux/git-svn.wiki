@@ -384,7 +384,11 @@ Git 提供了两种补丁方案，一是用git diff生成的UNIX标准补丁.dif
     git log --after="2014-7-1" --before="2014-7-4"
     git log --author="John"		# by author
     git log --author="John\|Mary"
+
     git log --grep="JRA-224:"		# by commit message, -i ignore case
+    git log --grep="foo" --grep="bar"               # or
+    git log --grep="foo" --grep="bar" --all-match   # and
+
     git log -- foo.py bar.py		# by files
     git log -S"Hello, World!"		# by patch content
     git log master..feature		# by range
