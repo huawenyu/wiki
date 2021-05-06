@@ -348,6 +348,10 @@ guide (https://google.github.io/styleguide/cppguide.html).
 
 # Howtos
 
+## Screen recorder
+
+Screen present recorder video was generated with screenkey -g $(slop -n -f '%g') and simplescreenrecorder.
+
 ## Upgrade GTK 3.14
 
 The GTK 3.10 is default version of Ubuntu (Linux Mint 14.04.1-Ubuntu).
