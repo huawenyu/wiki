@@ -19,6 +19,8 @@ http://derekmolloy.ie/hello-world-introductions-to-cmake/
     $ cmake ..
     $ make
     $ sudo make install
+    ...
+    $ rm -fr build
 ```
 
 ## Demo lib + sample:
