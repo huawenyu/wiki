@@ -32,6 +32,35 @@ This macro concatenates two expressions, and we want the same behavior:
   int PP_CONCAT(NAME, INDEX) = 1; // declares a variable name 'Thingy_1'
 ```
 
+# Macro overrides
+
+Now, we can build on this to define a variadic macro that has an expansion overridden by how many args it receives. This is what the original stackoverflow answer did. Something like this:
+```c
+  // Define two overrides that can be used by the expansion of
+  // our main macro.
+  #define _MY_CONCAT3(a, b, c) a b c
+  #define _MY_CONCAT2(a, b) a b
+
+  // Define a macro that uses the "paired, sliding arg list"
+  // technique to select the appropriate override. You should
+  // recognize this as similar to the GET_NTH_ARG() macro in
+  // previous examples.
+  #define _GET_N_MACRO(_1, _2, _3, NAME, ...) NAME
+
+  // Define a macro that concats either 3 or 2 strings together.
+  #define MY_CONCAT(...) _GET_N_MACRO(__VA_ARGS__, \
+      _MY_CONCAT3, _MY_CONCAT2)(__VA_ARGS__)
+
+  int main() {
+      printf("3 args: %s\n", MY_CONCAT("a", "b", "c"));
+      printf("2 args: %s", MY_CONCAT("a", "b"));
+  }
+
+  // —— output ——–
+  // 3 args: abc
+  // 2 args: ab
+```
+
 # Generic-program: '_Generic'
 
 ## choose function depend on type
@@ -109,30 +138,30 @@ With the ability to determine the size of our variadic list it now actually easy
     #define PP_OVERLOAD(Macro, ...) PP_CONCAT(Macro, PP_NARG(__VA_ARGS__))
 
 ```c
-// #define PP_CONCAT_IMPL(x, y) x##y
-// #define PP_CONCAT(x, y) PP_CONCAT_IMPL( x, y )
-//
-// #define PP_NARG(...)  PP_NARG_(__VA_ARGS__, PP_RSEQ_N())
-// #define PP_NARG_(...) PP_ARG_N(__VA_ARGS__)
-//
-// #define PP_RSEQ_N() 8, 7, 6, 5, 4, 3, 2, 1, 0
-// #define PP_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8,  N, ...) N
+  // #define PP_CONCAT_IMPL(x, y) x##y
+  // #define PP_CONCAT(x, y) PP_CONCAT_IMPL( x, y )
+  //
+  // #define PP_NARG(...)  PP_NARG_(__VA_ARGS__, PP_RSEQ_N())
+  // #define PP_NARG_(...) PP_ARG_N(__VA_ARGS__)
+  //
+  // #define PP_RSEQ_N() 8, 7, 6, 5, 4, 3, 2, 1, 0
+  // #define PP_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8,  N, ...) N
 
-// #define PP_OVERLOAD(Macro, ...) PP_CONCAT(Macro, PP_NARG(__VA_ARGS__))
+  // #define PP_OVERLOAD(Macro, ...) PP_CONCAT(Macro, PP_NARG(__VA_ARGS__))
 
-void my_func_1(const char *, int);
-void my_func_2(const char *, int, int);
-void my_func_3(const char *, int, int, int);
+  void my_func_1(const char *, int);
+  void my_func_2(const char *, int, int);
+  void my_func_3(const char *, int, int, int);
 
-// Please note that this solution doesn’t work with zero arguments.
-#define my_func(fmt, ...) PP_OVERLOAD(my_func_, __VA_ARGS__)(fmt, __VA_ARGS__)
+  // Please note that this solution doesn’t work with zero arguments.
+  #define my_func(fmt, ...) PP_OVERLOAD(my_func_, __VA_ARGS__)(fmt, __VA_ARGS__)
 
-void test()
-{
-    my_func("Thingy", 1);
-    my_func("Thingy", 1, 2);
-    my_func("Thingy", 1, 2, 3);
-}
+  void test()
+  {
+      my_func("Thingy", 1);
+      my_func("Thingy", 1, 2);
+      my_func("Thingy", 1, 2, 3);
+  }
 ```
 
 
@@ -185,12 +214,12 @@ Predefined preprocessor macro __COUNTER__
 ```
 ## Reset __COUNTER__ macro to zero
 
-Reset the __COUNTER__ macro at the start of a header file to make its evaluation within the header file consistent over several compile units?
+  Reset the __COUNTER__ macro at the start of a header file to make its evaluation within the header file consistent over several compile units?
 
-```c
-enum { COUNTER_BASE = __COUNTER__ };
+  ```c
+  enum { COUNTER_BASE = __COUNTER__ };
 
-#define LOCAL_COUNTER (__COUNTER__ - COUNTER_BASE)
+  #define LOCAL_COUNTER (__COUNTER__ - COUNTER_BASE)
 ```
 
 # Compile ifndef-fence code: change ifndef to if (true)
