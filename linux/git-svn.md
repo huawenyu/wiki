@@ -127,6 +127,9 @@ global-ignores = *.o *.lo *.la *.al .libs *.so *.so.[0-9]* *.a *.pyc *.pyo __pyc
 
 ### Clean for rebuild
 
+    svn cleanup . --remove-unversioned
+
+Old svn version use the 'status' to implement like:
 Should add option `--no-ignore` and check two beginwith characters 'I', '?'.
 
 ```sh

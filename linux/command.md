@@ -393,6 +393,18 @@ The escape character can be changed using the command line option `-e`. If you s
 
 # Commands:
 
+## top
+
+so either use shift or caps lock.
+
+    P %CPU
+    M %MEM
+    N PID
+    T TIME+
+
+By default, they will be sorted in DESC order. Use R to toggle ASC/DESC.
+To set the sorting from the command line option, use top -o %MEM. You can specify any column.
+
 ## tool: mutt - email client
 
     echo "" | mutt -s 'patch of HTTP-CONNECT-USER' hyu@fortinet.com -a patch.diff

@@ -269,3 +269,4 @@ The easiest way to create restricted user that cannot wander off the given direc
         ln -s /bin/mkdir /home/restricted_folder/bin/mkdir
         ln -s /bin/rm /home/restricted_folder/bin/rm
 
+

@@ -91,6 +91,9 @@ Provides a way to choose one of several expressions at compile time, based on a 
   }
 ```
 
+## Generic selection based on multiple arguments
+https://riptutorial.com/c/example/2784/generic-selection-based-on-multiple-arguments
+
 ## choose function depend on args number
 
 ### Step 1: find the size of the variadic macro.
