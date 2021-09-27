@@ -105,7 +105,10 @@ The print.sh file now contains:
 
 # Shell Script
 
-## '()' vs '{}': prefer {cmd1;}
+## () vs {}: prefer {cmd1;}
+
+If you want the side-effects of the command list to affect your current shell, use {...}
+If you want to discard any side-effects, use (...)
 
 ```sh
 	{ echo abc; cat 1.txt; } > 2.txt
@@ -127,6 +130,31 @@ This is known as a group command. The return status is the exit status of list.
 Note that unlike the metacharacters ( and ),  { and } are reserved words and must occur where a reserved word is permitted to be recognized.  Since they do not cause a word break, they must be separated from list by whitespace or another shell metacharacter.
 
 The first option (subshell environment) has a bunch of side effects, most if not all of which are irrelevant to your scenario; however, if redirecting a bunch of commands' output is all you need, then Option #2 here (group command) is preferred.
+
+## $(command) vs ${variable} == $variable
+
+```sh
+	$ animal=cat
+	$ echo $animal
+	cat
+
+	$ cat=tabby
+	$ echo $cat
+	tabby
+
+	# !: a level of variable indirection is introduced
+	$ echo ${!animal}
+	tabby                           # If $animal is "cat", then ${!animal} is $cat, i.e., “tabby”
+
+	# #: length
+	$ animal=cat
+	$ echo ${#animal}
+	3                               # String length
+
+	# substitution
+	$ echo ${animal/at/ow}
+	cow                             # Substitution
+```
 
 ## pass all files to a command
 
