@@ -97,7 +97,7 @@ ps. this Ctrl+Shift+Space is my keyboard shortcut to switch the input language.
 
 # Linux
 
-# Determine if a specific process is 32- or 64-Bit
+## check 32- or 64-Bit
 https://unix.stackexchange.com/questions/106234/determine-if-a-specific-process-is-32-or-64-bit
 http://en.wikipedia.org/wiki/Executable_and_Linkable_Format#File_header
 
@@ -268,5 +268,42 @@ The easiest way to create restricted user that cannot wander off the given direc
         ln -s /bin/ls /home/restricted_folder/bin/ls
         ln -s /bin/mkdir /home/restricted_folder/bin/mkdir
         ln -s /bin/rm /home/restricted_folder/bin/rm
+
+
+# Howtos
+
+## Clipboard
+
+There are two types of clipboards in Unix/Linux:
+- PRIMARY (often used with Ctrl-X/C/V) 
+- SELECTION (mouse selected text, inserted with Shift-Insert or clicking the mouse middle button).
+
+**In a regular shell session:**
+
+	I select with the mouse, and use Ctrl+Shift+C to COPY to clipboard
+	I use Ctrl+Shift+V to paste.
+
+**Here's what I used to do:** 
+
+	Ctrl+Insert : Copy to the clipboard
+	Shift+Insert : PASTE from the clipboard
+	Shift+Delete : Cut TO the clipboard
+
+**Now I have an Apple Keyboard, I do:**
+(The apple keyboard does not have an insert key)
+
+	Ctrl+C to Copy to the clipboard
+	Ctrl+V to PASTE FROM the clipboard
+	Shift+Delete to cut TO THE clipboard. 
+
+**In a terminal using Putty:**
+Select the text with the mouse copies directly to the clipboard
+
+	Right-Clicking anywhere in the terminal window does the paste
+
+### vim copy/paste accross vim-instance
+
+https://github.com/ojroques/vim-oscyank
+
 
 
