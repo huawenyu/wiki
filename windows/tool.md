@@ -5,6 +5,7 @@
   2. Support ssh, x-forward
   3. Also we get a cygwin Environment:
         Which support python, node, emacs, vim8.0, git, svn, curl, and more ...
+          Install: apt install curl
 
 - Cons:
   2. WSL's ssh more better
