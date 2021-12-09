@@ -209,6 +209,10 @@ The suggested workaround is:
   $ sudo /usr/NX/bin/nxserver --restart
 ```
 
+# auto-expect
+
+https://github.com/qsmx/auto-expect
+
 # window's best terminal: Mobaxterm
 
 We have two methods to add more tool into our Mobaxterm: download plugins, or `apt-get install bind-utils`

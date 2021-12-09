@@ -107,6 +107,45 @@ If the first 5 bytes are 0x7f, "ELF", 1: it's a 32 bit ELF binary.
 If the first 5 bytes are 0x7f, "ELF", 2: it's a 64 bit ELF binary.
 Otherwise: it's inconclusive.
 
+## add a new user or change username
+
+Unix-like operating systems decouple the user name from the user identity, so you may safely
+change the name without affecting the ID. All permissions, files, etc are tied to your identity
+(uid), not your username.
+
+As I only have ONE user account (administrator), it would not let me change the username ("you
+are already logged in" was the response in TTY1 (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>). To
+get around this:
+
+ 1. Login with your old credentials and add a new user, e.g. "temporary" in TTY1:
+
+        sudo adduser temporary
+
+ set the password.
+ 2. Allow the temporary user to run sudo by adding the user to sudo group:
+
+        sudo adduser temporary sudo
+
+ 3. Log out with the command `exit`.
+ 4. Return to tty1: Login with the 'temporary' user account and password. Change your username
+ and folder as mentioned above. `exit` (until you get the login prompt)
+ 5. Go back to TTY7 (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F7</kbd>) to login on the GUI/normal
+ desktop screen and see if this works.
+
+To change username (it is probably best to do this without being logged in):
+
+    sudo usermod -l newUsername oldUsername
+
+This however, doesn't rename the home folder.
+To change home-folder, after you changed the username:
+
+    sudo usermod -d /home/newHomeDir -m newUsername
+
+ 6. Delete temporary user and folder:
+
+        sudo deluser temporary
+        sudo rm -r /home/temporary
+
 ## To reset your lost or fogotten password:
 
 1. Reboot your computer / Turn your computer on.
