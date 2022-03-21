@@ -1,3 +1,44 @@
+# Linux
+
+https://github.com/jordansissel/xdotool
+We can use it to config our global shortcut to activate a windows.
+
+## Using xdotool
+  xdotool search "Mozilla Firefox" windowactivate
+  xdotool search "Google Chrome" windowactivate
+  xdotool search "Alacritty" windowactivate
+  xdotool search "Terminal" windowactivate
+  xdotool search "MousePad" windowactivate
+
+## Using wmctrl [better]
+    $ wmctrl -lx
+        0x01000003 -1 xfce4-panel.Xfce4-panel  hyu-dell xfce4-panel
+        0x01400028 -1 xfdesktop.Xfdesktop   hyu-dell Desktop
+        0x03a00007  1 virt-manager.Virt-manager  hyu-dell Virtual Machine Manager
+        0x03a00216  1 virt-manager.Virt-manager  hyu-dell ubuntu20.04 on QEMU/KVM
+        0x04600003  0 google-chrome.Google-chrome  hyu-dell linux - How to use wmctrl to activate window of a given class? - Super User - Google Chrome
+        0x0460003c  0 crx_ifpfemkbbkoldmalnheaiimnceiljfpe.Google-chrome  hyu-dell Mail - hyu@fortinet.com
+        0x05600003  0 xfce4-terminal.Xfce4-terminal  hyu-dell Terminal - 
+        0x05600210  0 xfce4-terminal.Xfce4-terminal  hyu-dell Terminal - 
+        0x05600289  0 xfce4-terminal.Xfce4-terminal  hyu-dell Terminal - 
+        0x05600b2a  0 xfce4-terminal.Xfce4-terminal  hyu-dell Terminal - 
+        0x01c02ca7  0 Thunar.Thunar         hyu-dell hyu - File Manager
+        0x05c00006  0 wireshark.Wireshark   hyu-dell PCAP_Exempt.pcap
+        0x05600e45  0 xfce4-terminal.Xfce4-terminal  hyu-dell Terminal - 
+        0x056027a5  0 xfce4-terminal.Xfce4-terminal  hyu-dell Terminal - 
+        0x05a00003  0 mousepad.Mousepad     hyu-dell *Untitled 2 - Mousepad
+        0x03c00002  0 Alacritty.Alacritty   hyu-dell Alacritty
+        0x0540002c  0 Navigator.Firefox     hyu-dell FortiGuard Service Network — Mozilla Firefox
+        0x06000005  0 microsoft teams - preview.Microsoft Teams - Preview  hyu-dell Me | Microsoft Teams
+        0x06a00007  0 xfce4-keyboard-settings.Xfce4-keyboard-settings  hyu-dell Keyboard
+
+  wmctrl -x -a  "Firefox"
+  wmctrl -x -a  "Google-chrome"
+  wmctrl -x -a  "Alacritty"
+  wmctrl -x -a  "Terminal"
+  wmctrl -x -a  "MousePad"
+
+
 # LinuxMint-XFCE
 
 ## Mint 19 Xfce typing delay
