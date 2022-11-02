@@ -1,0 +1,41 @@
+GCC = gcc
+CPPFLAGS = -I../../include -I../../../log -I.
+#CFLAGS = -g -finline-functions -Wall -Winline -pipe
+CFLAGS = -pipe -O -W -Wall -Wpointer-arith -Wno-unused-parameter -Wno-unused-but-set-variable -Wunused-function -Wno-unused-variable -Wno-unused-value -Werror -g
+
+LIBDIR =
+#LIBDIR = \
+#		-levent
+
+TGT_acsm = acsm
+TGT_acsmx = acsmx
+TGT_acsmx2 = acsmx2
+TGT_ac = ac
+
+OBJ_acsm = acsm.o test_acsm.o
+OBJ_acsmx = acsmx.o test_acsmx.o
+OBJ_acsmx2 = acsmx2.o test_acsmx2.o
+OBJ_ac = ac.o
+
+.PHONY: clean cleanobj all
+
+all: $(TGT_acsm) $(TGT_acsmx) $(TGT_acsmx2) cleanobj ;
+
+$(TGT_acsm): $(OBJ_acsm)
+	$(GCC) -g -o $@ $^ $(LIBDIR)
+
+$(TGT_acsmx): $(OBJ_acsmx)
+	$(GCC) -g -o $@ $^ $(LIBDIR)
+
+$(TGT_acsmx2): $(OBJ_acsmx2)
+	$(GCC) -g -o $@ $^ $(LIBDIR)
+
+$.o: %c
+	$(GCC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -rf $(TGT_acsm) $(TGT_acsmx) $(TGT_acsmx2) $(OBJ_acsm) $(OBJ_acsmx) $(OBJ_acsmx2)
+
+cleanobj:
+	rm -rf $(OBJ_acsm) $(OBJ_acsmx) $(OBJ_acsmx2)
+

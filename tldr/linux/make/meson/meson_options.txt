@@ -1,0 +1,1 @@
+option('more', type : 'combo', choices : ['none', 'asm', 'macro'], value : 'none')
