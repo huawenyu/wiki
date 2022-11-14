@@ -28,3 +28,4 @@ UDP - message-oriented, connectionless, unreliable, fast
     - the packet delay is more serious than packet loss.
     - like video/audio, dns,voip,
   + tcp: http,smtp,pop,ftp,ssh,telnet
+
