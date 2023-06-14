@@ -24,7 +24,20 @@ Upon reboot or resume, the nameserver is reset to 127.0.0.53.
     $ dig @172.16.100.100  voip.fortinet.com        <-- force using inner nameserver
 ```
 
-## set nameserver ourself
+## DNS by dnsmasq (better)
+
+Easy to setup, please follow the instruction:
+https://serverfault.com/questions/429839/assign-multiple-ips-to-1-entry-in-hosts-file
+
+1. install dnsmasq
+2. edit /etc/resolv.conf and set "nameserver 127.0.0.1" as a first DNS
+3. add normal DNS as alternative (google one for example) "nameserver 8.8.8.8" as a second line
+4. make sure two required records are in your /etc/hosts file
+5. now check with a command `host abc.efg.datastore.com`
+
+That should respond two records with RR-DNS so if one node from the list is down - your application will be connected to another one
+
+## DNS by resolvconf
 
     $ sudo apt install resolvconf
 
