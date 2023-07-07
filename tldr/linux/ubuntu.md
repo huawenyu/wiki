@@ -38,7 +38,7 @@ e.g.
 
 So now we know (at this time) we have two versions:
 
- - `1:60.2.1+build1-0ubuntu0.18.04.2` and 
+ - `1:60.2.1+build1-0ubuntu0.18.04.2` and
  - `1:52.7.0+build1-0ubuntu1`
 
 The three stars `***` indicates that this is the version *currently installed* as per the "Installed:" line.
@@ -48,19 +48,20 @@ The three stars `***` indicates that this is the version *currently installed* a
 This is easy, just use the syntax **[packagename]=[version]** with `apt install`.
 
 e.g.
-
+```sh
     $ sudo apt install thunderbird=1:52.7.0+build1-0ubuntu1
-    Reading package lists... Done
-    Building dependency tree       
-    Reading state information... Done
-    Suggested packages:
-      thunderbird-gnome-support ttf-lyx
-    The following packages will be DOWNGRADED:
-      thunderbird
-    0 to upgrade, 0 to newly install, 1 to downgrade, 0 to remove and 12 not to upgrade.
-    Need to get 46.5 MB of archives.
-    After this operation, 38.4 MB disk space will be freed.
-    Do you want to continue? [Y/n]
+        Reading package lists... Done
+        Building dependency tree
+        Reading state information... Done
+        Suggested packages:
+        thunderbird-gnome-support ttf-lyx
+        The following packages will be DOWNGRADED:
+        thunderbird
+        0 to upgrade, 0 to newly install, 1 to downgrade, 0 to remove and 12 not to upgrade.
+        Need to get 46.5 MB of archives.
+        After this operation, 38.4 MB disk space will be freed.
+        Do you want to continue? [Y/n]
+```
 
 Note the **warning** that the package will be **DOWNGRADED**
 
@@ -77,7 +78,7 @@ So now, when you `apt upgrade` you'll get a warning that packages have been **ke
 
     $ sudo apt upgrade
     Reading package lists... Done
-    Building dependency tree       
+    Building dependency tree
     Reading state information... Done
     Calculating upgrade... Done
     The following packages have been kept back:
@@ -93,7 +94,7 @@ e voila, the latest release is now the default again:
 
     $ sudo apt upgrade
     Reading package lists... Done
-    Building dependency tree       
+    Building dependency tree
     Reading state information... Done
     Calculating upgrade... Done
     The following packages will be upgraded:
