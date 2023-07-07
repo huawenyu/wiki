@@ -1,5 +1,14 @@
 # Howto
 
+## Enforce ubuntu apt by ipv4
+
+    ### https://www.cyberciti.biz/faq/howto-use-apt-get-with-ipv6-or-ipv4-transport-on-ubuntu-debian/
+    sudo apt-get -o Acquire::ForceIPv4=true install pkg
+    sudo apt-get -o Acquire::ForceIPv4=true update
+    sudo apt-get -o Acquire::ForceIPv4=true upgrade
+    sudo apt-get -o Acquire::ForceIPv4=true dist-upgrade
+    sudo apt-get -o Acquire::ForceIPv4=true install ksh
+
 ## Fix install fail or update fail
 
     $ sudo -i
