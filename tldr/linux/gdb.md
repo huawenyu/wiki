@@ -1,4 +1,5 @@
 # Quick Start:
+
   - https://en.wikipedia.org/wiki/Call_stack
   - Disassemble the `static int a = 0;`
     + https://www.recurse.com/blog/7-understanding-c-by-learning-assembly
@@ -7,6 +8,24 @@
     + https://sourceware.org/gdb/onlinedocs/gdb/gdbserver-man.html
     + $ sudo apt-get install gdbserver
   - GUI front-end: [neovim][5], eclipse, others(insight, nemiver)
+
+## Enhanced gdb
+
+- Using alias to using different gdbinit
+
+    $ cat ~/.gdbinit_gef
+    source /home/hyu/dotfiles/.gdbinit-gef.py
+
+    alias gdx1='pwndbg -x ~/.gdbinit_pwndbg'
+    alias gdx2='gdb -x ~/.gdbinit_gef'
+
+- pwndbg
+  1. Install
+
+    download [pwndbg_2023.07.17_amd64.deb](https://github.com/pwndbg/pwndbg/releases/tag/2023.07.17-pkgs)
+    sudo dpkg -i pwndbg_2023.07.17_amd64.deb
+  2. Install tmux-base GUI: [splitmind](https://github.com/jerdna-regeiz/splitmind)
+- [gef](https://github.com/hugsy/gef)
 
 ## howto generate core file
 
@@ -26,6 +45,7 @@
 [command doc][2][3]
 
 ## Registers
+  * Integer arguments (including pointers) are placed in the registers `%rdi, %rsi, %rdx, %rcx, %r8, and %r9`, in that order.
 
 ```
 |__64__|__56__|__48__|__40__|__32__|__24__|__16__|__8___|
@@ -51,10 +71,12 @@
     x/s str
     p *str@length
 
+    set disassembly-flavor intel
     set disassemble-next-line on    # show asm of nexti
 
-    finish			# show current function's return value
+    finish			    # show current function's return value
     type/whatis			# check value's type
+    set $sp += 4        # change register/return value
 ```
 
 ## normal useful
@@ -104,7 +126,7 @@ If gdb debug sometimes cannot find source because the source path is different. 
     set substitute-path /usr/src/include /mnt/include
     unset substitute-path [path]
 ```
-## cpu: ARM
+## ARM
 
   [Arm ASM Doc][6], and also we can search a command 'cbnz' by google like:
 

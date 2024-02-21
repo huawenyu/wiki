@@ -25,7 +25,7 @@
     When a page fault occurs, the address the program attempted to access is stored in the CR2 register.
 
 
-## cpu: ARM
+## ARM
 
   [Arm ASM Doc][6], and also we can search a command 'cbnz' by google like:
 
