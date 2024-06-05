@@ -71,6 +71,21 @@ echo "put $1 $3" | sftp $2
 
     $ putfile /tmp/aaa.txt.gz hyu@172.16.101.145 /hyu/test
 
+## Use sftp over socks 
+
+### through `paramiko`
+
+    https://www.paramiko.org/installing.html
+
+### trhough `nc`
+
+https://stackoverflow.com/questions/69627222/sftp-using-socks-proxy-command-with-password-authentication
+
+This can be done using a local SSH config file.  Create a new file inside the .ssh directory within your home directory, and call the file "config".  Here is the full content of my ~/.ssh/config file
+
+    host server.mywork.com
+        ProxyCommand /usr/bin/nc -x localhost:8080 %h %p
+
 ## Use lftp as sftp-clint
 
 ### script
