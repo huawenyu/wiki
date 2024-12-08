@@ -10,6 +10,8 @@ https://hoverbear.org/blog/setting-up-a-rust-devenv/
     ### Check cargo and rustc to confirm that we have Rust and Cargo installed
     $ cargo
     $ rustc
+    ### Run rust snippets easily
+    $ cargo install rust-script
 
     ### Next it's advisable to install the Rust source and documentation locally for later use when offline or for tools such as the autocompletion
     $ rustup component add rust-src
