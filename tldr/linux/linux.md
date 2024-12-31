@@ -3,6 +3,10 @@
 https://github.com/jordansissel/xdotool
 We can use it to config our global shortcut to activate a windows.
 
+## Package manager
+
+- apt/snap/`nix`
+
 ## Using xdotool
   xdotool search "Mozilla Firefox" windowactivate
   xdotool search "Google Chrome" windowactivate
