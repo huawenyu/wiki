@@ -89,3 +89,10 @@ our commits history, but keep the code in its current state, try this:
 	git push -f origin master
 	NOTE: You might need to provide the credentials for your GitHub account.
 
+## Avoid input token/passwd
+
+```bash
+    $ cat ~/.git-credentials
+        https://<your-name>:<your-token>@github.com
+```
+
