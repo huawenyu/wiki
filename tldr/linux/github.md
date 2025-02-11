@@ -37,6 +37,15 @@ https://gist.github.com/jexchan/2351996
 
 # Howtos
 
+## Access github without password
+
+We can use token:
+
+```bash
+    $ cat ~/.git-credentials
+        https://huawenyu:<your-token>@github.com
+```
+
 ## Delete commits history with git commands
 https://gist.github.com/heiswayi/350e2afda8cece810c0f6116dadbe651
 

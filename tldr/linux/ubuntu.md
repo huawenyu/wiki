@@ -1,5 +1,11 @@
 # Howto
 
+## apt install fail: Certificate verification failed: The certificate is NOT trusted.
+
+sudo apt update
+sudo apt install --reinstall ca-certificates
+sudo update-ca-certificates
+
 ## Enforce ubuntu apt by ipv4
 
     ### https://www.cyberciti.biz/faq/howto-use-apt-get-with-ipv6-or-ipv4-transport-on-ubuntu-debian/
