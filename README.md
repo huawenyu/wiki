@@ -1,2 +1,3 @@
 # wiki
-Wiki document.
+[Wiki](./document)
+

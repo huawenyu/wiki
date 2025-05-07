@@ -1,0 +1,54 @@
+- CMacro:
+    layout: even-horizontal
+    pane-border-status: top
+    panes:
+      - ppstep:
+          - rlwrap --always-readline -z ./tool/filter.py ppstep -I./src src/{{$code | foreach.c}}
+          - sleep: 1
+          - keys: help
+          - keys: Enter
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+          - sleep: 1
+          - keys: step
+          - keys: Enter
+      - log:
+          - sleep: 1
+          - tail -f out.log | ./tool/color2.py
+
